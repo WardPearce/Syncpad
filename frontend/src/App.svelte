@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
 
   let mode = "dark";
+  let advanceMode = false;
 
   async function toggleMode() {
     mode = mode === "dark" ? "light" : "dark";
@@ -51,6 +52,14 @@
       </span>
     </label>
     <p><span style="text-transform: capitalize;">{mode}</span> mode</p>
+  </div>
+
+  <div>
+    <label class="switch">
+      <input type="checkbox" bind:checked={advanceMode} />
+      <span />
+    </label>
+    <p>Advance mode</p>
   </div>
 </nav>
 
@@ -180,6 +189,30 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
 
     <h5>Documents</h5>
     <p>None</p>
+
+    {#if advanceMode}
+      <h5>Server issuer ID</h5>
+      <div class="field border">
+        <input type="text" disabled value="bDuRLaf2SG5k6aZ6S5U5bPdJdCaoa3Mw" />
+      </div>
+
+      <h5>Signature</h5>
+      <div class="field textarea border">
+        <textarea
+          disabled
+          value="MIHcAgEBBEIB7dvzJtl2a4NPp482YPFrddA90ATkK438mWCbR54fyx69/oh78ClH
+68d9HaC6PvLiWCrOByGgeGjxHbAblavfbEygBwYFK4EEACOhgYkDgYYABAHFgVVQ
+dWEkCazcHsNkq2E8dKHtTX2ezA/jLGIimfBHM476LOUNpm9MrlSeZX9+mc4H898y
+jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
+4xKXQhZ47UFtZs9KvElr1PNGFBivSfwp1mls347j3w=="
+        />
+      </div>
+
+      <h5>Raw message</h5>
+      <div class="field textarea border">
+        <textarea disabled value="" />
+      </div>
+    {/if}
   </article>
 
   <button class="medium-divider large">View previous statement</button>

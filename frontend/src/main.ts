@@ -1,5 +1,4 @@
-import App from "./App.svelte"
-import "./assets/styles.css"
+import App from "./App.svelte";
 
 import "beercss";
 import "material-dynamic-colors";
