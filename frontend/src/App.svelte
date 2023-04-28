@@ -32,6 +32,10 @@
     <span>Login</span>
   </a>
   <a href="/">
+    <i>add</i>
+    <span>Add a site</span>
+  </a>
+  <a href="/">
     <i>article</i>
     <span>About</span>
   </a>
@@ -109,7 +113,7 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
 
   <article>
     <nav>
-      <h3>Current</h3>
+      <h3>Latest Canary</h3>
       <div class="small chip circle">
         <i>done_all</i>
         <div class="tooltip right">
@@ -118,7 +122,17 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
       </div>
     </nav>
     <div class="grid">
-      <div class="s12 m6 l4">
+      <div class="s12 m6 l3">
+        <article class="border">
+          <div class="row">
+            <div class="max">
+              <h5>Concern</h5>
+              <h6 class="green-text">None</h6>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="s12 m6 l3">
         <article class="border">
           <div class="row">
             <div class="max">
@@ -128,19 +142,17 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
           </div>
         </article>
       </div>
-      <div class="s12 m6 l4">
+      <div class="s12 m6 l3">
         <article class="border">
-          <div class="row scroll">
+          <div class="row">
             <div class="max">
-              <h5>Bitcoin Block</h5>
-              <h6>
-                000000000000000000023fd612169f5435f8be8b91bf2b2e2815fa1db06e1c4c
-              </h6>
+              <h5>Issued</h5>
+              <h6>28th April 2023</h6>
             </div>
           </div>
         </article>
       </div>
-      <div class="s12 m6 l4">
+      <div class="s12 m6 l3">
         <article class="border">
           <div class="row">
             <div class="max">
