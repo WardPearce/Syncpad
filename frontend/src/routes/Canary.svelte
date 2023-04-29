@@ -47,7 +47,7 @@
         target="_blank"
         class="link"
         rel="noopener noreferrer">privacyguides.org</a
-      >.
+      > (Visit at your own risk.)
     </p>
 
     <h6>Public key</h6>
@@ -143,6 +143,11 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
   <p>None</p>
 
   {#if advanceMode}
+    <h5>Canary ID</h5>
+    <div class="field border">
+      <input type="text" disabled value="U5bPdJdCaoa3Mw" />
+    </div>
+
     <h5>Server issuer ID</h5>
     <div class="field border">
       <input type="text" disabled value="bDuRLaf2SG5k6aZ6S5U5bPdJdCaoa3Mw" />
@@ -167,4 +172,4 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
   {/if}
 </article>
 
-<button class="medium-divider large">View previous statement</button>
+<button class="medium-divider large">View previous cancary</button>

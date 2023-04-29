@@ -9,9 +9,9 @@
 </script>
 
 <main class="absolute center">
-  <article>
-    <h5>{mode}</h5>
+  <h4>{mode}</h4>
 
+  <article>
     {#if passwordScreen}
       <Password {isRegister} {mode} />
     {:else}

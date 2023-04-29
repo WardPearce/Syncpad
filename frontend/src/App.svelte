@@ -9,9 +9,10 @@
 
   const CanaryLoader = () => import("./routes/Canary.svelte");
   const LoginLoader = () => import("./routes/Login/Login.svelte");
-  const DashboardLoader = () => import("./routes/Dashboard.svelte");
+  const DashboardLoader = () => import("./routes/Dashboard/Dashboard.svelte");
 
   let mode = "dark";
+  let mobileNavShow = false;
 
   function onAdvanceModeToggle() {
     advanceModeStore.set(!get(advanceModeStore));
@@ -41,6 +42,74 @@
 </script>
 
 <Router primary={false}>
+  <!-- Stupid repetitive nav code, should be cleaned up -->
+  <header class="mobile-nav">
+    <nav>
+      <button
+        class="circle transparent"
+        on:click={() => (mobileNavShow = true)}
+      >
+        <i>menu</i>
+      </button>
+    </nav>
+  </header>
+
+  <div class={`modal left ${mobileNavShow ? "active" : ""}`}>
+    <header class="fixed">
+      <nav>
+        <button
+          class="transparent circle large"
+          on:click={() => (mobileNavShow = false)}
+        >
+          <i>close</i>
+        </button>
+        <h5 class="max">Canary Status</h5>
+      </nav>
+    </header>
+    <a use:link href="/login" class="row round">
+      <i>login</i>
+      <span>Login</span>
+    </a>
+    <a href="/" class="row round">
+      <i>add</i>
+      <span>Add a site</span>
+    </a>
+    <a href="/" class="row round">
+      <i>article</i>
+      <span>About</span>
+    </a>
+    <a
+      target="_blank"
+      referrerpolicy="no-referrer"
+      href="https://github.com/WardPearce/canarystatus.com"
+      class="row round"
+    >
+      <i>code</i>
+      <span>Github</span>
+    </a>
+    <div class="row round">
+      <label class="switch icon">
+        <input
+          type="checkbox"
+          checked={mode === "dark"}
+          on:click={toggleMode}
+        />
+        <span>
+          <i>{`${mode}_mode`}</i>
+        </span>
+      </label>
+      <p><span style="text-transform: capitalize;">{mode}</span> mode</p>
+    </div>
+
+    <div class="row round">
+      <label class="switch">
+        <input type="checkbox" on:click={onAdvanceModeToggle} />
+        <span />
+      </label>
+      <p>Advance mode</p>
+    </div>
+  </div>
+
   <nav class="m l right">
     <a use:link href="/login">
       <i>login</i>
@@ -107,3 +176,15 @@
     </LazyRoute>
   </main>
 </Router>
+
+<style>
+  .mobile-nav {
+    display: none;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .mobile-nav {
+      display: block;
+    }
+  }
+</style>
