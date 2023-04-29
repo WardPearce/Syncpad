@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import { advanceModeStore } from "../stores";
+  import { advanceModeStore, themeStore } from "../stores";
+  import { getDynamicTheme } from "../lib/theme";
 
   export let domainName: string;
 
@@ -11,6 +12,7 @@
   onMount(async () => {
     // To be done based off API.
     await window.ui("theme", "#ffdb57");
+    themeStore.set(await getDynamicTheme());
   });
 </script>
 

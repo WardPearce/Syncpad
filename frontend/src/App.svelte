@@ -3,11 +3,13 @@
   import { Router, link, Route } from "svelte-navigator";
   import LazyRoute from "./components/LazyRoute.svelte";
   import PageLoading from "./components/PageLoading.svelte";
-  import { advanceModeStore } from "./stores";
+  import { advanceModeStore, themeStore } from "./stores";
   import { get } from "svelte/store";
+  import { getDynamicTheme } from "./lib/theme";
 
   const CanaryLoader = () => import("./routes/Canary.svelte");
-  const LoginLoader = () => import("./routes/Login.svelte");
+  const LoginLoader = () => import("./routes/Login/Login.svelte");
+  const DashboardLoader = () => import("./routes/Dashboard.svelte");
 
   let mode = "dark";
 
@@ -19,6 +21,7 @@
     mode = mode === "dark" ? "light" : "dark";
     await window.ui("mode", mode);
     localStorage.setItem("mode", mode);
+    themeStore.set(await getDynamicTheme(mode));
   }
 
   onMount(async () => {
@@ -32,6 +35,8 @@
     ) {
       await window.ui("mode", "dark");
     }
+
+    themeStore.set(await getDynamicTheme());
   });
 </script>
 
@@ -85,6 +90,9 @@
       <PageLoading />
     </Route>
     <LazyRoute path="/login" component={LoginLoader}>
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute path="/dashboard" component={DashboardLoader}>
       <PageLoading />
     </LazyRoute>
     <LazyRoute
