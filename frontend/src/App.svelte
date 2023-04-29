@@ -63,7 +63,7 @@
         >
           <i>close</i>
         </button>
-        <h5 class="max">Canary Status</h5>
+        <h6 class="max">Canary status</h6>
       </nav>
     </header>
     <a use:link href="/login" class="row round">

@@ -9,9 +9,8 @@
 </script>
 
 <main class="absolute center">
-  <h4>{mode}</h4>
-
   <article>
+    <h4>{mode}</h4>
     {#if passwordScreen}
       <Password {isRegister} {mode} />
     {:else}
@@ -21,4 +20,9 @@
 </main>
 
 <style>
+  @media only screen and (max-width: 600px) {
+    main {
+      width: 98%;
+    }
+  }
 </style>
