@@ -16,7 +16,6 @@
 </script>
 
 <Router primary={false}>
-  <!-- Stupid repetitive nav code, should be cleaned up -->
   <header class="mobile-nav">
     <nav>
       <button
