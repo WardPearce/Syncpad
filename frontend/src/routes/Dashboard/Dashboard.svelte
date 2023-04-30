@@ -26,10 +26,10 @@
   </div>
   <div class="s12 m6 l4">
     <article class="border center-align middle-align" style="height: 100%;">
-      <button>
+      <a class="button" href="/dashboard/add-site" use:link>
         <i>add</i>
         <span>Add site</span>
-      </button>
+      </a>
     </article>
   </div>
 </div>

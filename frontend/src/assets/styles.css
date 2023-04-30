@@ -1,0 +1,8 @@
+.color-picker .wrapper {
+    background-color: var(--surface) !important;
+}
+
+.color-picker input {
+    color: var(--on-secondary) !important;
+    background-color: var(--on-background) !important;
+}

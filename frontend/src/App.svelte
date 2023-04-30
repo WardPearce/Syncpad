@@ -10,6 +10,10 @@
   const CanaryLoader = () => import("./routes/Canary.svelte");
   const LoginLoader = () => import("./routes/Login/Login.svelte");
   const DashboardLoader = () => import("./routes/Dashboard/Dashboard.svelte");
+  const DashboardAddSiteLoader = () =>
+    import("./routes/Dashboard/AddSite.svelte");
+  const DashboardVerifySiteLoader = () =>
+    import("./routes/Dashboard/VerifySite.svelte");
 
   let mode = "dark";
   let mobileNavShow = false;
@@ -70,11 +74,11 @@
       <i>login</i>
       <span>Login</span>
     </a>
-    <a href="/" class="row round">
+    <a use:link href="/dashboard/add-site" class="row round">
       <i>add</i>
       <span>Add a site</span>
     </a>
-    <a href="/" class="row round">
+    <a use:link href="/" class="row round">
       <i>article</i>
       <span>About</span>
     </a>
@@ -115,11 +119,11 @@
       <i>login</i>
       <span>Login</span>
     </a>
-    <a href="/">
+    <a use:link href="/dashboard/add-site">
       <i>add</i>
       <span>Add a site</span>
     </a>
-    <a href="/">
+    <a use:link href="/">
       <i>article</i>
       <span>About</span>
     </a>
@@ -162,6 +166,15 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute path="/dashboard" component={DashboardLoader}>
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute path="/dashboard/add-site" component={DashboardAddSiteLoader}>
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
+      path="/dashboard/verify-site/:domainName"
+      component={DashboardVerifySiteLoader}
+    >
       <PageLoading />
     </LazyRoute>
     <LazyRoute
