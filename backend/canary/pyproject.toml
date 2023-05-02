@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "canary"
+version = "0.1.0"
+description = ""
+authors = ["WardPearce <wardpearce@protonmail.com>"]
+readme = "README.md"
+packages = [
+    {include = "*", from = "app"},
+    {include = "run.py"}
+]
+
+[tool.poetry.scripts]
+server = "run:main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+litestar = {extras = ["full"], version = "^2.0.0a5"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

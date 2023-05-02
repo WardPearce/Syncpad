@@ -40,6 +40,10 @@
   <i>login</i>
   <span>Login</span>
 </a>
+<a use:link href="/register" class={isMobile ? "row round" : ""}>
+  <i>person_add_alt</i>
+  <span>Register</span>
+</a>
 <a use:link href="/dashboard/add-site" class={isMobile ? "row round" : ""}>
   <i>add</i>
   <span>Add a site</span>

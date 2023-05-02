@@ -5,7 +5,7 @@
   import NavItems from "./components/NavItems.svelte";
 
   const CanaryLoader = () => import("./routes/Canary.svelte");
-  const LoginLoader = () => import("./routes/Login/Login.svelte");
+  const LoginLoader = () => import("./routes/Login.svelte");
   const DashboardLoader = () => import("./routes/Dashboard/Dashboard.svelte");
   const DashboardAddSiteLoader = () =>
     import("./routes/Dashboard/AddSite.svelte");
