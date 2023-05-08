@@ -31,11 +31,10 @@ async def retrieve_user_handler(
             return user_id
 
         return None
-
-    if blacklisted is True:
+    elif blacklisted is True:
         return None
-
-    return ObjectId(token.sub)
+    else:
+        return ObjectId(token.sub)
 
 
 jwt_cookie_auth = JWTCookieAuth[ObjectId](
