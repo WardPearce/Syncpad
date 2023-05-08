@@ -1,3 +1,4 @@
+import secrets
 from typing import Optional
 
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings
@@ -29,10 +30,19 @@ class OpenAPI(BaseModel):
     version: str = "0.0.1"
 
 
+class Redis(BaseModel):
+    host: str = "redis://localhost/"
+    port: int = 6379
+    db: int = 0
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
+    redis: Redis = Redis()
     proxy_urls: ProxiedUrls = ProxiedUrls()
     open_api: OpenAPI = OpenAPI()
+    jwt_secret: str = secrets.token_urlsafe(64)
+    csrf_secret: str = secrets.token_urlsafe(64)
 
     class Config:
         env_prefix = "canary_"

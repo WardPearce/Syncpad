@@ -13,7 +13,7 @@ class EmailModel(BaseModel):
 class Argon2Modal(BaseModel):
     salt: str = Field(
         ...,
-        max_length=32,
+        max_length=64,
         description="Salt used for deriving account key, base64 encoded",
     )
     time_cost: int = Field(
@@ -64,13 +64,14 @@ class CreateUserModel(__CreateUserShared):
 
 
 class UserModel(__CreateUserShared, EmailModel):
+    id: ObjectIdStr = Field(..., alias="_id")
     otp_secret: Optional[str]
 
 
 class UserLoginSignatureModel(BaseModel):
     signature: str = Field(..., description="to_sign signed with ed25519 private key")
     id: str = Field(..., alias="_id")
-    otp_code: str = Field(None, max_length=6, min_length=0)
+    otp_code: str = Field(None, max_length=8, min_length=0)
 
 
 class UserToSignModel(BaseModel):
