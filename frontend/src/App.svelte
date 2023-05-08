@@ -4,14 +4,6 @@
   import PageLoading from "./components/PageLoading.svelte";
   import NavItems from "./components/NavItems.svelte";
 
-  const CanaryLoader = () => import("./routes/Canary.svelte");
-  const LoginLoader = () => import("./routes/Login.svelte");
-  const DashboardLoader = () => import("./routes/Dashboard/Dashboard.svelte");
-  const DashboardAddSiteLoader = () =>
-    import("./routes/Dashboard/AddSite.svelte");
-  const DashboardVerifySiteLoader = () =>
-    import("./routes/Dashboard/VerifySite.svelte");
-
   let mobileNavShow = false;
 </script>
 
@@ -50,29 +42,38 @@
     <Route path="/">
       <PageLoading />
     </Route>
-    <LazyRoute path="/login" component={LoginLoader}>
+    <LazyRoute path="/login" component={() => import("./routes/Login.svelte")}>
       <PageLoading />
     </LazyRoute>
-    <LazyRoute path="/dashboard" component={DashboardLoader}>
+    <LazyRoute
+      path="/dashboard"
+      component={() => import("./routes/Dashboard/Dashboard.svelte")}
+    >
       <PageLoading />
     </LazyRoute>
-    <LazyRoute path="/dashboard/add-site" component={DashboardAddSiteLoader}>
+    <LazyRoute
+      path="/dashboard/add-site"
+      component={() => import("./routes/Dashboard/AddSite.svelte")}
+    >
       <PageLoading />
     </LazyRoute>
     <LazyRoute
       path="/dashboard/verify-site/:domainName"
-      component={DashboardVerifySiteLoader}
+      component={() => import("./routes/Dashboard/VerifySite.svelte")}
     >
       <PageLoading />
     </LazyRoute>
     <LazyRoute
       path="/register"
       componentProps={{ isRegister: true }}
-      component={LoginLoader}
+      component={() => import("./routes/Login.svelte")}
     >
       <PageLoading />
     </LazyRoute>
-    <LazyRoute path="/:domainName" component={CanaryLoader}>
+    <LazyRoute
+      path="/:domainName"
+      component={() => import("./routes/Canary.svelte")}
+    >
       <PageLoading />
     </LazyRoute>
   </main>
