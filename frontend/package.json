@@ -24,6 +24,7 @@
     "vite": "^4.3.2"
   },
   "dependencies": {
+    "@mcaptcha/svelte-glue": "^0.1.0-alpha-1",
     "svelte-navigator": "^3.2.2"
   }
 }

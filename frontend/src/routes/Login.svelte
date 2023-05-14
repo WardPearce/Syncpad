@@ -4,6 +4,7 @@
   import { link } from "svelte-navigator";
 
   import { themeStore } from "../stores";
+  import Mcaptcha from "../components/Mcaptcha.svelte";
 
   export let isRegister = false;
 
@@ -47,6 +48,8 @@
           <input type="checkbox" />
           <span>Remember me</span>
         </label>
+
+        <Mcaptcha />
 
         <div class="right-align" style="margin-top: 1em;">
           <button type="submit">
