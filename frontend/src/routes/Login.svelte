@@ -13,6 +13,13 @@
 
   $: theme = get(themeStore);
   themeStore.subscribe((value) => (theme = value));
+
+  async function onLogin() {
+    // Hackie way of extracting mCaptcha token.
+    const mCaptchaToken = (
+      document.getElementById("mcaptcha__token") as HTMLInputElement
+    ).value;
+  }
 </script>
 
 <main class="absolute center">
@@ -29,7 +36,7 @@
         >
       {/if}
 
-      <form>
+      <form on:submit|preventDefault={onLogin} id="login">
         <div class="field label border medium-divider fill">
           <input type="text" />
           <label for="email">Email</label>

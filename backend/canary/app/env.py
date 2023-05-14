@@ -36,11 +36,19 @@ class Redis(BaseModel):
     db: int = 0
 
 
+class mCaptcha(BaseModel):
+    verify_url: str
+    site_key: str
+    account_secret: str
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
     proxy_urls: ProxiedUrls = ProxiedUrls()
     open_api: OpenAPI = OpenAPI()
+    mcaptcha: Optional[mCaptcha]
+
     jwt_secret: str = secrets.token_urlsafe(64)
     csrf_secret: str = secrets.token_urlsafe(64)
 

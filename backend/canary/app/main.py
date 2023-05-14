@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, cast
 
+import aiohttp
 from app.env import SETTINGS
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
@@ -21,7 +22,7 @@ cache_store = RedisStore(
 
 
 async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
-    if not getattr("state", "mongo", None):
+    if not getattr(state, "mongo", None):
         mongo = motor_asyncio.AsyncIOMotorClient(
             SETTINGS.mongo.host, SETTINGS.mongo.port
         )
@@ -33,8 +34,19 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
     return state.mongo
 
 
+async def init_aiohttp(state: "State") -> aiohttp.ClientSession:
+    if not getattr(state, "aiohttp", None):
+        state.aiohttp = aiohttp.ClientSession()
+
+    return state.aiohttp
+
+
+async def deconstruct_aiohttp(state: "State") -> None:
+    await state.aiohttp.close()
+
+
 async def init_redis(state: "State") -> RedisStore:
-    if not getattr("state", "redis", None):
+    if not getattr(state, "redis", None):
         state.redis = cache_store
 
     return state.redis
@@ -46,7 +58,8 @@ async def wipe_cache_on_shutdown() -> None:
 
 app = Litestar(
     route_handlers=[],
-    on_startup=[init_mongo, init_redis],
+    on_startup=[init_mongo, init_redis, init_aiohttp],
+    on_shutdown=[deconstruct_aiohttp],
     csrf_config=CSRFConfig(secret=SETTINGS.csrf_secret),
     cors_config=CORSConfig(
         allow_origins=[SETTINGS.proxy_urls.backend, SETTINGS.proxy_urls.frontend],
