@@ -1,11 +1,13 @@
 from typing import TYPE_CHECKING, cast
 
 import aiohttp
+from app.controllers import routes
 from app.env import SETTINGS
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
+from litestar.openapi import OpenAPIConfig
 from litestar.stores.redis import RedisStore
 from motor import motor_asyncio
 from redis.asyncio import Redis
@@ -57,13 +59,16 @@ async def wipe_cache_on_shutdown() -> None:
 
 
 app = Litestar(
-    route_handlers=[],
+    route_handlers=[routes],
     on_startup=[init_mongo, init_redis, init_aiohttp],
     on_shutdown=[deconstruct_aiohttp],
     csrf_config=CSRFConfig(secret=SETTINGS.csrf_secret),
     cors_config=CORSConfig(
         allow_origins=[SETTINGS.proxy_urls.backend, SETTINGS.proxy_urls.frontend],
         allow_credentials=True,
+    ),
+    openapi_config=OpenAPIConfig(
+        title=SETTINGS.open_api.title, version=SETTINGS.open_api.version
     ),
     response_cache_config=ResponseCacheConfig(store=cache_store),
     before_shutdown=[wipe_cache_on_shutdown],

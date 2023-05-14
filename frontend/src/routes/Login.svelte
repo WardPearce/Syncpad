@@ -14,12 +14,7 @@
   $: theme = get(themeStore);
   themeStore.subscribe((value) => (theme = value));
 
-  async function onLogin() {
-    // Hackie way of extracting mCaptcha token.
-    const mCaptchaToken = (
-      document.getElementById("mcaptcha__token") as HTMLInputElement
-    ).value;
-  }
+  async function onLogin() {}
 </script>
 
 <main class="absolute center">

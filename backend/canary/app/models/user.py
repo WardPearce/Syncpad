@@ -1,13 +1,11 @@
 from typing import Optional
 
 from app.models.customs import IvField, ObjectIdStr
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 
 class EmailModel(BaseModel):
-    email: str = Field(
-        ..., min_length=3, max_length=64, regex=r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"
-    )
+    email: EmailStr
 
 
 class Argon2Modal(BaseModel):

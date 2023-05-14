@@ -2,12 +2,13 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from app.errors import InvalidAccountAuth, UserNotFoundException
+from app.errors import EmailTaken, InvalidAccountAuth, UserNotFoundException
 from app.lib.jwt import jwt_cookie_auth
 from app.lib.otp import OneTimePassword
 from app.lib.user import User
 from app.models.user import (
     Argon2Modal,
+    CreateUserModel,
     UserLoginSignatureModel,
     UserModel,
     UserToSignModel,
@@ -36,7 +37,7 @@ class LoginController(Controller):
         description="Used to generate a unique code to sign.",
         tags=["user"],
     )
-    async def to_sign(self, state: "State", email: str):
+    async def to_sign(self, state: "State", email: str) -> UserToSignModel:
         try:
             user = await User(state, email).get()
         except UserNotFoundException:
@@ -92,6 +93,14 @@ class LoginController(Controller):
             response_body=user,
             token_unique_jwt_id=secrets.token_urlsafe(32),
         )
+
+
+@post(path="/create")
+async def create_account(state: "State", data: CreateUserModel) -> Response[UserModel]:
+    email = data.email.lower()  # Ensure always lowercase email.
+
+    if await state.mongo.user.count_documents({"email": email}) > 0:
+        raise EmailTaken()
 
 
 router = Router(path="/account", route_handlers=[LoginController])

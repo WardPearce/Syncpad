@@ -1,6 +1,10 @@
 from enum import Enum
 
-from litestar.exceptions import NotAuthorizedException, NotFoundException
+from litestar.exceptions import (
+    NotAuthorizedException,
+    NotFoundException,
+    ValidationException,
+)
 
 ERROR_CODE_KEY = "error_code"
 
@@ -9,6 +13,7 @@ class ErrorCodes(Enum):
     user_not_found = 2001
     invalid_auth = 2002
     invalid_captcha = 2003
+    email_taken = 2004
 
 
 class UserNotFoundException(NotFoundException):
@@ -38,4 +43,14 @@ class InvalidCaptcha(NotAuthorizedException):
         super().__init__(
             detail="Invalid captcha",
             extra={ERROR_CODE_KEY: ErrorCodes.invalid_captcha.value},
+        )
+
+
+class EmailTaken(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Email has already been registered",
+            extra={ERROR_CODE_KEY: ErrorCodes.email_taken.value},
         )
