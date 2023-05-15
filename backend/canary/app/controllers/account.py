@@ -127,13 +127,9 @@ async def create_account(
     if await state.mongo.user.count_documents({"email": email}) > 0:
         raise EmailTaken()
 
-    result = await state.mongo.user.insert_one(data.dict())
+    await state.mongo.user.insert_one(data.dict())
 
-    return jwt_cookie_auth.login(
-        identifier=str(result.inserted_id),
-        token_expiration=timedelta(days=1),
-        token_unique_jwt_id=secrets.token_urlsafe(32),
-    )
+    return Response(None, status_code=201)
 
 
 router = Router(path="/account", route_handlers=[LoginController, create_account])
