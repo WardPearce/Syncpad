@@ -10,7 +10,7 @@ import { getCookie } from "./misc";
 class CSrfHttpRequest extends FetchHttpRequest {
     public override request<T>(options: ApiRequestOptions): CancelablePromise<T> {
         let csrfToken = getCookie("csrftoken");
-        if (csrfToken !== undefined) {
+        if (csrfToken) {
             if (this.config.HEADERS === undefined)
                 this.config.HEADERS = {};
 

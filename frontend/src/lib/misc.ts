@@ -6,7 +6,8 @@ export function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function getCookie(name: string): string {
+export function getCookie(name: string): string | null {
   let match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
   if (match) return match[2];
+  return;
 }

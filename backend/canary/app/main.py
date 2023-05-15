@@ -64,7 +64,7 @@ app = Litestar(
     on_shutdown=[deconstruct_aiohttp],
     csrf_config=CSRFConfig(
         secret=SETTINGS.csrf_secret,
-        cookie_httponly=SETTINGS.proxy_urls.frontend != "localhost",
+        cookie_httponly=False,
     ),
     cors_config=CORSConfig(
         allow_origins=[SETTINGS.proxy_urls.backend, SETTINGS.proxy_urls.frontend],
