@@ -1,43 +1,59 @@
 <script lang="ts">
   import QrCode from "svelte-qrcode";
   import { get } from "svelte/store";
-  import { link } from "svelte-navigator";
+  import { link, navigate } from "svelte-navigator";
   import { zxcvbn } from "@zxcvbn-ts/core";
 
-  import sodium from "libsodium-wrappers";
+  import sodium from "libsodium-wrappers-sumo";
 
-  import { themeStore } from "../stores";
+  import { advanceModeStore, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
-  import type { Argon2Modal } from "../lib/client";
+  import {
+    ApiError,
+    type Argon2Modal,
+    type CreateUserModel,
+  } from "../lib/client";
+  import { timeout } from "../lib/misc";
 
   export let isRegister = false;
 
   let mode = isRegister ? "Register" : "Login";
   let passwordScreen = true;
-  let captchaToken = "";
   let error = "";
+  let advanceModeMsg = "";
+  let isLoading = false;
 
   let email = "";
   let rawPassword = "";
+  let captchaToken = "";
   let rememberLogin = false;
 
   $: theme = get(themeStore);
   themeStore.subscribe((value) => (theme = value));
 
-  async function onLogin() {
-    await sodium.ready;
+  $: advanceMode = false;
+  advanceModeStore.subscribe((value) => (advanceMode = value));
 
+  async function onLogin() {
+    isLoading = true;
     error = "";
+
+    advanceModeMsg = "libsodium blocks :(";
+    await timeout(10); // Stop libsodium from blocking loop before updating loading
+
+    await sodium.ready;
 
     if (captchaToken === "") {
       error = "Please complete captcha.";
+      isLoading = false;
       return;
     }
 
     let argon: Argon2Modal;
     let rawSalt: Uint8Array;
     if (!isRegister) {
+      advanceModeMsg = "Fetching account KDF";
       argon = await client.account.controllersAccountEmailKdfKdf(email);
       rawSalt = sodium.from_base64(argon.salt);
     } else {
@@ -47,14 +63,25 @@
         return;
       }
 
-      argon = {
-        salt: "",
-        time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
-        memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
-      };
+      try {
+        await client.account.controllersAccountEmailKdfKdf(email);
+        error = "Email taken.";
+        isLoading = false;
+        return;
+      } catch (error) {}
+
+      advanceModeMsg = "Generating salt.";
+
       rawSalt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
+
+      argon = {
+        salt: sodium.to_base64(rawSalt),
+        time_cost: sodium.crypto_pwhash_OPSLIMIT_MODERATE,
+        memory_cost: sodium.crypto_pwhash_MEMLIMIT_MODERATE,
+      };
     }
 
+    advanceModeMsg = "Deriving key from password.";
     const rawDerivedKey = sodium.crypto_pwhash(
       32,
       rawPassword,
@@ -64,85 +91,150 @@
       sodium.crypto_pwhash_ALG_DEFAULT
     );
 
-    console.log(rawDerivedKey);
+    const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
+
+    if (isRegister) {
+      const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
+      const rawKeychainIv = sodium.randombytes_buf(
+        sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
+      );
+
+      const TransmitSafeKeychain = sodium.to_base64(
+        sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
+          rawKeychain,
+          null,
+          null,
+          rawKeychainIv,
+          rawDerivedKey
+        )
+      );
+      const TransmitSafeKeychainIv = sodium.to_base64(rawKeychainIv);
+
+      const createUser: CreateUserModel = {
+        email: email,
+        kdf: argon,
+        keychain: {
+          iv: TransmitSafeKeychainIv,
+          cipher_text: TransmitSafeKeychain,
+        },
+        ed25199: {
+          public_key: sodium.to_base64(rawAuthKeys.publicKey),
+        },
+        signature: "",
+      };
+
+      createUser.signature = sodium.to_base64(
+        sodium.crypto_sign(
+          sodium.crypto_generichash(
+            sodium.crypto_generichash_BYTES,
+            JSON.stringify(createUser)
+          ),
+          rawAuthKeys.privateKey
+        )
+      );
+
+      try {
+        await client.account.controllersAccountCreateCreateAccount(
+          captchaToken,
+          createUser
+        );
+      } catch (error) {
+        error = error.body.detail;
+        isLoading = false;
+        return;
+      }
+
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    isLoading = false;
   }
 </script>
 
 <main class="absolute center">
   <article>
-    <h4>{mode}</h4>
-    {#if passwordScreen}
-      {#if !isRegister}
-        <a href="/register" use:link class="link"
-          >Need a account? Register here.</a
-        >
-      {:else}
-        <a href="/login" use:link class="link"
-          >Already have an account? Login.</a
-        >
-      {/if}
+    {#if isLoading}
+      <div style="display: flex; flex-direction: column;align-items: center;">
+        <h4>Loading</h4>
+        <p>Please wait, this may take a moment.</p>
+        <span style="margin: 1em 0;" class="loader large" />
 
-      <form on:submit|preventDefault={onLogin} id="login">
-        {#if error !== ""}
-          <div class="red5">
-            <p>{error}</p>
+        {#if advanceMode}
+          <div style="font-style: italic;">
+            <p>Advance comment</p>
           </div>
         {/if}
-        <div class="field label border medium-divider fill">
-          <input type="text" bind:value={email} />
-          <label for="email">Email</label>
-        </div>
-        <div class="field label border medium-divider fill">
-          <input type="password" bind:value={rawPassword} />
-          <label for="password">Password</label>
-        </div>
-        {#if isRegister}
-          <div class="field label border medium-divider fill">
-            <input type="password" />
-            <label for="password">Repeat Password</label>
-          </div>
-        {/if}
-        <label class="checkbox">
-          <input type="checkbox" bind:checked={rememberLogin} />
-          <span>Remember me</span>
-        </label>
-
-        <Mcaptcha bind:captchaToken />
-
-        <div class="right-align" style="margin-top: 1em;">
-          <button type="submit">
-            <i>login</i>
-            <span>{mode}</span>
-          </button>
-        </div>
-      </form>
+      </div>
     {:else}
-      {#if isRegister}
-        <p>
-          Due to the importance of our service, we require all accounts to have
-          two factor security.
-        </p>
-        <p>Please scan the following QR code to continue.</p>
-        <div class="center-align">
-          <QrCode
-            value="https://github.com/"
-            background={theme["--surface"]}
-            color={theme["--primary"]}
-          />
-        </div>
-      {:else}
-        <p>Please enter your OTP code to contiue.</p>
-      {/if}
+      <h4>{mode}</h4>
+      {#if passwordScreen}
+        {#if !isRegister}
+          <a href="/register" use:link class="link"
+            >Need a account? Register here.</a
+          >
+        {:else}
+          <a href="/login" use:link class="link"
+            >Already have an account? Login.</a
+          >
+        {/if}
 
-      <nav>
-        <div class="max field label fill border">
-          <input type="text" />
-          <label for="otp">000000</label>
-        </div>
-        <button class="square extra">
-          <i>arrow_forward_ios</i>
-        </button>
-      </nav>
+        <form on:submit|preventDefault={onLogin} id="login">
+          {#if error}
+            <div class="red5">
+              <p>{error}</p>
+            </div>
+          {/if}
+          <div class="field label border medium-divider fill">
+            <input type="text" bind:value={email} />
+            <label for="email">Email</label>
+          </div>
+          <div class="field label border medium-divider fill">
+            <input type="password" bind:value={rawPassword} />
+            <label for="password">Password</label>
+          </div>
+          <label class="checkbox">
+            <input type="checkbox" bind:checked={rememberLogin} />
+            <span>Remember me</span>
+          </label>
+
+          <Mcaptcha bind:captchaToken />
+
+          <div class="right-align" style="margin-top: 1em;">
+            <button type="submit">
+              <i>login</i>
+              <span>{mode}</span>
+            </button>
+          </div>
+        </form>
+      {:else}
+        {#if isRegister}
+          <p>
+            Due to the importance of our service, we require all accounts to
+            have two factor security.
+          </p>
+          <p>Please scan the following QR code to continue.</p>
+          <div class="center-align">
+            <QrCode
+              value="https://github.com/"
+              background={theme["--surface"]}
+              color={theme["--primary"]}
+            />
+          </div>
+        {:else}
+          <p>Please enter your OTP code to contiue.</p>
+        {/if}
+
+        <nav>
+          <div class="max field label fill border">
+            <input type="text" />
+            <label for="otp">000000</label>
+          </div>
+          <button class="square extra">
+            <i>arrow_forward_ios</i>
+          </button>
+        </nav>
+      {/if}
     {/if}
   </article>
 </main>

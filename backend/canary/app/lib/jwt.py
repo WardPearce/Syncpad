@@ -41,12 +41,12 @@ jwt_cookie_auth = JWTCookieAuth[ObjectId](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=SETTINGS.jwt_secret,
     exclude=[
-        "/controller/account/create",
-        "/controller/account/kdf",
-        "/controller/account/to-sign",
-        "/controller/account/login",
+        "/controllers/account/create",
+        "/controllers/account/kdf",
+        "/controllers/account/to-sign",
+        "/controllers/account/login",
         "/schema",
     ],
     samesite="strict",
-    secure=True,
+    secure=SETTINGS.proxy_urls.frontend != "localhost",
 )
