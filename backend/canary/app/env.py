@@ -11,8 +11,8 @@ class MongoDB(BaseModel):
 
 
 class ProxiedUrls(BaseModel):
-    frontend: AnyHttpUrl = AnyHttpUrl(url="canary.localhost", scheme="http")
-    backend: AnyHttpUrl = AnyHttpUrl(url="canary.localhost/api", scheme="http")
+    frontend: AnyHttpUrl = AnyHttpUrl(url="localhost", scheme="http")
+    backend: AnyHttpUrl = AnyHttpUrl(url="localhost/api", scheme="http")
 
 
 class S3(BaseModel):

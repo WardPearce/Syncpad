@@ -1,6 +1,12 @@
 <script lang="ts">
   import { gen_pow } from "@mcaptcha/pow-wasm";
 
+  export let captchaToken: string = "";
+
+  $: {
+    if (captchaToken === "") status = CaptchaStatus.waiting;
+  }
+
   enum CaptchaStatus {
     waiting = 0,
     loading = 1,
@@ -22,7 +28,11 @@
         body: JSON.stringify({ key: import.meta.env.VITE_MCAPTCHA_SITE_KEY }),
       }
     );
-    if (configResp.status != 200) return; // Assume API is down if not 200
+    // Assume API is down, mark as completed.
+    if (configResp.status != 200) {
+      status = CaptchaStatus.completed;
+      return;
+    }
 
     const configJson = await configResp.json();
 
@@ -45,9 +55,14 @@
       }
     );
 
-    if (verifyResp.status != 200) return; // Assume API is down if not 200
+    if (verifyResp.status != 200) {
+      status = CaptchaStatus.completed;
+      return;
+    }
 
     const verifyJson = await verifyResp.json();
+
+    captchaToken = verifyJson.token;
 
     status = CaptchaStatus.completed;
   }
@@ -56,9 +71,7 @@
 <div class="main">
   <div class="captcha">
     {#if status == CaptchaStatus.waiting}
-      <button class="square small" on:click={startPow} type="button">
-        <i>smart_toy</i>
-      </button>
+      <button class="square small" on:click={startPow} type="button" />
       <p>I'm not a robot</p>
     {:else if status == CaptchaStatus.loading}
       <span class="loader small" style="margin: 0 1em" />
@@ -67,7 +80,7 @@
       <button class="square small" disabled type="button">
         <i>check</i>
       </button>
-      <p>Completed!</p>
+      <p>Captcha completed!</p>
     {/if}
   </div>
   <div class="footer">

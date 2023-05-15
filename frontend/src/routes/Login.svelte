@@ -2,19 +2,70 @@
   import QrCode from "svelte-qrcode";
   import { get } from "svelte/store";
   import { link } from "svelte-navigator";
+  import { zxcvbn } from "@zxcvbn-ts/core";
+
+  import sodium from "libsodium-wrappers";
 
   import { themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
+  import { client } from "../lib/canary";
+  import type { Argon2Modal } from "../lib/client";
 
   export let isRegister = false;
 
   let mode = isRegister ? "Register" : "Login";
   let passwordScreen = true;
+  let captchaToken = "";
+  let error = "";
+
+  let email = "";
+  let rawPassword = "";
+  let rememberLogin = false;
 
   $: theme = get(themeStore);
   themeStore.subscribe((value) => (theme = value));
 
-  async function onLogin() {}
+  async function onLogin() {
+    await sodium.ready;
+
+    error = "";
+
+    if (captchaToken === "") {
+      error = "Please complete captcha.";
+      return;
+    }
+
+    let argon: Argon2Modal;
+    let rawSalt: Uint8Array;
+    if (!isRegister) {
+      argon = await client.account.controllersAccountEmailKdfKdf(email);
+      rawSalt = sodium.from_base64(argon.salt);
+    } else {
+      // Add a bare min for a decent password.
+      if (zxcvbn(rawPassword).score < 3) {
+        error = "Please use a stronger password.";
+        return;
+      }
+
+      argon = {
+        salt: "",
+        time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
+        memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
+      };
+      rawSalt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
+    }
+
+    const rawDerivedKey = sodium.crypto_pwhash(
+      32,
+      rawPassword,
+      rawSalt,
+      argon.time_cost,
+      argon.memory_cost,
+      sodium.crypto_pwhash_ALG_DEFAULT
+    );
+
+    console.log(rawDerivedKey);
+  }
 </script>
 
 <main class="absolute center">
@@ -32,12 +83,17 @@
       {/if}
 
       <form on:submit|preventDefault={onLogin} id="login">
+        {#if error !== ""}
+          <div class="red5">
+            <p>{error}</p>
+          </div>
+        {/if}
         <div class="field label border medium-divider fill">
-          <input type="text" />
+          <input type="text" bind:value={email} />
           <label for="email">Email</label>
         </div>
         <div class="field label border medium-divider fill">
-          <input type="password" />
+          <input type="password" bind:value={rawPassword} />
           <label for="password">Password</label>
         </div>
         {#if isRegister}
@@ -47,11 +103,11 @@
           </div>
         {/if}
         <label class="checkbox">
-          <input type="checkbox" />
+          <input type="checkbox" bind:checked={rememberLogin} />
           <span>Remember me</span>
         </label>
 
-        <Mcaptcha />
+        <Mcaptcha bind:captchaToken />
 
         <div class="right-align" style="margin-top: 1em;">
           <button type="submit">
@@ -81,7 +137,7 @@
       <nav>
         <div class="max field label fill border">
           <input type="text" />
-          <label for="otp">8 digit OTP code</label>
+          <label for="otp">000000</label>
         </div>
         <button class="square extra">
           <i>arrow_forward_ios</i>
@@ -96,5 +152,10 @@
     main {
       width: 98%;
     }
+  }
+
+  .red5 {
+    padding: 0.5em 1em;
+    margin-top: 1em;
   }
 </style>

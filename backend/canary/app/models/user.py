@@ -1,6 +1,7 @@
 from typing import Optional
 
 from app.models.customs import IvField, ObjectIdStr
+from argon2.profiles import RFC_9106_LOW_MEMORY
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -15,12 +16,17 @@ class Argon2Modal(BaseModel):
         description="Salt used for deriving account key, base64 encoded",
     )
     time_cost: int = Field(
-        ...,
+        RFC_9106_LOW_MEMORY.memory_cost,
         ge=3,
         le=12,
         description="Time cost",
     )
-    memory_cost: int = Field(..., ge=67108864, le=3355443200, description="Memory cost")
+    memory_cost: int = Field(
+        RFC_9106_LOW_MEMORY.memory_cost,
+        ge=67108864,
+        le=3355443200,
+        description="Memory cost",
+    )
 
 
 class AccountEd25199Modal(BaseModel):
@@ -63,13 +69,13 @@ class CreateUserModel(__CreateUserShared):
 
 class UserModel(__CreateUserShared, EmailModel):
     id: ObjectIdStr = Field(..., alias="_id")
-    otp_secret: Optional[str]
+    otp_secret: Optional[str] = None
+    email_verified: bool = False
 
 
 class UserLoginSignatureModel(BaseModel):
     signature: str = Field(..., description="to_sign signed with ed25519 private key")
     id: str = Field(..., alias="_id")
-    otp_code: str = Field(None, max_length=8, min_length=0)
 
 
 class UserToSignModel(BaseModel):
