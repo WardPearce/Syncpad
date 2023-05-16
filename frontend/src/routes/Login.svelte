@@ -73,8 +73,8 @@
 
       argon = {
         salt: sodium.to_base64(rawSalt),
-        time_cost: sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-        memory_cost: sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+        time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
+        memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
       };
     }
 
