@@ -9,16 +9,13 @@
   import { advanceModeStore, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
-  import {
-    ApiError,
-    type Argon2Modal,
-    type CreateUserModel,
-  } from "../lib/client";
+  import { type Argon2Modal, type CreateUserModel } from "../lib/client";
   import { timeout } from "../lib/misc";
 
   export let isRegister = false;
 
   let mode = isRegister ? "Register" : "Login";
+  let otpSetupRequired = false;
   let passwordScreen = true;
   let error = "";
   let advanceModeMsg = "";
@@ -76,8 +73,8 @@
 
       argon = {
         salt: sodium.to_base64(rawSalt),
-        time_cost: sodium.crypto_pwhash_OPSLIMIT_MODERATE,
-        memory_cost: sodium.crypto_pwhash_MEMLIMIT_MODERATE,
+        time_cost: sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+        memory_cost: sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
       };
     }
 
@@ -161,8 +158,9 @@
         <span style="margin: 1em 0;" class="loader large" />
 
         {#if advanceMode}
-          <div style="font-style: italic;">
-            <p>Advance comment</p>
+          <div style="font-style: italic;text-align: center;">
+            <p style="font-weight: bold;">Advance comment</p>
+            <p>{advanceModeMsg}</p>
           </div>
         {/if}
       </div>
@@ -208,27 +206,31 @@
           </div>
         </form>
       {:else}
-        {#if isRegister}
+        {#if otpSetupRequired}
           <p>
             Due to the importance of our service, we require all accounts to
             have two factor security.
           </p>
           <p>Please scan the following QR code to continue.</p>
-          <div class="center-align">
+          <div
+            style="display: flex;flex-direction: column;align-items: center;row-gap: 1em;"
+          >
             <QrCode
               value="https://github.com/"
               background={theme["--surface"]}
               color={theme["--primary"]}
             />
+            <button>
+              <i>vpn_key</i>
+              <span>Copy secret</span>
+            </button>
           </div>
-        {:else}
-          <p>Please enter your OTP code to contiue.</p>
         {/if}
 
         <nav>
           <div class="max field label fill border">
             <input type="text" />
-            <label for="otp">000000</label>
+            <label for="otp">OTP code</label>
           </div>
           <button class="square extra">
             <i>arrow_forward_ios</i>
