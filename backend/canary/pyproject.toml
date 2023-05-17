@@ -30,3 +30,7 @@ motor-types = "^1.0.0b1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[build-system.dependencies]
+# Used for GExiv2
+libgexiv2-dev = {version = "*", markers = "sys_platform == 'linux'"}

@@ -69,7 +69,7 @@
 </script>
 
 {#if import.meta.env.VITE_MCAPTCHA_ENABLED === "true"}
-  <div class="main">
+  <article class="main fill">
     <div class="captcha">
       {#if status == CaptchaStatus.waiting}
         <button class="square small" on:click={startPow} type="button" />
@@ -92,7 +92,7 @@
         class="link">Powered by mCaptcha</a
       >
     </div>
-  </div>
+  </article>
 {/if}
 
 <style>
@@ -100,6 +100,7 @@
     background-color: var(--inverse-on-surface);
     margin-top: 1em;
     position: relative;
+    padding: 0;
   }
 
   .footer {
