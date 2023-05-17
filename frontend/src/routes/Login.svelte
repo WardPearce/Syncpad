@@ -88,6 +88,7 @@
       sodium.crypto_pwhash_ALG_DEFAULT
     );
 
+    advanceModeMsg = "Seeding keypair.";
     const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
 
     if (isRegister) {

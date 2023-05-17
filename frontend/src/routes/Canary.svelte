@@ -134,9 +134,10 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
       class="link"
       rel="noopener noreferrer">privacyguides.org</a
     > and all its associated data. As the owner and administrator of the website,
-    I have not received any subpoenas for data, and I remain committed to protecting
-    the privacy and security of all users of my website. This statement will be reviewed
-    and updated as necessary on or before 28th April 2024.
+    I have not received any subpoenas or warrants for data, nor have I received any
+    gag order limiting me from informing users as such, and I remain committed to
+    protecting the privacy and security of all users of my website. This statement
+    will be reviewed and updated as necessary on or before 28th April 2024.
   </p>
 
   <h5>Documents</h5>
