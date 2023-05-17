@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Argon2Modal } from '../models/Argon2Modal';
 import type { CreateUserModel } from '../models/CreateUserModel';
+import type { PublicUserModel } from '../models/PublicUserModel';
 import type { UserLoginSignatureModel } from '../models/UserLoginSignatureModel';
 import type { UserModel } from '../models/UserModel';
 import type { UserToSignModel } from '../models/UserToSignModel';
@@ -13,28 +13,6 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class AccountService {
 
     constructor(public readonly httpRequest: BaseHttpRequest) {}
-
-    /**
-     * Kdf
-     * Public KDF details
-     * @param email
-     * @returns Argon2Modal Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailKdfKdf(
-        email: string,
-    ): CancelablePromise<Argon2Modal> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/kdf',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
 
     /**
      * Login
@@ -64,6 +42,28 @@ export class AccountService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * Public
+     * Public KDF details
+     * @param email
+     * @returns PublicUserModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailPublicPublic(
+        email: string,
+    ): CancelablePromise<PublicUserModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/public',
+            path: {
+                'email': email,
+            },
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

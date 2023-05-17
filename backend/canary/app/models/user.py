@@ -29,6 +29,11 @@ class Argon2Modal(BaseModel):
     )
 
 
+class PublicUserModel(BaseModel):
+    kdf: Argon2Modal
+    otp_completed: bool = False
+
+
 class AccountEd25199Modal(BaseModel):
     public_key: str = Field(
         ..., max_length=44, description="ed25519 public key, base64 encoded"

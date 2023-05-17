@@ -42,7 +42,7 @@ jwt_cookie_auth = JWTCookieAuth[ObjectId](
     token_secret=SETTINGS.jwt_secret,
     exclude=[
         "/controllers/account/create",
-        "/controllers/account/kdf",
+        "/controllers/account/public",
         "/controllers/account/to-sign",
         "/controllers/account/login",
         "/schema",

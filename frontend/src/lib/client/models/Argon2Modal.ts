@@ -4,7 +4,7 @@
 
 export type Argon2Modal = {
     salt: string;
-    time_cost: number;
-    memory_cost: number;
+    time_cost?: number;
+    memory_cost?: number;
 };
 

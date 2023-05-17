@@ -3,14 +3,16 @@
   import { get } from "svelte/store";
   import { link, navigate } from "svelte-navigator";
   import { zxcvbn } from "@zxcvbn-ts/core";
+  import { set } from "idb-keyval";
 
   import sodium from "libsodium-wrappers-sumo";
 
   import { advanceModeStore, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
-  import { type Argon2Modal, type CreateUserModel } from "../lib/client";
+  import { type CreateUserModel, type PublicUserModel } from "../lib/client";
   import { timeout } from "../lib/misc";
+  import { base64Decode, base64Encode } from "../lib/base64";
 
   export let isRegister = false;
 
@@ -47,12 +49,14 @@
       return;
     }
 
-    let argon: Argon2Modal;
+    let publicUser: PublicUserModel;
     let rawSalt: Uint8Array;
     if (!isRegister) {
       advanceModeMsg = "Fetching account KDF";
-      argon = await client.account.controllersAccountEmailKdfKdf(email);
-      rawSalt = sodium.from_base64(argon.salt);
+      publicUser = await client.account.controllersAccountEmailPublicPublic(
+        email
+      );
+      rawSalt = base64Decode(publicUser.kdf.salt);
     } else {
       // Add a bare min for a decent password.
       if (zxcvbn(rawPassword).score < 3) {
@@ -61,7 +65,7 @@
       }
 
       try {
-        await client.account.controllersAccountEmailKdfKdf(email);
+        await client.account.controllersAccountEmailPublicPublic(email);
         error = "Email taken.";
         isLoading = false;
         return;
@@ -71,10 +75,12 @@
 
       rawSalt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
 
-      argon = {
-        salt: sodium.to_base64(rawSalt),
-        time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
-        memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
+      publicUser = {
+        kdf: {
+          salt: base64Encode(rawSalt),
+          time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
+          memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
+        },
       };
     }
 
@@ -83,21 +89,24 @@
       32,
       rawPassword,
       rawSalt,
-      argon.time_cost,
-      argon.memory_cost,
+      publicUser.kdf.time_cost,
+      publicUser.kdf.memory_cost,
       sodium.crypto_pwhash_ALG_DEFAULT
     );
 
     advanceModeMsg = "Seeding keypair.";
     const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
 
+    let rawKeychain: Uint8Array;
+    let rawKeychainIv: Uint8Array;
+
     if (isRegister) {
-      const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
-      const rawKeychainIv = sodium.randombytes_buf(
+      rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
+      rawKeychainIv = sodium.randombytes_buf(
         sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
       );
 
-      const TransmitSafeKeychain = sodium.to_base64(
+      const TransmitSafeKeychain = base64Encode(
         sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
           rawKeychain,
           null,
@@ -106,22 +115,26 @@
           rawDerivedKey
         )
       );
-      const TransmitSafeKeychainIv = sodium.to_base64(rawKeychainIv);
+      const TransmitSafeKeychainIv = base64Encode(rawKeychainIv);
 
       const createUser: CreateUserModel = {
         email: email,
-        kdf: argon,
+        kdf: {
+          time_cost: publicUser.kdf.time_cost,
+          memory_cost: publicUser.kdf.memory_cost,
+          salt: publicUser.kdf.salt,
+        },
         keychain: {
           iv: TransmitSafeKeychainIv,
           cipher_text: TransmitSafeKeychain,
         },
         ed25199: {
-          public_key: sodium.to_base64(rawAuthKeys.publicKey),
+          public_key: base64Encode(rawAuthKeys.publicKey),
         },
         signature: "",
       };
 
-      createUser.signature = sodium.to_base64(
+      createUser.signature = base64Encode(
         sodium.crypto_sign(
           sodium.crypto_generichash(
             sodium.crypto_generichash_BYTES,
@@ -144,6 +157,77 @@
 
       navigate("/login", { replace: true });
       return;
+    } else {
+      advanceModeMsg = "Getting data to sign";
+      const toProve = await client.account.controllersAccountEmailToSignToSign(
+        email
+      );
+
+      advanceModeMsg = "Sending signed data to server";
+
+      const loggedInUser =
+        await client.account.controllersAccountEmailLoginLogin(
+          captchaToken,
+          email,
+          {
+            _id: toProve._id,
+            signature: base64Encode(
+              sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
+            ),
+          }
+        );
+
+      const accountHash = sodium.crypto_generichash(
+        sodium.crypto_generichash_BYTES,
+        JSON.stringify({
+          email: email,
+          kdf: {
+            time_cost: publicUser.kdf.time_cost,
+            memory_cost: publicUser.kdf.memory_cost,
+            salt: publicUser.kdf.salt,
+          },
+          ed25199: {
+            // Should never be loaded from the server.
+            public_key: base64Encode(rawAuthKeys.publicKey),
+          },
+          keychain: {
+            cipher_text: loggedInUser.keychain.cipher_text,
+            iv: loggedInUser.keychain.iv,
+          },
+          signature: "",
+        })
+      );
+
+      try {
+        if (
+          sodium.to_hex(
+            sodium.crypto_sign(accountHash, rawAuthKeys.privateKey).slice(64)
+          ) !==
+          sodium.to_hex(
+            sodium.crypto_sign_open(
+              base64Decode(loggedInUser.signature),
+              rawAuthKeys.publicKey
+            )
+          )
+        ) {
+          isLoading = false;
+          error = "Failed to validate given data from server";
+          return;
+        }
+      } catch {
+        isLoading = false;
+        error = "Failed to validate given data from server";
+      }
+
+      advanceModeMsg = "Decrypting keychain key";
+
+      rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+        null,
+        loggedInUser.keychain.cipher_text,
+        null,
+        base64Decode(loggedInUser.keychain.iv),
+        rawDerivedKey
+      );
     }
 
     isLoading = false;

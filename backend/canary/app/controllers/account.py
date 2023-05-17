@@ -12,8 +12,8 @@ from app.lib.jwt import jwt_cookie_auth
 from app.lib.otp import OneTimePassword
 from app.lib.user import User
 from app.models.user import (
-    Argon2Modal,
     CreateUserModel,
+    PublicUserModel,
     UserLoginSignatureModel,
     UserModel,
     UserToSignModel,
@@ -34,9 +34,14 @@ if TYPE_CHECKING:
 class LoginController(Controller):
     path = "/{email:str}"
 
-    @get(path="/kdf", description="Public KDF details", tags=["account"])
-    async def kdf(self, state: "State", email: str) -> Argon2Modal:
-        return (await User(state, email).get()).kdf
+    @get(path="/public", description="Public KDF details", tags=["account"])
+    async def public(self, state: "State", email: str) -> PublicUserModel:
+        user = await User(state, email).get()
+
+        otp_completed = user.otp_secret is not None
+        assert isinstance(otp_completed, bool)
+
+        return PublicUserModel(kdf=user.kdf, otp_completed=otp_completed)
 
     @get(
         path="/to-sign",
