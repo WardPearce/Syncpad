@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 import pyotp
 from app.errors import InvalidAccountAuth
 from app.models.user import UserModel
+from bson import ObjectId
 
 if TYPE_CHECKING:
     from app.types import State
@@ -30,7 +31,7 @@ class OneTimePassword:
 
         otp_search = {
             "otp_hash": sha256(given_code.encode()).hexdigest(),
-            "owner_id": model.id,
+            "owner_id": ObjectId(model.id),
         }
 
         otp_count = await state.mongo.old_otp.count_documents(otp_search)
