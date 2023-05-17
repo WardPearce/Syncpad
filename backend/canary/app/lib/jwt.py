@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 async def retrieve_user_handler(
     token: Token, connection: ASGIConnection[Any, Any, Any, "State"]
 ) -> Optional[ObjectId]:
-    blacklisted = await connection.state.redis.get(token.sub) != "false"
+    blacklisted = await connection.state.redis.get(token.sub)
 
     if blacklisted is None:
         if (
@@ -31,7 +31,7 @@ async def retrieve_user_handler(
             return user_id
 
         return None
-    elif blacklisted is True:
+    elif blacklisted == "true":  # Is stored as a string.
         return None
     else:
         return ObjectId(token.sub)

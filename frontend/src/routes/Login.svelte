@@ -192,10 +192,6 @@
             <input type="password" bind:value={rawPassword} />
             <label for="password">Password</label>
           </div>
-          <label class="checkbox">
-            <input type="checkbox" bind:checked={rememberLogin} />
-            <span>Remember me</span>
-          </label>
 
           <Mcaptcha bind:captchaToken />
 

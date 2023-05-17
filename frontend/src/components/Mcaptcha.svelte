@@ -68,30 +68,32 @@
   }
 </script>
 
-<div class="main">
-  <div class="captcha">
-    {#if status == CaptchaStatus.waiting}
-      <button class="square small" on:click={startPow} type="button" />
-      <p>I'm not a robot</p>
-    {:else if status == CaptchaStatus.loading}
-      <span class="loader small" style="margin: 0 1em" />
-      <p>Processing</p>
-    {:else}
-      <button class="square small" disabled type="button">
-        <i>check</i>
-      </button>
-      <p>Captcha completed!</p>
-    {/if}
+{#if import.meta.env.VITE_MCAPTCHA_ENABLED === "true"}
+  <div class="main">
+    <div class="captcha">
+      {#if status == CaptchaStatus.waiting}
+        <button class="square small" on:click={startPow} type="button" />
+        <p>I'm not a robot</p>
+      {:else if status == CaptchaStatus.loading}
+        <span class="loader small" style="margin: 0 1em" />
+        <p>Processing</p>
+      {:else}
+        <button class="square small" disabled type="button">
+          <i>check</i>
+        </button>
+        <p>Captcha completed!</p>
+      {/if}
+    </div>
+    <div class="footer">
+      <a
+        href="https://github.com/mCaptcha/mCaptcha"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link">Powered by mCaptcha</a
+      >
+    </div>
   </div>
-  <div class="footer">
-    <a
-      href="https://github.com/mCaptcha/mCaptcha"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="link">Powered by mCaptcha</a
-    >
-  </div>
-</div>
+{/if}
 
 <style>
   .main {

@@ -1,5 +1,5 @@
 import secrets
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings
 
@@ -42,12 +42,29 @@ class mCaptcha(BaseModel):
     account_secret: str
 
 
+class Documents(BaseModel):
+    max_amount: int = 3
+    max_size: int = 10490000
+    allowed_extensions: List[str] = [
+        "pdf",
+        "html",
+        "png",
+        "jpeg",
+        "jpg",
+        "mp4",
+        "mp3",
+        "gif",
+        "7z",
+    ]
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
     proxy_urls: ProxiedUrls = ProxiedUrls()
     open_api: OpenAPI = OpenAPI()
-    mcaptcha: Optional[mCaptcha]
+    mcaptcha: Optional[mCaptcha] = None
+    documents: Documents = Documents()
 
     jwt_secret: str = secrets.token_urlsafe(64)
     csrf_secret: str = secrets.token_urlsafe(64)
