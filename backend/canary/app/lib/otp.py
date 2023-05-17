@@ -30,7 +30,7 @@ class OneTimePassword:
             raise InvalidAccountAuth()
 
         otp_search = {
-            "otp_hash": sha256(given_code.encode()).hexdigest(),
+            "otp_hash": given_code,
             "owner_id": ObjectId(model.id),
         }
 
