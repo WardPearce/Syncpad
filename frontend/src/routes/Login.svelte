@@ -10,23 +10,31 @@
   import { advanceModeStore, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
-  import { type CreateUserModel, type PublicUserModel } from "../lib/client";
+  import {
+    type CreateUserModel,
+    type PublicUserModel,
+    type UserModel,
+  } from "../lib/client";
   import { timeout } from "../lib/misc";
   import { base64Decode, base64Encode } from "../lib/base64";
 
   export let isRegister = false;
 
-  let mode = isRegister ? "Register" : "Login";
+  $: mode = isRegister ? "Register" : "Login";
   let otpSetupRequired = false;
   let passwordScreen = true;
-  let error = "";
+  let errorMsg = "";
   let advanceModeMsg = "";
   let isLoading = false;
 
   let email = "";
   let rawPassword = "";
   let captchaToken = "";
-  let rememberLogin = false;
+  let optCode = "";
+
+  let rawAuthKeys: sodium.KeyPair;
+  let rawDerivedKey: Uint8Array;
+  let loggedInUser: UserModel;
 
   $: theme = get(themeStore);
   themeStore.subscribe((value) => (theme = value));
@@ -34,9 +42,119 @@
   $: advanceMode = false;
   advanceModeStore.subscribe((value) => (advanceMode = value));
 
+  async function attemptAuthorization() {
+    advanceModeMsg = "Getting data to sign";
+
+    const toProve = await client.account.controllersAccountEmailToSignToSign(
+      email
+    );
+
+    advanceModeMsg = "Sending signed data to server";
+    try {
+      loggedInUser = await client.account.controllersAccountEmailLoginLogin(
+        captchaToken,
+        email,
+        {
+          _id: toProve.id,
+          signature: base64Encode(
+            sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
+          ),
+        },
+        otpSetupRequired ? "" : optCode
+      );
+    } catch (error) {
+      throw error.body.detail;
+    }
+
+    // Manually defining the whole object, must
+    // be in the same order as the createUser var
+    // for hashes to match.
+    const accountHash = sodium.crypto_generichash(
+      sodium.crypto_generichash_BYTES,
+      JSON.stringify({
+        email: email,
+        kdf: {
+          time_cost: loggedInUser.kdf.time_cost,
+          memory_cost: loggedInUser.kdf.memory_cost,
+          salt: loggedInUser.kdf.salt,
+        },
+        keychain: {
+          iv: loggedInUser.keychain.iv,
+          cipher_text: loggedInUser.keychain.cipher_text,
+        },
+        ed25199: {
+          // Should never be loaded from the server.
+          public_key: base64Encode(rawAuthKeys.publicKey),
+        },
+        signature: "",
+      })
+    );
+
+    try {
+      if (
+        sodium.to_hex(
+          sodium.crypto_sign(accountHash, rawAuthKeys.privateKey).slice(64)
+        ) !==
+        sodium.to_hex(
+          sodium.crypto_sign_open(
+            base64Decode(loggedInUser.signature),
+            rawAuthKeys.publicKey
+          )
+        )
+      ) {
+        throw "Failed to validate given data from server";
+      }
+    } catch {
+      throw "Failed to validate given data from server";
+    }
+
+    advanceModeMsg = "Decrypting keychain key";
+
+    const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+      null,
+      base64Decode(loggedInUser.keychain.cipher_text),
+      null,
+      base64Decode(loggedInUser.keychain.iv),
+      rawDerivedKey
+    );
+  }
+
+  async function OnOtpEnter() {
+    isLoading = true;
+    errorMsg = "";
+
+    if (otpSetupRequired) {
+      try {
+        await client.account.controllersAccountEmailSetupOtpOtpSetup(
+          loggedInUser.email,
+          optCode
+        );
+      } catch (error) {
+        errorMsg = error.body.detail;
+        isLoading = false;
+        return;
+      }
+    } else {
+      try {
+        await attemptAuthorization();
+      } catch (error) {
+        errorMsg = error;
+        passwordScreen = true;
+        rawPassword = "";
+        optCode = "";
+        isLoading = false;
+        return;
+      }
+    }
+
+    navigate("/dashboard", { replace: true });
+
+    isLoading = false;
+  }
+
   async function onLogin() {
     isLoading = true;
-    error = "";
+    errorMsg = "";
 
     advanceModeMsg = "libsodium blocks :(";
     await timeout(10); // Stop libsodium from blocking loop before updating loading
@@ -44,13 +162,14 @@
     await sodium.ready;
 
     if (captchaToken === "") {
-      error = "Please complete captcha.";
+      errorMsg = "Please complete captcha.";
       isLoading = false;
       return;
     }
 
-    let publicUser: PublicUserModel;
     let rawSalt: Uint8Array;
+    let publicUser: PublicUserModel;
+
     if (!isRegister) {
       advanceModeMsg = "Fetching account KDF";
       publicUser = await client.account.controllersAccountEmailPublicPublic(
@@ -60,13 +179,13 @@
     } else {
       // Add a bare min for a decent password.
       if (zxcvbn(rawPassword).score < 3) {
-        error = "Please use a stronger password.";
+        errorMsg = "Please use a stronger password.";
         return;
       }
 
       try {
         await client.account.controllersAccountEmailPublicPublic(email);
-        error = "Email taken.";
+        errorMsg = "Email taken.";
         isLoading = false;
         return;
       } catch (error) {}
@@ -85,7 +204,7 @@
     }
 
     advanceModeMsg = "Deriving key from password.";
-    const rawDerivedKey = sodium.crypto_pwhash(
+    rawDerivedKey = sodium.crypto_pwhash(
       32,
       rawPassword,
       rawSalt,
@@ -95,14 +214,11 @@
     );
 
     advanceModeMsg = "Seeding keypair.";
-    const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
-
-    let rawKeychain: Uint8Array;
-    let rawKeychainIv: Uint8Array;
+    rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
 
     if (isRegister) {
-      rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
-      rawKeychainIv = sodium.randombytes_buf(
+      const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
+      const rawKeychainIv = sodium.randombytes_buf(
         sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
       );
 
@@ -150,84 +266,28 @@
           createUser
         );
       } catch (error) {
-        error = error.body.detail;
+        errorMsg = error.body.detail;
         isLoading = false;
         return;
       }
 
-      navigate("/login", { replace: true });
-      return;
+      rawPassword = "";
+      isRegister = false;
     } else {
-      advanceModeMsg = "Getting data to sign";
-      const toProve = await client.account.controllersAccountEmailToSignToSign(
-        email
-      );
-
-      advanceModeMsg = "Sending signed data to server";
-
-      const loggedInUser =
-        await client.account.controllersAccountEmailLoginLogin(
-          captchaToken,
-          email,
-          {
-            _id: toProve._id,
-            signature: base64Encode(
-              sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
-            ),
-          }
-        );
-
-      const accountHash = sodium.crypto_generichash(
-        sodium.crypto_generichash_BYTES,
-        JSON.stringify({
-          email: email,
-          kdf: {
-            time_cost: publicUser.kdf.time_cost,
-            memory_cost: publicUser.kdf.memory_cost,
-            salt: publicUser.kdf.salt,
-          },
-          ed25199: {
-            // Should never be loaded from the server.
-            public_key: base64Encode(rawAuthKeys.publicKey),
-          },
-          keychain: {
-            cipher_text: loggedInUser.keychain.cipher_text,
-            iv: loggedInUser.keychain.iv,
-          },
-          signature: "",
-        })
-      );
-
-      try {
-        if (
-          sodium.to_hex(
-            sodium.crypto_sign(accountHash, rawAuthKeys.privateKey).slice(64)
-          ) !==
-          sodium.to_hex(
-            sodium.crypto_sign_open(
-              base64Decode(loggedInUser.signature),
-              rawAuthKeys.publicKey
-            )
-          )
-        ) {
+      if (!publicUser.otp_completed) {
+        try {
+          await attemptAuthorization();
+        } catch (error) {
+          errorMsg = error;
           isLoading = false;
-          error = "Failed to validate given data from server";
           return;
         }
-      } catch {
-        isLoading = false;
-        error = "Failed to validate given data from server";
+        otpSetupRequired = true;
+      } else {
+        otpSetupRequired = false;
       }
 
-      advanceModeMsg = "Decrypting keychain key";
-
-      rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-        null,
-        loggedInUser.keychain.cipher_text,
-        null,
-        base64Decode(loggedInUser.keychain.iv),
-        rawDerivedKey
-      );
+      passwordScreen = false;
     }
 
     isLoading = false;
@@ -251,6 +311,13 @@
       </div>
     {:else}
       <h4>{mode}</h4>
+
+      {#if errorMsg}
+        <div class="red5">
+          <p>{errorMsg}</p>
+        </div>
+      {/if}
+
       {#if passwordScreen}
         {#if !isRegister}
           <a href="/register" use:link class="link"
@@ -261,13 +328,7 @@
             >Already have an account? Login.</a
           >
         {/if}
-
         <form on:submit|preventDefault={onLogin} id="login">
-          {#if error}
-            <div class="red5">
-              <p>{error}</p>
-            </div>
-          {/if}
           <div class="field label border medium-divider fill">
             <input type="text" bind:value={email} />
             <label for="email">Email</label>
@@ -297,26 +358,32 @@
             style="display: flex;flex-direction: column;align-items: center;row-gap: 1em;"
           >
             <QrCode
-              value="https://github.com/"
+              value={loggedInUser.otp.provisioning_uri}
               background={theme["--surface"]}
               color={theme["--primary"]}
             />
-            <button>
+            <button
+              on:click={async () => {
+                await navigator.clipboard.writeText(loggedInUser.otp.secret);
+              }}
+            >
               <i>vpn_key</i>
               <span>Copy secret</span>
             </button>
           </div>
         {/if}
 
-        <nav>
-          <div class="max field label fill border">
-            <input type="text" />
-            <label for="otp">OTP code</label>
-          </div>
-          <button class="square extra">
-            <i>arrow_forward_ios</i>
-          </button>
-        </nav>
+        <form on:submit|preventDefault={OnOtpEnter}>
+          <nav>
+            <div class="max field label fill border">
+              <input type="text" bind:value={optCode} />
+              <label for="otp">OTP code</label>
+            </div>
+            <button class="square extra">
+              <i>arrow_forward_ios</i>
+            </button>
+          </nav>
+        </form>
       {/if}
     {/if}
   </article>
@@ -331,6 +398,6 @@
 
   .red5 {
     padding: 0.5em 1em;
-    margin-top: 1em;
+    margin: 1em 0;
   }
 </style>

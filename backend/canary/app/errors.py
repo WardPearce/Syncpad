@@ -14,6 +14,7 @@ class ErrorCodes(Enum):
     invalid_auth = 2002
     invalid_captcha = 2003
     email_taken = 2004
+    otp_completed = 2005
 
 
 class UserNotFoundException(NotFoundException):
@@ -43,6 +44,16 @@ class InvalidCaptcha(NotAuthorizedException):
         super().__init__(
             detail="Invalid captcha",
             extra={ERROR_CODE_KEY: ErrorCodes.invalid_captcha.value},
+        )
+
+
+class OtpAlreadyCompleted(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="OTP setup is completed already",
+            extra={ERROR_CODE_KEY: ErrorCodes.otp_completed.value},
         )
 
 

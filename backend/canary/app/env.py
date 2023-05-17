@@ -65,6 +65,7 @@ class Settings(BaseSettings):
     open_api: OpenAPI = OpenAPI()
     mcaptcha: Optional[mCaptcha] = None
     documents: Documents = Documents()
+    site_name = "canarystat.us"
 
     jwt_secret: str = secrets.token_urlsafe(64)
     csrf_secret: str = secrets.token_urlsafe(64)

@@ -33,6 +33,8 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
             motor_asyncio.AsyncIOMotorCollection, mongo[SETTINGS.mongo.collection]
         )
 
+        await state.mongo.old_otp.create_index("expires", expireAfterSeconds=0)
+
     return state.mongo
 
 

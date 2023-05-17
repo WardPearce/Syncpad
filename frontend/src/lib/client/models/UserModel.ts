@@ -5,6 +5,7 @@
 import type { AccountEd25199Modal } from './AccountEd25199Modal';
 import type { AccountKeychainModal } from './AccountKeychainModal';
 import type { Argon2Modal } from './Argon2Modal';
+import type { OtpModel } from './OtpModel';
 
 export type UserModel = {
     email: string;
@@ -14,7 +15,7 @@ export type UserModel = {
     signature: string;
     algorithms?: string;
     _id: any;
-    otp_secret?: (null | string);
+    otp: OtpModel;
     email_verified?: boolean;
 };
 

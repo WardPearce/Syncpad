@@ -2,10 +2,12 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Optional
 
+import pyotp
 from app.errors import (
     EmailTaken,
     InvalidAccountAuth,
     InvalidCaptcha,
+    OtpAlreadyCompleted,
     UserNotFoundException,
 )
 from app.lib.jwt import jwt_cookie_auth
@@ -22,6 +24,7 @@ from bson import ObjectId
 from lib.mCaptcha import validate_captcha
 from litestar import Response, Router
 from litestar.controller import Controller
+from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
@@ -38,15 +41,39 @@ class LoginController(Controller):
     async def public(self, state: "State", email: str) -> PublicUserModel:
         user = await User(state, email).get()
 
-        otp_completed = user.otp_secret is not None
-        assert isinstance(otp_completed, bool)
+        return PublicUserModel(kdf=user.kdf, otp_completed=user.otp.completed)
 
-        return PublicUserModel(kdf=user.kdf, otp_completed=otp_completed)
+    @post(
+        path="/setup/otp",
+        description="Used to confirm OTP is completed",
+        tags=["account"],
+        status_code=201,
+        raises=[OtpAlreadyCompleted],
+    )
+    async def otp_setup(self, state: "State", email: str, otp: str) -> Response:
+        user = await User(state, email).get()
+
+        if user.otp.completed:
+            raise OtpAlreadyCompleted()
+
+        try:
+            await OneTimePassword.validate_user(state, user, otp)
+        except InvalidAccountAuth:
+            # Not defined in errors.py because it should
+            # only be used here.
+            raise ValidationException(detail="Invalid OTP code")
+
+        await state.mongo.user.update_one(
+            {"_id": ObjectId(user.id)}, {"$set": {"otp.completed": True}}
+        )
+
+        return Response(None, status_code=201)
 
     @get(
         path="/to-sign",
         description="Used to generate a unique code to sign.",
         tags=["account"],
+        raises=[UserNotFoundException],
     )
     async def to_sign(self, state: "State", email: str) -> UserToSignModel:
         try:
@@ -58,14 +85,17 @@ class LoginController(Controller):
             result = await state.mongo.proof.insert_one(
                 {
                     "to_sign": to_sign,
-                    "user_id": user.id,
+                    "user_id": ObjectId(user.id),
                     "expires": datetime.now(tz=timezone.utc) + timedelta(seconds=60),
                 }
             )
             return UserToSignModel(to_sign=to_sign, _id=result.inserted_id)
 
     @post(
-        path="/login", description="Validate signature and OTP code", tags=["account"]
+        path="/login",
+        description="Validate signature and OTP code",
+        tags=["account"],
+        raises=[InvalidCaptcha, InvalidAccountAuth],
     )
     async def login(
         self,
@@ -82,12 +112,13 @@ class LoginController(Controller):
 
         user = await User(state, email).get()
 
-        try:
-            await OneTimePassword.validate_user(state, user, otp)
-        except InvalidAccountAuth:
-            raise
+        if user.otp.completed:
+            try:
+                await OneTimePassword.validate_user(state, user, otp)
+            except InvalidAccountAuth:
+                raise
 
-        proof_search = {"user_id": user.id, "_id": ObjectId(data.id)}
+        proof_search = {"user_id": ObjectId(user.id), "_id": ObjectId(data.id)}
         proof = await state.mongo.proof.find_one(proof_search)
         if not proof:
             raise InvalidAccountAuth()
@@ -118,7 +149,7 @@ class LoginController(Controller):
         )
 
 
-@post(path="/create", tags=["account"])
+@post(path="/create", tags=["account"], status_code=201)
 async def create_account(
     state: "State", captcha: str, data: CreateUserModel
 ) -> Response:
@@ -132,7 +163,9 @@ async def create_account(
     if await state.mongo.user.count_documents({"email": email}) > 0:
         raise EmailTaken()
 
-    await state.mongo.user.insert_one(data.dict())
+    await state.mongo.user.insert_one(
+        {**data.dict(), "otp": {"secret": pyotp.random_base32(), "completed": False}}
+    )
 
     return Response(None, status_code=201)
 

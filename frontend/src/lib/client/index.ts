@@ -13,6 +13,7 @@ export type { AccountEd25199Modal } from './models/AccountEd25199Modal';
 export type { AccountKeychainModal } from './models/AccountKeychainModal';
 export type { Argon2Modal } from './models/Argon2Modal';
 export type { CreateUserModel } from './models/CreateUserModel';
+export type { OtpModel } from './models/OtpModel';
 export type { PublicUserModel } from './models/PublicUserModel';
 export type { UserLoginSignatureModel } from './models/UserLoginSignatureModel';
 export type { UserModel } from './models/UserModel';

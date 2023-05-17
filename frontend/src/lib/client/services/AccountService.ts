@@ -44,6 +44,34 @@ export class AccountService {
             mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
+                401: `No permission -- see authorization schemes`,
+            },
+        });
+    }
+
+    /**
+     * OtpSetup
+     * Used to confirm OTP is completed
+     * @param email
+     * @param otp
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailSetupOtpOtpSetup(
+        email: string,
+        otp: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/{email}/setup/otp',
+            path: {
+                'email': email,
+            },
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
             },
         });
     }
@@ -88,6 +116,7 @@ export class AccountService {
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
             },
         });
     }

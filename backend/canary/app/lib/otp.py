@@ -25,11 +25,6 @@ class OneTimePassword:
     async def validate_user(
         cls, state: "State", model: UserModel, given_code: Optional[str]
     ) -> None:
-        if model.otp_secret is None:
-            if given_code is not None:
-                raise InvalidAccountAuth()
-            return
-
         if given_code is None:
             raise InvalidAccountAuth()
 
@@ -42,7 +37,7 @@ class OneTimePassword:
         if otp_count > 0:
             raise InvalidAccountAuth()
 
-        if not OneTimePassword(state=state, key=model.otp_secret).verify(given_code):
+        if not OneTimePassword(state=state, key=model.otp.secret).verify(given_code):
             raise InvalidAccountAuth()
 
         await state.mongo.old_otp.insert_one(

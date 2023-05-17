@@ -72,9 +72,15 @@ class CreateUserModel(__CreateUserShared):
     pass
 
 
+class OtpModel(BaseModel):
+    secret: str
+    completed: bool = False
+    provisioning_uri: str
+
+
 class UserModel(__CreateUserShared, EmailModel):
     id: ObjectIdStr = Field(..., alias="_id")
-    otp_secret: Optional[str] = None
+    otp: OtpModel
     email_verified: bool = False
 
 

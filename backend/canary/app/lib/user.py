@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING
 
+import pyotp
 from app.errors import UserNotFoundException
 from app.models.user import UserModel
+from env import SETTINGS
 
 if TYPE_CHECKING:
     from app.types import State
@@ -39,4 +41,9 @@ class User:
         user = await self.state.mongo.user.find_one(self.__email_query)
         if not user:
             raise UserNotFoundException()
+
+        user["otp"]["provisioning_uri"] = pyotp.totp.TOTP(
+            user["otp"]["secret"]
+        ).provisioning_uri(name=user["email"], issuer_name=SETTINGS.site_name)
+
         return UserModel(**user)
