@@ -7,6 +7,7 @@ from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
+from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi import OpenAPIConfig
 from litestar.stores.redis import RedisStore
 from motor import motor_asyncio
@@ -68,6 +69,9 @@ app = Litestar(
         secret=SETTINGS.csrf_secret,
         cookie_httponly=False,
     ),
+    middleware=[
+        RateLimitConfig(rate_limit=("minute", 60), exclude=["/schema"]).middleware
+    ],
     cors_config=CORSConfig(
         allow_origins=[SETTINGS.proxy_urls.backend, SETTINGS.proxy_urls.frontend],
         allow_credentials=True,
