@@ -123,6 +123,8 @@
     isLoading = true;
     errorMsg = "";
 
+    advanceModeMsg = "Validating OTP code";
+
     if (otpSetupRequired) {
       try {
         await client.account.controllersAccountEmailSetupOtpOtpSetup(
@@ -171,7 +173,7 @@
     let publicUser: PublicUserModel;
 
     if (!isRegister) {
-      advanceModeMsg = "Fetching account KDF";
+      advanceModeMsg = "Fetching account KDF parameters";
       publicUser = await client.account.controllersAccountEmailPublicPublic(
         email
       );
