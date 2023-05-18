@@ -22,7 +22,6 @@
     "material-dynamic-colors": "^0.1.7",
     "openapi-typescript-codegen": "^0.24.0",
     "svelte": "^3.57.0",
-    "svelte-awesome-color-picker": "^2.4.1",
     "svelte-check": "^2.10.3",
     "svelte-qrcode": "^1.0.0",
     "tslib": "^2.5.0",

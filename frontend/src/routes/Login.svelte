@@ -3,11 +3,10 @@
   import { get } from "svelte/store";
   import { link, navigate } from "svelte-navigator";
   import { zxcvbn } from "@zxcvbn-ts/core";
-  import { set } from "idb-keyval";
 
   import sodium from "libsodium-wrappers-sumo";
 
-  import { advanceModeStore, themeStore } from "../stores";
+  import { advanceModeStore, setLocalSecrets, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
   import {
@@ -117,6 +116,14 @@
       base64Decode(loggedInUser.keychain.iv),
       rawDerivedKey
     );
+
+    // Should never store derivedKey or private key.
+    // If IndexDB compromised, authorization can't be acquired.
+    await setLocalSecrets({
+      email: loggedInUser.email,
+      userId: loggedInUser.id,
+      rawKeychain: rawDerivedKey,
+    });
   }
 
   async function OnOtpEnter() {
@@ -182,6 +189,7 @@
       // Add a bare min for a decent password.
       if (zxcvbn(rawPassword).score < 3) {
         errorMsg = "Please use a stronger password.";
+        isLoading = false;
         return;
       }
 

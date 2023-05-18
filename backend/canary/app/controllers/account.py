@@ -22,7 +22,7 @@ from app.models.user import (
 )
 from bson import ObjectId
 from lib.mCaptcha import validate_captcha
-from litestar import Response, Router
+from litestar import Response, Router, delete
 from litestar.controller import Controller
 from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
@@ -148,8 +148,24 @@ class LoginController(Controller):
             token_unique_jwt_id=secrets.token_urlsafe(32),
         )
 
+    @delete(
+        path="/logout",
+        description="Logout of User account",
+        tags=["account"],
+        status_code=200,
+    )
+    async def logout(self) -> Response:
+        response = Response(content=None)
+        response.delete_cookie(jwt_cookie_auth.key)
+        return response
 
-@post(path="/create", tags=["account"], status_code=201)
+
+@post(
+    path="/create",
+    description="Create a user account",
+    tags=["account"],
+    status_code=201,
+)
 async def create_account(
     state: "State", captcha: str, data: CreateUserModel
 ) -> Response:

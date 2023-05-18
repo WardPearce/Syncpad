@@ -1,45 +1,45 @@
 <script lang="ts">
   import { link } from "svelte-navigator";
-  import ColorPicker, { ChromeVariant } from "svelte-awesome-color-picker";
 
-  let hex;
+  let siteDomain = "";
+  let aboutSite = "";
+  let siteLogo: File;
 
-  async function onColorChange() {
-    await window.ui("theme", hex);
+  async function onLogoChange(event) {
+    await ui("theme", event.target.files[0]);
   }
 </script>
 
 <h4>Add site</h4>
-<div class="field label border">
-  <input type="text" />
+<div class="field label border" class:invalid={siteDomain.length > 50}>
+  <input type="text" bind:value={siteDomain} />
   <label for="domain">Domain name</label>
-  <span class="helper">0/200</span>
+  <span class="helper">{siteDomain.length}/50</span>
 </div>
 
-<div class="field textarea label border">
-  <textarea />
+<div
+  class="field textarea label border extra"
+  class:invalid={aboutSite.length > 500}
+>
+  <textarea bind:value={aboutSite} />
   <label for="about">About your site</label>
-  <span class="helper">0/500</span>
+  <span class="helper">{aboutSite.length}/500</span>
 </div>
 
 <nav>
   <div class="field label suffix border">
     <input type="text" />
-    <input type="file" />
+    <input
+      type="file"
+      bind:value={siteLogo}
+      on:input={onLogoChange}
+      multiple={false}
+      accept="image/png, image/jpeg, image/jpg"
+    />
     <label for="logo">Logo</label>
     <i>attach_file</i>
-    <span class="helper">Max 5MB - PNG, GIF, JPEG</span>
+    <span class="helper">Max 5MB - PNG, JPEG</span>
   </div>
-
-  <ColorPicker
-    bind:hex
-    label="Theme color"
-    canChangeMode={false}
-    isAlpha={false}
-    components={ChromeVariant}
-    toRight={true}
-    on:input={onColorChange}
-  />
 </nav>
 
 <div class="right-align">

@@ -13,7 +13,7 @@
     completed = 2,
   }
 
-  let status = CaptchaStatus.waiting;
+  $: status = CaptchaStatus.waiting;
 
   async function startPow() {
     status = CaptchaStatus.loading;

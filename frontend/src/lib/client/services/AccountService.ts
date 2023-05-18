@@ -50,6 +50,19 @@ export class AccountService {
     }
 
     /**
+     * Logout
+     * Logout of User account
+     * @returns any Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailLogoutLogout(): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/{email}/logout',
+        });
+    }
+
+    /**
      * OtpSetup
      * Used to confirm OTP is completed
      * @param email
@@ -123,6 +136,7 @@ export class AccountService {
 
     /**
      * CreateAccount
+     * Create a user account
      * @param captcha
      * @param requestBody
      * @returns any Document created, URL follows
