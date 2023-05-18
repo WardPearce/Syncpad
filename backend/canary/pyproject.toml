@@ -22,6 +22,7 @@ litestar = {extras = ["full"], version = "^2.0.0a5"}
 aiohttp = "^3.8.4"
 email-validator = "^2.0.0.post2"
 argon2-cffi = "^21.3.0"
+redis = "^4.5.5"
 
 
 [tool.poetry.group.dev.dependencies]

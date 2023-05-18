@@ -31,7 +31,7 @@ class OpenAPI(BaseModel):
 
 
 class Redis(BaseModel):
-    host: str = "redis://localhost/"
+    host: str = "localhost"
     port: int = 6379
     db: int = 0
 

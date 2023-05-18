@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import pyotp
 from app.errors import (
@@ -22,7 +22,8 @@ from app.models.user import (
 )
 from bson import ObjectId
 from lib.mCaptcha import validate_captcha
-from litestar import Response, Router, delete
+from litestar import Request, Response, Router, delete
+from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
@@ -37,7 +38,12 @@ if TYPE_CHECKING:
 class LoginController(Controller):
     path = "/{email:str}"
 
-    @get(path="/public", description="Public KDF details", tags=["account"])
+    @get(
+        path="/public",
+        description="Public KDF details",
+        tags=["account"],
+        exclude_from_auth=True,
+    )
     async def public(self, state: "State", email: str) -> PublicUserModel:
         user = await User(state, email).get()
 
@@ -74,6 +80,7 @@ class LoginController(Controller):
         description="Used to generate a unique code to sign.",
         tags=["account"],
         raises=[UserNotFoundException],
+        exclude_from_auth=True,
     )
     async def to_sign(self, state: "State", email: str) -> UserToSignModel:
         try:
@@ -96,6 +103,7 @@ class LoginController(Controller):
         description="Validate signature and OTP code",
         tags=["account"],
         raises=[InvalidCaptcha, InvalidAccountAuth],
+        exclude_from_auth=True,
     )
     async def login(
         self,
@@ -165,6 +173,7 @@ class LoginController(Controller):
     description="Create a user account",
     tags=["account"],
     status_code=201,
+    exclude_from_auth=True,
 )
 async def create_account(
     state: "State", captcha: str, data: CreateUserModel
@@ -186,4 +195,14 @@ async def create_account(
     return Response(None, status_code=201)
 
 
-router = Router(path="/account", route_handlers=[LoginController, create_account])
+@get(
+    path="/me",
+    description="Get JWT sub for user",
+    tags=["account"],
+    sync_to_thread=False,
+)
+def me(request: Request[str, Token, Any]) -> str:
+    return request.user
+
+
+router = Router(path="/account", route_handlers=[LoginController, create_account, me])

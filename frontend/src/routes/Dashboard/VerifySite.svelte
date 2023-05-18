@@ -1,5 +1,7 @@
 <script lang="ts">
   export let domainName: string;
+
+  let verifyCode = "canary=t6V4NtZmaWD4Mt";
 </script>
 
 <h4>Verify domain</h4>
@@ -19,9 +21,19 @@
 <h6>Step 3</h6>
 <p>In the "Value" or "Data" field, enter the following.</p>
 
-<div class="field border">
-  <input type="text" disabled value="canary=t6V4NtZmaWD4Mt" />
-</div>
+<nav>
+  <div class="field border">
+    <input type="text" disabled value={verifyCode} />
+  </div>
+  <button
+    class="square"
+    on:click={async () => {
+      await navigator.clipboard.writeText(verifyCode);
+    }}
+  >
+    <i>content_copy</i>
+  </button>
+</nav>
 
 <h6>Step 4</h6>
 <p>
