@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { link, navigate, useLocation } from "svelte-navigator";
-  import { del } from "idb-keyval";
+  import { link, useLocation } from "svelte-navigator";
   import {
     advanceModeStore,
     themeStore,
@@ -10,7 +9,7 @@
   } from "../stores";
   import { get } from "svelte/store";
   import { getDynamicTheme } from "../lib/theme";
-  import { client } from "../lib/canary";
+  import { logout } from "../lib/logout";
 
   export let isMobile: boolean = false;
 
@@ -24,17 +23,6 @@
 
   function onAdvanceModeToggle() {
     advanceModeStore.set(!get(advanceModeStore));
-  }
-
-  async function logout() {
-    try {
-      await client.account.controllersAccountEmailLogoutLogout();
-    } catch {}
-    try {
-      await del("localSecrets");
-    } catch {}
-    localSecrets.set(undefined);
-    navigate("/", { replace: true });
   }
 
   async function toggleMode() {
@@ -61,16 +49,6 @@
     }
 
     themeStore.set(await getDynamicTheme());
-
-    // Validate JWT session.
-    try {
-      const userId = await client.account.controllersAccountMeMe();
-      if (userId !== loggedInUser.userId) {
-        await logout();
-      }
-    } catch (error) {
-      await logout();
-    }
   });
 </script>
 

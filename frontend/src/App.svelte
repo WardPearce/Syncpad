@@ -1,10 +1,31 @@
 <script lang="ts">
   import { Router, Route } from "svelte-navigator";
+  import { onMount } from "svelte";
+
   import LazyRoute from "./components/LazyRoute.svelte";
   import PageLoading from "./components/PageLoading.svelte";
   import NavItems from "./components/NavItems.svelte";
 
+  import { client } from "./lib/canary";
+  import { logout } from "./lib/logout";
+  import { localSecrets, type LocalSecretsModel } from "./stores";
+
   let mobileNavShow = false;
+
+  let loggedInUser: LocalSecretsModel | undefined;
+  localSecrets.subscribe((secrets) => (loggedInUser = secrets));
+
+  onMount(async () => {
+    // Validate JWT session.
+    try {
+      const userId = await client.account.controllersAccountMeMe();
+      if (userId !== loggedInUser.userId) {
+        await logout();
+      }
+    } catch (error) {
+      await logout();
+    }
+  });
 </script>
 
 <Router primary={false}>
