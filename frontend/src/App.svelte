@@ -17,11 +17,11 @@
   localSecrets.subscribe((secrets) => (loggedInUser = secrets));
 
   onMount(async () => {
-    // Validate JWT session.
-    if (!(await get("localSecrerawKeychaints"))) {
+    if (!(await get("localSecrets"))) {
       await logout();
     }
 
+    // Validate JWT session.
     try {
       const userId = await client.account.controllersAccountMeMe();
       if (userId !== loggedInUser.userId) {
