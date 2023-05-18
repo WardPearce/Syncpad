@@ -9,6 +9,7 @@
   import { client } from "./lib/canary";
   import { logout } from "./lib/logout";
   import { localSecrets, type LocalSecretsModel } from "./stores";
+  import { get } from "idb-keyval";
 
   let mobileNavShow = false;
 
@@ -17,6 +18,10 @@
 
   onMount(async () => {
     // Validate JWT session.
+    if (!(await get("localSecrerawKeychaints"))) {
+      await logout();
+    }
+
     try {
       const userId = await client.account.controllersAccountMeMe();
       if (userId !== loggedInUser.userId) {

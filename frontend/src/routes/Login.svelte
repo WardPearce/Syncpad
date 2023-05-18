@@ -122,7 +122,7 @@
     await setLocalSecrets({
       email: loggedInUser.email,
       userId: loggedInUser.id,
-      rawKeychain: rawDerivedKey,
+      rawKeychain: rawKeychain,
     });
   }
 

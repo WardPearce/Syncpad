@@ -40,10 +40,9 @@
   Please wait for DNS propagation to occur, which can take anywhere from a few
   minutes to several hours.
 </p>
+<p>canarystat.us will check automatically every so often.</p>
 
-<div class="right-align">
-  <button>
-    <i>domain_verification</i>
-    <span>Check domain</span>
-  </button>
-</div>
+<button style="margin-top: 1em;">
+  <i>travel_explore</i>
+  <span>Validate domain</span>
+</button>
