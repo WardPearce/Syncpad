@@ -42,8 +42,4 @@ class User:
         if not user:
             raise UserNotFoundException()
 
-        user["otp"]["provisioning_uri"] = pyotp.totp.TOTP(
-            user["otp"]["secret"]
-        ).provisioning_uri(name=user["email"], issuer_name=SETTINGS.site_name)
-
         return UserModel(**user)

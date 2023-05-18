@@ -107,7 +107,7 @@
       throw "Failed to validate given data from server";
     }
 
-    advanceModeMsg = "Decrypting keychain key";
+    advanceModeMsg = "Decrypting keychain";
 
     const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
       null,
@@ -134,7 +134,7 @@
 
     if (otpSetupRequired) {
       try {
-        await client.account.controllersAccountEmailSetupOtpOtpSetup(
+        await client.account.controllersAccountEmailOtpSetupOtpSetup(
           loggedInUser.email,
           optCode
         );

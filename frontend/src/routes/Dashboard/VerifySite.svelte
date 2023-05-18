@@ -40,7 +40,10 @@
   Please wait for DNS propagation to occur, which can take anywhere from a few
   minutes to several hours.
 </p>
-<p>{import.meta.env.VITE_SITE_NAME} will check automatically every so often.</p>
+<p>
+  {import.meta.env.VITE_SITE_NAME} will check automatically every so often. Expect
+  an email once validation is successful.
+</p>
 
 <div class="right-align" style="margin-top: 1em;">
   <button>

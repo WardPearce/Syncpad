@@ -15,6 +15,7 @@ from app.lib.otp import OneTimePassword
 from app.lib.user import User
 from app.models.user import (
     CreateUserModel,
+    OtpModel,
     PublicUserModel,
     UserLoginSignatureModel,
     UserModel,
@@ -50,7 +51,7 @@ class LoginController(Controller):
         return PublicUserModel(kdf=user.kdf, otp_completed=user.otp.completed)
 
     @post(
-        path="/setup/otp",
+        path="/otp/setup",
         description="Used to confirm OTP is completed",
         tags=["account"],
         status_code=201,
@@ -88,7 +89,7 @@ class LoginController(Controller):
         except UserNotFoundException:
             raise
         else:
-            to_sign = secrets.token_urlsafe(64)
+            to_sign = secrets.token_urlsafe(32)
             result = await state.mongo.proof.insert_one(
                 {
                     "to_sign": to_sign,
@@ -205,4 +206,18 @@ def me(request: Request[str, Token, Any]) -> str:
     return request.user
 
 
-router = Router(path="/account", route_handlers=[LoginController, create_account, me])
+@delete(path="/otp/reset", description="Reset OTP", tags=["account"], status_code=200)
+async def reset_otp(state: "State", request: Request[str, Token, Any]) -> OtpModel:
+    otp_secret = pyotp.random_base32()
+
+    await state.mongo.user.update_one(
+        {"_id": ObjectId(request.user)},
+        {"$set": {"otp.completed": False, "otp.secret": otp_secret}},
+    )
+
+    return OtpModel(secret=otp_secret, completed=False)
+
+
+router = Router(
+    path="/account", route_handlers=[LoginController, create_account, me, reset_otp]
+)

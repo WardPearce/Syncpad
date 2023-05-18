@@ -1,8 +1,8 @@
-from typing import Optional
-
+import pyotp
+from app.env import SETTINGS
 from app.models.customs import IvField, ObjectIdStr
 from argon2.profiles import RFC_9106_LOW_MEMORY
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, root_validator
 
 
 class EmailModel(BaseModel):
@@ -75,7 +75,12 @@ class CreateUserModel(__CreateUserShared):
 class OtpModel(BaseModel):
     secret: str
     completed: bool = False
-    provisioning_uri: str
+
+    @property
+    def provisioning_uri(self) -> str:
+        return pyotp.totp.TOTP(self.secret).provisioning_uri(
+            issuer_name=SETTINGS.site_name
+        )
 
 
 class UserModel(__CreateUserShared, EmailModel):

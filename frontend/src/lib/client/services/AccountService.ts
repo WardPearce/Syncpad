@@ -70,13 +70,13 @@ export class AccountService {
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountEmailSetupOtpOtpSetup(
+    public controllersAccountEmailOtpSetupOtpSetup(
         email: string,
         otp: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/account/{email}/setup/otp',
+            url: '/controllers/account/{email}/otp/setup',
             path: {
                 'email': email,
             },
