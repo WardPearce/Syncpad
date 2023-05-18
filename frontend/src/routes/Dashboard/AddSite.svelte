@@ -42,7 +42,7 @@
   </div>
 </nav>
 
-<div class="right-align">
+<div class="right-align" style="margin-top: 1em;">
   <a class="button" href="/dashboard/verify-site/123" use:link>
     <i>arrow_forward_ios</i>
     <span>Next step</span>

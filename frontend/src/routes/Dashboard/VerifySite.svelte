@@ -42,7 +42,9 @@
 </p>
 <p>canarystat.us will check automatically every so often.</p>
 
-<button style="margin-top: 1em;">
-  <i>travel_explore</i>
-  <span>Validate domain</span>
-</button>
+<div class="right-align" style="margin-top: 1em;">
+  <button>
+    <i>travel_explore</i>
+    <span>Validate domain</span>
+  </button>
+</div>

@@ -17,8 +17,12 @@
   localSecrets.subscribe((secrets) => (loggedInUser = secrets));
 
   onMount(async () => {
+    // Default UI color
+    await ui("theme", "#b776dd");
+
     if (!(await get("localSecrets"))) {
       await logout();
+      return;
     }
 
     // Validate JWT session.
@@ -54,7 +58,7 @@
         >
           <i>close</i>
         </button>
-        <h6 class="max">Canary status</h6>
+        <h6 class="max">canarystat.us</h6>
       </nav>
     </header>
     <NavItems isMobile={true} />
