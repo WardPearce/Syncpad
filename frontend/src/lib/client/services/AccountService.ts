@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CreateUserModel } from '../models/CreateUserModel';
+import type { OtpModel } from '../models/OtpModel';
 import type { PublicUserModel } from '../models/PublicUserModel';
 import type { UserLoginSignatureModel } from '../models/UserLoginSignatureModel';
 import type { UserModel } from '../models/UserModel';
@@ -170,6 +171,28 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/account/me',
+        });
+    }
+
+    /**
+     * ResetOtp
+     * Reset OTP
+     * @param otp
+     * @returns OtpModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpResetResetOtp(
+        otp: string,
+    ): CancelablePromise<OtpModel> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/otp/reset',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
         });
     }
 

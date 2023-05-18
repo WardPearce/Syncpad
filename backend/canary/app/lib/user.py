@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import pyotp
 from app.errors import UserNotFoundException
 from app.models.user import UserModel
+from bson import ObjectId
 from env import SETTINGS
 
 if TYPE_CHECKING:
@@ -10,13 +11,18 @@ if TYPE_CHECKING:
 
 
 class User:
-    def __init__(self, state: "State", email: str) -> None:
+    def __init__(self, state: "State", identifier: Union[str, ObjectId]) -> None:
         self.state = state
-        self.email = email
+        self.__identifier = identifier
+        self.__is_str = isinstance(identifier, str)
 
     @property
-    def __email_query(self) -> dict:
-        return {"email": self.email}
+    def _user_query(self) -> dict:
+        return (
+            {"email": self.__identifier}
+            if self.__is_str
+            else {"_id": self.__identifier}
+        )
 
     async def exists(self) -> None:
         """Check if user exists.
@@ -25,7 +31,7 @@ class User:
             UserNotFoundException
         """
 
-        if await self.state.mongo.user.count_documents(self.__email_query) == 0:
+        if await self.state.mongo.user.count_documents(self._user_query) == 0:
             raise UserNotFoundException()
 
     async def get(self) -> UserModel:
@@ -38,7 +44,7 @@ class User:
             UserModel
         """
 
-        user = await self.state.mongo.user.find_one(self.__email_query)
+        user = await self.state.mongo.user.find_one(self._user_query)
         if not user:
             raise UserNotFoundException()
 

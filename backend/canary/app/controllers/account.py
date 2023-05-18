@@ -207,7 +207,16 @@ def me(request: Request[str, Token, Any]) -> str:
 
 
 @delete(path="/otp/reset", description="Reset OTP", tags=["account"], status_code=200)
-async def reset_otp(state: "State", request: Request[str, Token, Any]) -> OtpModel:
+async def reset_otp(
+    state: "State", request: Request[str, Token, Any], otp: str
+) -> OtpModel:
+    user = await User(state, request.user).get()
+
+    try:
+        await OneTimePassword.validate_user(state, user, otp)
+    except InvalidAccountAuth:
+        raise
+
     otp_secret = pyotp.random_base32()
 
     await state.mongo.user.update_one(
