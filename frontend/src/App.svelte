@@ -20,6 +20,10 @@
     // Default UI color
     await ui("theme", "#b776dd");
 
+    if (loggedInUser === undefined) {
+      return;
+    }
+
     if (!(await get("localSecrets"))) {
       await logout();
       return;
