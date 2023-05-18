@@ -40,7 +40,7 @@
   Please wait for DNS propagation to occur, which can take anywhere from a few
   minutes to several hours.
 </p>
-<p>canarystat.us will check automatically every so often.</p>
+<p>{import.meta.env.VITE_SITE_NAME} will check automatically every so often.</p>
 
 <div class="right-align" style="margin-top: 1em;">
   <button>

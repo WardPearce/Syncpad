@@ -18,7 +18,8 @@
 
   onMount(async () => {
     // Default UI color
-    await ui("theme", "#b776dd");
+    await ui("theme", import.meta.env.VITE_THEME);
+    document.title = import.meta.env.VITE_SITE_NAME;
 
     if (loggedInUser === undefined) {
       return;
@@ -62,7 +63,7 @@
         >
           <i>close</i>
         </button>
-        <h6 class="max">canarystat.us</h6>
+        <h6 class="max">{import.meta.env.VITE_SITE_NAME}</h6>
       </nav>
     </header>
     <NavItems isMobile={true} />
