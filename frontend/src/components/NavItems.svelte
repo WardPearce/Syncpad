@@ -61,6 +61,16 @@
     }
 
     themeStore.set(await getDynamicTheme());
+
+    // Validate JWT session.
+    try {
+      const userId = await client.account.controllersAccountMeMe();
+      if (userId !== loggedInUser.userId) {
+        await logout();
+      }
+    } catch (error) {
+      await logout();
+    }
   });
 </script>
 

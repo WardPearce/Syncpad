@@ -160,4 +160,17 @@ export class AccountService {
         });
     }
 
+    /**
+     * Me
+     * Get JWT sub for user
+     * @returns string Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountMeMe(): CancelablePromise<string> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/me',
+        });
+    }
+
 }
