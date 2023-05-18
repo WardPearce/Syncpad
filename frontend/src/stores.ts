@@ -8,7 +8,7 @@ export const themeStore = writable({});
 export interface LocalSecretsModel {
     email: string,
     userId: string,
-    rawKeychain: Uint8Array,
+    rawKeychain: string,
 }
 
 export const localSecrets: Writable<LocalSecretsModel | undefined> = writable(

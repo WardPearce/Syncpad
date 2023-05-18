@@ -91,6 +91,17 @@
   <i>add</i>
   <span>Add a site</span>
 </a>
+{#if loggedInUser !== undefined}
+  <a
+    use:link
+    href="/account"
+    class:active={currentPage === "/account"}
+    class={isMobile ? "row round" : ""}
+  >
+    <i>admin_panel_settings</i>
+    <span>Account</span>
+  </a>
+{/if}
 <a
   use:link
   href="/"
