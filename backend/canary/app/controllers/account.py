@@ -89,18 +89,7 @@ class LoginController(Controller):
         data: UserLoginSignatureModel,
         email: str,
     ) -> Response[UserModel]:
-        try:
-            await validate_captcha(state, captcha)
-        except InvalidCaptcha:
-            raise
-
         user = await User(state, email).get()
-
-        if user.otp.completed:
-            try:
-                await OneTimePassword.validate_user(state, user, otp)
-            except InvalidAccountAuth:
-                raise
 
         proof_search = {"user_id": ObjectId(user.id), "_id": ObjectId(data.id)}
         proof = await state.mongo.proof.find_one(proof_search)
@@ -108,6 +97,17 @@ class LoginController(Controller):
             raise InvalidAccountAuth()
 
         await state.mongo.proof.delete_one(proof_search)
+
+        try:
+            await validate_captcha(state, captcha)
+        except InvalidCaptcha:
+            raise
+
+        if user.otp.completed:
+            try:
+                await OneTimePassword.validate_user(state, user, otp)
+            except InvalidAccountAuth:
+                raise
 
         try:
             public_key = Base64Encoder.decode(user.ed25199.public_key.encode())
