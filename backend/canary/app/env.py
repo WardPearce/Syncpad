@@ -58,6 +58,11 @@ class Documents(BaseModel):
     ]
 
 
+class Jwt(BaseModel):
+    secret: str = secrets.token_urlsafe(32)
+    expire_days: int = 1
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
@@ -67,8 +72,8 @@ class Settings(BaseSettings):
     documents: Documents = Documents()
     site_name = "canarystat.us"
 
-    jwt_secret: str = secrets.token_urlsafe(64)
-    csrf_secret: str = secrets.token_urlsafe(64)
+    jwt: Jwt = Jwt()
+    csrf_secret: str = secrets.token_urlsafe(32)
 
     class Config:
         env_prefix = "canary_"

@@ -38,7 +38,7 @@ async def retrieve_user_handler(
 
 jwt_cookie_auth = JWTCookieAuth[ObjectId](
     retrieve_user_handler=retrieve_user_handler,
-    token_secret=SETTINGS.jwt_secret,
+    token_secret=SETTINGS.jwt.secret,
     exclude=[
         "/schema",
     ],

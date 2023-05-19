@@ -22,6 +22,7 @@ from app.models.user import (
     UserToSignModel,
 )
 from bson import ObjectId
+from env import SETTINGS
 from lib.mCaptcha import validate_captcha
 from litestar import Request, Response, Router, delete
 from litestar.contrib.jwt import Token
@@ -126,7 +127,7 @@ class LoginController(Controller):
 
         return jwt_cookie_auth.login(
             identifier=str(user.id),
-            token_expiration=timedelta(days=1),
+            token_expiration=timedelta(days=SETTINGS.jwt.expire_days),
             response_body=user,
             token_unique_jwt_id=secrets.token_urlsafe(32),
         )

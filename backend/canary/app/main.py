@@ -33,6 +33,7 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
 
         await state.mongo.old_otp.create_index("expires", expireAfterSeconds=0)
         await state.mongo.proof.create_index("expires", expireAfterSeconds=0)
+        await state.mongo.jwt_blacklist.create_index("expires", expireAfterSeconds=0)
 
     return state.mongo
 
