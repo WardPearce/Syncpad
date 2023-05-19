@@ -1,7 +1,7 @@
 import secrets
 from typing import List, Optional
 
-from pydantic import AnyHttpUrl, BaseModel, BaseSettings
+from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 
 
 class MongoDB(BaseModel):
@@ -59,7 +59,7 @@ class Documents(BaseModel):
 
 
 class Jwt(BaseModel):
-    secret: str = secrets.token_urlsafe(32)
+    secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
     expire_days: int = 1
 
 
@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     site_name = "canarystat.us"
 
     jwt: Jwt = Jwt()
-    csrf_secret: str = secrets.token_urlsafe(32)
+    csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
 
     class Config:
         env_prefix = "canary_"
