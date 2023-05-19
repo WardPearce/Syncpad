@@ -5,5 +5,6 @@
 export type OtpModel = {
     secret: string;
     completed?: boolean;
+    provisioning_uri?: string;
 };
 
