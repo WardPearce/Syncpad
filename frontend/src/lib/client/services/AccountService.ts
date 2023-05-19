@@ -51,46 +51,6 @@ export class AccountService {
     }
 
     /**
-     * Logout
-     * Logout of User account
-     * @returns any Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailLogoutLogout(): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/{email}/logout',
-        });
-    }
-
-    /**
-     * OtpSetup
-     * Used to confirm OTP is completed
-     * @param email
-     * @param otp
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailOtpSetupOtpSetup(
-        email: string,
-        otp: string,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/{email}/otp/setup',
-            path: {
-                'email': email,
-            },
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * Public
      * Public KDF details
      * @param email
@@ -136,6 +96,50 @@ export class AccountService {
     }
 
     /**
+     * OtpSetup
+     * Used to confirm OTP is completed
+     * @param otp
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpSetupOtpSetup(
+        otp: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/otp/setup',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * ResetOtp
+     * Reset OTP
+     * @param otp
+     * @returns OtpModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpResetResetOtp(
+        otp: string,
+    ): CancelablePromise<OtpModel> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/otp/reset',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * CreateAccount
      * Create a user account
      * @param captcha
@@ -175,24 +179,15 @@ export class AccountService {
     }
 
     /**
-     * ResetOtp
-     * Reset OTP
-     * @param otp
-     * @returns OtpModel Request fulfilled, document follows
+     * Logout
+     * Logout of User account
+     * @returns any Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountOtpResetResetOtp(
-        otp: string,
-    ): CancelablePromise<OtpModel> {
+    public controllersAccountLogoutLogout(): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/otp/reset',
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
+            url: '/controllers/account/logout',
         });
     }
 

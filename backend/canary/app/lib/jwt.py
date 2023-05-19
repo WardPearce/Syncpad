@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 async def retrieve_user_handler(
     token: Token, connection: ASGIConnection
-) -> Optional[str]:
+) -> Optional[ObjectId]:
     state = cast("State", connection.scope["app"].state)
     jti = cast(str, token.jti)
 
@@ -27,13 +27,13 @@ async def retrieve_user_handler(
         user_id = ObjectId(token.sub)
         if await state.mongo.user.count_documents({"_id": user_id}) > 0:
             await state.redis.set(jti, "false", 60)
-            return token.sub
+            return user_id
 
         return None
     elif blacklisted == "true":  # Is stored as a string.
         return None
     else:
-        return token.sub
+        return ObjectId(token.sub)
 
 
 jwt_cookie_auth = JWTCookieAuth[ObjectId](

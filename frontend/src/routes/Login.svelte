@@ -134,10 +134,7 @@
 
     if (otpSetupRequired) {
       try {
-        await client.account.controllersAccountEmailOtpSetupOtpSetup(
-          loggedInUser.email,
-          optCode
-        );
+        await client.account.controllersAccountOtpSetupOtpSetup(optCode);
       } catch (error) {
         errorMsg = error.body.detail;
         isLoading = false;

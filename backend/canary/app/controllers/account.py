@@ -50,32 +50,6 @@ class LoginController(Controller):
 
         return PublicUserModel(kdf=user.kdf, otp_completed=user.otp.completed)
 
-    @post(
-        path="/otp/setup",
-        description="Used to confirm OTP is completed",
-        tags=["account"],
-        status_code=201,
-        raises=[OtpAlreadyCompleted],
-    )
-    async def otp_setup(self, state: "State", email: str, otp: str) -> Response:
-        user = await User(state, email).get()
-
-        if user.otp.completed:
-            raise OtpAlreadyCompleted()
-
-        try:
-            await OneTimePassword.validate_user(state, user, otp)
-        except InvalidAccountAuth:
-            # Not defined in errors.py because it should
-            # only be used here.
-            raise ValidationException(detail="Invalid OTP code")
-
-        await state.mongo.user.update_one(
-            {"_id": ObjectId(user.id)}, {"$set": {"otp.completed": True}}
-        )
-
-        return Response(None, status_code=201)
-
     @get(
         path="/to-sign",
         description="Used to generate a unique code to sign.",
@@ -157,17 +131,6 @@ class LoginController(Controller):
             token_unique_jwt_id=secrets.token_urlsafe(32),
         )
 
-    @delete(
-        path="/logout",
-        description="Logout of User account",
-        tags=["account"],
-        status_code=200,
-    )
-    async def logout(self) -> Response:
-        response = Response(content=None)
-        response.delete_cookie(jwt_cookie_auth.key)
-        return response
-
 
 @post(
     path="/create",
@@ -202,31 +165,75 @@ async def create_account(
     tags=["account"],
     sync_to_thread=False,
 )
-def me(request: Request[str, Token, Any]) -> str:
-    return request.user
+def me(request: Request[ObjectId, Token, Any]) -> str:
+    return str(request.user)
 
 
-@delete(path="/otp/reset", description="Reset OTP", tags=["account"], status_code=200)
-async def reset_otp(
-    state: "State", request: Request[str, Token, Any], otp: str
-) -> OtpModel:
-    user = await User(state, request.user).get()
+class OtpController(Controller):
+    path = "/otp"
 
-    try:
-        await OneTimePassword.validate_user(state, user, otp)
-    except InvalidAccountAuth:
-        raise
-
-    otp_secret = pyotp.random_base32()
-
-    await state.mongo.user.update_one(
-        {"_id": ObjectId(request.user)},
-        {"$set": {"otp.completed": False, "otp.secret": otp_secret}},
+    @post(
+        path="/setup",
+        description="Used to confirm OTP is completed",
+        tags=["account"],
+        status_code=201,
+        raises=[OtpAlreadyCompleted],
     )
+    async def otp_setup(
+        self, request: Request[ObjectId, Token, Any], state: "State", otp: str
+    ) -> Response:
+        user = await User(state, request.user).get()
 
-    return OtpModel(secret=otp_secret, completed=False)
+        if user.otp.completed:
+            raise OtpAlreadyCompleted()
+
+        try:
+            await OneTimePassword.validate_user(state, user, otp)
+        except InvalidAccountAuth:
+            # Not defined in errors.py because it should
+            # only be used here.
+            raise ValidationException(detail="Invalid OTP code")
+
+        await state.mongo.user.update_one(
+            {"_id": ObjectId(user.id)}, {"$set": {"otp.completed": True}}
+        )
+
+        return Response(None, status_code=201)
+
+    @delete(path="/reset", description="Reset OTP", tags=["account"], status_code=200)
+    async def reset_otp(
+        self, state: "State", request: Request[ObjectId, Token, Any], otp: str
+    ) -> OtpModel:
+        user = await User(state, request.user).get()
+
+        try:
+            await OneTimePassword.validate_user(state, user, otp)
+        except InvalidAccountAuth:
+            raise
+
+        otp_secret = pyotp.random_base32()
+
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {"$set": {"otp.completed": False, "otp.secret": otp_secret}},
+        )
+
+        return OtpModel(secret=otp_secret, completed=False)
+
+
+@delete(
+    path="/logout",
+    description="Logout of User account",
+    tags=["account"],
+    status_code=200,
+)
+async def logout() -> Response:
+    response = Response(content=None)
+    response.delete_cookie(jwt_cookie_auth.key)
+    return response
 
 
 router = Router(
-    path="/account", route_handlers=[LoginController, create_account, me, reset_otp]
+    path="/account",
+    route_handlers=[LoginController, OtpController, create_account, me, logout],
 )
