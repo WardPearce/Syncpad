@@ -66,8 +66,7 @@ app = Litestar(
     on_startup=[init_mongo, init_redis, init_aiohttp],
     on_shutdown=[close_aiohttp],
     csrf_config=CSRFConfig(
-        secret=SETTINGS.csrf_secret,
-        cookie_httponly=False,
+        secret=SETTINGS.csrf_secret, cookie_httponly=False, cookie_samesite="strict"
     ),
     middleware=[
         RateLimitConfig(rate_limit=("minute", 60), exclude=["/schema"]).middleware
