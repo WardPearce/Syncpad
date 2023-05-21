@@ -38,7 +38,7 @@
   $: theme = get(themeStore);
   themeStore.subscribe((value) => (theme = value));
 
-  $: advanceMode = false;
+  let advanceMode;
   advanceModeStore.subscribe((value) => (advanceMode = value));
 
   async function attemptAuthorization() {
@@ -166,6 +166,8 @@
     await timeout(10); // Stop libsodium from blocking loop before updating loading
 
     await sodium.ready;
+
+    console.log(advanceMode);
 
     if (captchaToken === "") {
       errorMsg = "Please complete captcha.";
