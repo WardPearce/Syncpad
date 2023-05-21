@@ -1,10 +1,10 @@
 from ipaddress import ip_address
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, cast
 
 import aiodns
 import yarl
 from app.env import SETTINGS
-from app.errors import DomainValidationError
+from app.errors import DomainValidationError, LocalDomainInvalid
 from bson import ObjectId
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ async def get_localhost_aliases() -> List[str]:
 
 class Domain:
     def __init__(self, domain: str) -> None:
-        self.__domain = domain
+        self.__domain = yarl.URL(domain).host
         self.__resolver = aiodns.DNSResolver(timeout=SETTINGS.domain_verify.timeout)
 
     async def attempt_verify(self, state: "State", user_id: ObjectId) -> None:
@@ -46,6 +46,9 @@ class Domain:
         Raises:
             DomainValidationError
         """
+
+        if not self.__domain:
+            raise DomainValidationError()
 
         try:
             txt_records = await self.__resolver.query(self.__domain, "TXT")
@@ -74,40 +77,37 @@ class Domain:
             canary_search, {"$set": {"verify.completed": True}}
         )
 
-    async def is_local(self) -> bool:
+    async def is_local(self) -> None:
         """Used to validate webhooks if it's a local ip or not.
 
-        Returns:
-            bool: If given domain resolves to localhost.
+        Raises:
+            LocalDomainInvalid
         """
+
+        if not self.__domain:
+            raise LocalDomainInvalid()
 
         localhost_aliases = await get_localhost_aliases()
 
         if self.__domain in localhost_aliases:
-            return True
+            raise LocalDomainInvalid()
 
         try:
             given_ip = ip_address(self.__domain)
             if given_ip.is_private or given_ip.is_loopback:
-                return True
+                raise LocalDomainInvalid()
         except ValueError:
             pass
 
-        domain_host = yarl.URL(self.__domain).host
-        if not domain_host:
-            return True
-
         try:
-            ipv4_address = await self.__resolver.query(domain_host, "A")
+            ipv4_address = await self.__resolver.query(self.__domain, "A")
             for ipv4 in ipv4_address:
                 if ipv4 in localhost_aliases or __is_local_ip(ipv4):
-                    return True
+                    raise LocalDomainInvalid()
 
-            ipv6_address = await self.__resolver.query(domain_host, "AAAA")
+            ipv6_address = await self.__resolver.query(self.__domain, "AAAA")
             for ipv6 in ipv6_address:
                 if ipv6 in localhost_aliases or __is_local_ip(ipv6):
-                    return True
+                    raise LocalDomainInvalid()
         except aiodns.error.DNSError:
-            return True  # Look up fails, assume is private.
-
-        return False
+            raise LocalDomainInvalid()  # Look up fails, assume is private.
