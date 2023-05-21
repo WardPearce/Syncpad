@@ -2,6 +2,7 @@ from ipaddress import ip_address
 from typing import TYPE_CHECKING, List
 
 import aiodns
+import yarl
 from app.env import SETTINGS
 from app.errors import DomainValidationError
 from bson import ObjectId
@@ -92,13 +93,17 @@ class Domain:
         except ValueError:
             pass
 
+        domain_host = yarl.URL(self.__domain).host
+        if not domain_host:
+            return True
+
         try:
-            ipv4_address = await self.__resolver.query(self.__domain, "A")
+            ipv4_address = await self.__resolver.query(domain_host, "A")
             for ipv4 in ipv4_address:
                 if ipv4 in localhost_aliases or __is_local_ip(ipv4):
                     return True
 
-            ipv6_address = await self.__resolver.query(self.__domain, "AAAA")
+            ipv6_address = await self.__resolver.query(domain_host, "AAAA")
             for ipv6 in ipv6_address:
                 if ipv6 in localhost_aliases or __is_local_ip(ipv6):
                     return True
