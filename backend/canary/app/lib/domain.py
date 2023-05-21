@@ -35,9 +35,16 @@ class Domain:
         self.__domain = domain
         self.__resolver = aiodns.DNSResolver(timeout=SETTINGS.domain_verify.timeout)
 
-    async def verify(self, state: "State", user_id: ObjectId) -> None:
-        if await self.is_local():
-            raise DomainValidationError()
+    async def attempt_verify(self, state: "State", user_id: ObjectId) -> None:
+        """Attempt to verify a canary domain.
+
+        Args:
+            state (State)
+            user_id (ObjectId)
+
+        Raises:
+            DomainValidationError
+        """
 
         try:
             txt_records = await self.__resolver.query(self.__domain, "TXT")
@@ -53,6 +60,8 @@ class Domain:
                 canary_code = record.text.replace(SETTINGS.domain_verify.prefix, "", 1)
                 break
 
+        canary_code = canary_code.strip()
+
         if not canary_code:
             raise DomainValidationError()
 
@@ -65,6 +74,12 @@ class Domain:
         )
 
     async def is_local(self) -> bool:
+        """Used to validate webhooks if it's a local ip or not.
+
+        Returns:
+            bool: If given domain resolves to localhost.
+        """
+
         localhost_aliases = await get_localhost_aliases()
 
         if self.__domain in localhost_aliases:

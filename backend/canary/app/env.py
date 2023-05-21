@@ -64,7 +64,7 @@ class Jwt(BaseModel):
 
 
 class DomainVerify(BaseModel):
-    prefix: str = "canarystat.us="
+    prefix: str = "canarystat.us__verify="
     timeout: int = 20
 
 
