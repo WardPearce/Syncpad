@@ -13,7 +13,12 @@
 
   export let isMobile: boolean = false;
 
-  let mode: string;
+  enum ThemeMode {
+    dark = "dark",
+    light = "light",
+  }
+
+  let mode: ThemeMode;
 
   let isAdvanceMode: boolean;
   advanceModeStore.subscribe((status) => (isAdvanceMode = status));
@@ -37,7 +42,7 @@
   }
 
   async function toggleMode() {
-    mode = mode === "dark" ? "light" : "dark";
+    mode = mode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     await window.ui("mode", mode);
     localStorage.setItem("mode", mode);
     themeStore.set(await getDynamicTheme(mode));
@@ -46,16 +51,16 @@
   onMount(async () => {
     const localStorageMode = localStorage.getItem("mode");
     if (localStorageMode) {
-      mode = localStorageMode;
+      mode = localStorageMode as ThemeMode;
       await window.ui("mode", mode);
     } else if (
       window.matchMedia &&
       !window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
-      mode = "light";
+      mode = ThemeMode.light;
       await window.ui("mode", mode);
     } else {
-      mode = "dark";
+      mode = ThemeMode.dark;
       await window.ui("mode", mode);
     }
 
@@ -141,7 +146,11 @@
 
 <div class={isMobile ? "row round" : ""}>
   <label class="switch icon">
-    <input type="checkbox" checked={mode === "dark"} on:click={toggleMode} />
+    <input
+      type="checkbox"
+      checked={mode === ThemeMode.dark}
+      on:click={toggleMode}
+    />
     <span>
       <i>{`${mode}_mode`}</i>
     </span>
