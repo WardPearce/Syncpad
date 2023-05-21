@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from app.types import State
 
 
-def is_local_ip(not_trusted_ip: str):
+def __is_local_ip(not_trusted_ip: str):
     ip = ip_address(not_trusted_ip)
     return ip.is_loopback or ip.is_private
 
@@ -86,7 +86,8 @@ class Domain:
             return True
 
         try:
-            if ip_address(self.__domain).is_private:
+            given_ip = ip_address(self.__domain)
+            if given_ip.is_private or given_ip.is_loopback:
                 return True
         except ValueError:
             pass
@@ -94,12 +95,12 @@ class Domain:
         try:
             ipv4_address = await self.__resolver.query(self.__domain, "A")
             for ipv4 in ipv4_address:
-                if ipv4 in localhost_aliases or is_local_ip(ipv4):
+                if ipv4 in localhost_aliases or __is_local_ip(ipv4):
                     return True
 
             ipv6_address = await self.__resolver.query(self.__domain, "AAAA")
             for ipv6 in ipv6_address:
-                if ipv6 in localhost_aliases or is_local_ip(ipv6):
+                if ipv6 in localhost_aliases or __is_local_ip(ipv6):
                     return True
         except aiodns.error.DNSError:
             return True  # Look up fails, assume is private.
