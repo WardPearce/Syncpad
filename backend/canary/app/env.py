@@ -63,6 +63,11 @@ class Jwt(BaseModel):
     expire_days: int = 1
 
 
+class DomainVerify(BaseModel):
+    prefix: str = "canarystat.us="
+    timeout: int = 20
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
@@ -71,6 +76,7 @@ class Settings(BaseSettings):
     mcaptcha: Optional[mCaptcha] = None
     documents: Documents = Documents()
     site_name = "canarystat.us"
+    domain_verify: DomainVerify = DomainVerify()
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)

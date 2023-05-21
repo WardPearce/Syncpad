@@ -15,6 +15,7 @@ class ErrorCodes(Enum):
     invalid_captcha = 2003
     email_taken = 2004
     otp_completed = 2005
+    domain_validation = 2006
 
 
 class UserNotFoundException(NotFoundException):
@@ -64,4 +65,14 @@ class EmailTaken(ValidationException):
         super().__init__(
             detail="Email has already been registered",
             extra={ERROR_CODE_KEY: ErrorCodes.email_taken.value},
+        )
+
+
+class DomainValidationError(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Domain validation failed",
+            extra={ERROR_CODE_KEY: ErrorCodes.domain_validation.value},
         )

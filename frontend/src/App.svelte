@@ -25,11 +25,6 @@
       return;
     }
 
-    if (!(await get("localSecrets"))) {
-      await logout();
-      return;
-    }
-
     // Validate JWT session.
     try {
       const userId = await client.account.controllersAccountMeMe();
