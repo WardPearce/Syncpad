@@ -109,5 +109,5 @@ class Domain:
             for ipv6 in ipv6_address:
                 if ipv6 in localhost_aliases or __is_local_ip(ipv6):
                     raise LocalDomainInvalid()
-        except aiodns.error.DNSError:
+        except (aiodns.error.DNSError, ValueError):
             raise LocalDomainInvalid()  # Look up fails, assume is private.
