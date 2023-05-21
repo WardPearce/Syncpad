@@ -50,25 +50,27 @@
       > (Visit at your own risk.)
     </p>
 
-    <h6>Public key</h6>
-    <div class="field textarea border">
-      <textarea
-        disabled
-        value="MIHcAgEBBEIB7dvzJtl2a4NPp482YPFrddA90ATkK438mWCbR54fyx69/oh78ClH
-68d9HaC6PvLiWCrOByGgeGjxHbAblavfbEygBwYFK4EEACOhgYkDgYYABAHFgVVQ
-dWEkCazcHsNkq2E8dKHtTX2ezA/jLGIimfBHM476LOUNpm9MrlSeZX9+mc4H898y
-jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
-4xKXQhZ47UFtZs9KvElr1PNGFBivSfwp1mls347j3w=="
-      />
-    </div>
+    {#if advanceMode}
+      <h6>Public key</h6>
+      <div class="field textarea border">
+        <textarea
+          disabled
+          value="MIHcAgEBBEIB7dvzJtl2a4NPp482YPFrddA90ATkK438mWCbR54fyx69/oh78ClH
+  68d9HaC6PvLiWCrOByGgeGjxHbAblavfbEygBwYFK4EEACOhgYkDgYYABAHFgVVQ
+  dWEkCazcHsNkq2E8dKHtTX2ezA/jLGIimfBHM476LOUNpm9MrlSeZX9+mc4H898y
+  jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
+  4xKXQhZ47UFtZs9KvElr1PNGFBivSfwp1mls347j3w=="
+        />
+      </div>
 
-    <h6>BLAKE2b hash</h6>
-    <div class="field textarea border">
-      <textarea
-        disabled
-        value="01fb78393eb2e9e544927cbebc34204b2af88996045bc6ce34d2dbaf693a9a565f4015535aa07ed0fc2b6a35c912a96dbefd0af4fbb0f37631846427b114f54d"
-      />
-    </div>
+      <h6>BLAKE2b hash</h6>
+      <div class="field textarea border">
+        <textarea
+          disabled
+          value="01fb78393eb2e9e544927cbebc34204b2af88996045bc6ce34d2dbaf693a9a565f4015535aa07ed0fc2b6a35c912a96dbefd0af4fbb0f37631846427b114f54d"
+        />
+      </div>
+    {/if}
   </details>
 </article>
 
