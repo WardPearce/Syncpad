@@ -15,6 +15,9 @@
 
   let mode: string;
 
+  let isAdvanceMode: boolean;
+  advanceModeStore.subscribe((status) => (isAdvanceMode = status));
+
   let loggedInUser: LocalSecretsModel | undefined;
   localSecrets.subscribe((secrets) => (loggedInUser = secrets));
 
@@ -22,7 +25,15 @@
   useLocation().subscribe((page) => (currentPage = page.pathname));
 
   function onAdvanceModeToggle() {
-    advanceModeStore.set(!get(advanceModeStore));
+    const advanceModeToggled = !get(advanceModeStore);
+
+    advanceModeStore.set(advanceModeToggled);
+
+    if (advanceModeToggled) {
+      localStorage.setItem("advanceMode", "true");
+    } else {
+      localStorage.removeItem("advanceMode");
+    }
   }
 
   async function toggleMode() {
@@ -140,7 +151,11 @@
 
 <div class={isMobile ? "row round" : ""}>
   <label class="switch">
-    <input type="checkbox" on:click={onAdvanceModeToggle} />
+    <input
+      type="checkbox"
+      on:click={onAdvanceModeToggle}
+      bind:checked={isAdvanceMode}
+    />
     <span />
   </label>
   <p>Advance mode</p>

@@ -9,7 +9,6 @@
   import { client } from "./lib/canary";
   import { logout } from "./lib/logout";
   import { localSecrets, type LocalSecretsModel } from "./stores";
-  import { get } from "idb-keyval";
 
   let mobileNavShow = false;
 

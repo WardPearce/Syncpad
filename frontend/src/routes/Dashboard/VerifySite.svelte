@@ -1,7 +1,7 @@
 <script lang="ts">
   export let domainName: string;
 
-  let verifyCode = "canary=t6V4NtZmaWD4Mt";
+  let verifyCode = "canarystat.us__verify=t6V4NtZmaWD4Mt";
 </script>
 
 <h4>Verify domain</h4>
