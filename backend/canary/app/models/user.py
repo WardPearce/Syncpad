@@ -16,14 +16,14 @@ class Argon2Modal(BaseModel):
         description="Salt used for deriving account key, base64 encoded",
     )
     time_cost: int = Field(
-        RFC_9106_LOW_MEMORY.memory_cost,
-        ge=3,
+        RFC_9106_LOW_MEMORY.time_cost,
+        ge=RFC_9106_LOW_MEMORY.time_cost - 1,
         le=12,
         description="Time cost",
     )
     memory_cost: int = Field(
         RFC_9106_LOW_MEMORY.memory_cost,
-        ge=67108864,
+        ge=RFC_9106_LOW_MEMORY.memory_cost - 1,
         le=3355443200,
         description="Memory cost",
     )
@@ -62,7 +62,7 @@ class __CreateUserShared(EmailModel):
     # Assumed client side algorithms being used, help for future proofing
     # if we need to move away from outdated algorithms.
     algorithms: str = Field(
-        "XSALSA20_POLY1305_MAC+ED25519+ARGON2+BLAKE2b+IV16+SALT16",
+        "XCHACHA20_POLY1305+ED25519+ARGON2+BLAKE2b+IV24+SALT16+KEY32",
         max_length=120,
         description="Algorithms used by client.",
     )
