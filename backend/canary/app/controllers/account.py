@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 import pyotp
 from app.errors import (
@@ -29,8 +29,10 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
+from models.session import CreateSessionModel, SessionLocationModel
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
+from nacl.public import PublicKey, SealedBox
 from nacl.signing import VerifyKey
 
 if TYPE_CHECKING:
@@ -84,6 +86,7 @@ class LoginController(Controller):
     async def login(
         self,
         state: "State",
+        request: Request,
         captcha: str,
         otp: Optional[str],
         data: UserLoginSignatureModel,
@@ -125,11 +128,77 @@ class LoginController(Controller):
         if given_code.decode() != proof["to_sign"]:
             raise InvalidAccountAuth()
 
+        now = datetime.now(tz=timezone.utc)
+        token_timedelta = timedelta(days=SETTINGS.jwt.expire_days)
+
+        location = SessionLocationModel()
+        device: Optional[str] = None
+
+        try:
+            sealed_box = SealedBox(
+                PublicKey(Base64Encoder.decode(user.keypair.public_key.encode()))
+            )
+        except ValueError:
+            pass
+        else:
+            if (
+                user.ip_lookup_consent
+                and SETTINGS.proxy_check
+                and request.client
+                and request.client.host
+            ):
+                client_ip = request.client.host
+
+                resp = await state.aiohttp.get(
+                    url=f"{SETTINGS.proxy_check.url}/{client_ip}",
+                    params={"key": SETTINGS.proxy_check.api_key},
+                )
+                if resp.status == 200:
+                    resp_json = await resp.json()
+                    if resp_json["status"] == "ok":
+                        location = SessionLocationModel(
+                            region=Base64Encoder.encode(
+                                sealed_box.encrypt(
+                                    cast(
+                                        str,
+                                        resp_json[client_ip].get("region", "Unknown"),
+                                    ).encode()
+                                )
+                            ).decode(),
+                            country=Base64Encoder.encode(
+                                sealed_box.encrypt(
+                                    cast(
+                                        str,
+                                        resp_json[client_ip].get("country", "Unknown"),
+                                    ).encode()
+                                )
+                            ).decode(),
+                            ip=Base64Encoder.encode(
+                                sealed_box.encrypt(client_ip.encode())
+                            ).decode(),
+                        )
+
+            if "User-Agent" in request.headers:
+                device = Base64Encoder.encode(
+                    sealed_box.encrypt(request.headers["User-Agent"].encode())
+                ).decode()
+
+        session = await state.mongo.session.insert_one(
+            CreateSessionModel(
+                expires=now + token_timedelta,
+                record_kept_till=now + timedelta(days=SETTINGS.jwt.expire_days * 7),
+                created=now,
+                location=location,
+                device=device,
+                user_id=user.id,
+            ).dict()
+        )
+
         return jwt_cookie_auth.login(
             identifier=str(user.id),
-            token_expiration=timedelta(days=SETTINGS.jwt.expire_days),
+            token_expiration=token_timedelta,
             response_body=user,
-            token_unique_jwt_id=secrets.token_urlsafe(32),
+            token_unique_jwt_id=str(session.inserted_id),
         )
 
 
@@ -154,7 +223,11 @@ async def create_account(
         raise EmailTaken()
 
     await state.mongo.user.insert_one(
-        {**data.dict(), "otp": {"secret": pyotp.random_base32(), "completed": False}}
+        {
+            **data.dict(),
+            "created": datetime.now(),
+            "otp": {"secret": pyotp.random_base32(), "completed": False},
+        }
     )
 
     return Response(None, status_code=201)

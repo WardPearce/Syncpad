@@ -1,17 +1,14 @@
-from bson.objectid import ObjectId
+from bson import Int64, ObjectId
 from pydantic import BaseModel, Field
 
 
-class ObjectIdStr(str):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v: ObjectId) -> str:
-        if not isinstance(v, ObjectId):
-            raise ValueError("Not a valid ObjectId")
-        return str(v)
+class CustomJsonEncoder(BaseModel):
+    class Config:
+        json_encoders = {
+            ObjectId: lambda v: str(v),
+            Int64: lambda v: int(v),
+        }
+        arbitrary_types_allowed = True
 
 
 class IvField(BaseModel):

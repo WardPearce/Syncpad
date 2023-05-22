@@ -16,24 +16,20 @@ async def retrieve_user_handler(
     state = cast("State", connection.scope["app"].state)
     jti = cast(str, token.jti)
 
-    blacklisted = await state.redis.get(jti)
+    whitelisted = await state.redis.get(jti)
 
-    if blacklisted is None:
-        if await state.mongo.jwt_blacklist.count_documents({"_id": token.jti}) > 0:
-            # Cache is blacklisted for 32 hours.
-            await state.redis.set(jti, "true", 115200)
+    if whitelisted is None:
+        if await state.mongo.session.count_documents({"_id": ObjectId(jti)}) > 0:
+            await state.redis.set(jti, "true", 60)
+
+            return ObjectId(token.sub)
+        else:
+            await state.redis.set(jti, "false", SETTINGS.jwt.expire_days * 86400)
             return None
-
-        user_id = ObjectId(token.sub)
-        if await state.mongo.user.count_documents({"_id": user_id}) > 0:
-            await state.redis.set(jti, "false", 60)
-            return user_id
-
-        return None
-    elif blacklisted == "true":  # Is stored as a string.
-        return None
-    else:
+    elif whitelisted == b"true":
         return ObjectId(token.sub)
+    else:
+        return None
 
 
 jwt_cookie_auth = JWTCookieAuth[ObjectId](

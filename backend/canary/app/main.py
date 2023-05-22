@@ -4,6 +4,7 @@ import aiohttp
 from app.controllers import routes
 from app.env import SETTINGS
 from app.lib.jwt import jwt_cookie_auth
+from app.models.customs import CustomJsonEncoder
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
@@ -12,6 +13,7 @@ from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi import OpenAPIConfig
 from litestar.stores.redis import RedisStore
 from motor import motor_asyncio
+from pydantic import BaseModel
 from redis.asyncio import Redis
 
 if TYPE_CHECKING:
@@ -33,7 +35,7 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
 
         await state.mongo.old_otp.create_index("expires", expireAfterSeconds=0)
         await state.mongo.proof.create_index("expires", expireAfterSeconds=0)
-        await state.mongo.jwt_blacklist.create_index("expires", expireAfterSeconds=0)
+        await state.mongo.session.create_index("record_kept_till", expireAfterSeconds=0)
 
     return state.mongo
 
@@ -82,4 +84,8 @@ app = Litestar(
     response_cache_config=ResponseCacheConfig(store=cache_store),
     before_shutdown=[wipe_cache_on_shutdown],
     on_app_init=[jwt_cookie_auth.on_app_init],
+    type_encoders={
+        BaseModel: lambda m: m.dict(by_alias=True),
+        **CustomJsonEncoder.Config.json_encoders,
+    },
 )

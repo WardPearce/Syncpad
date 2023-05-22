@@ -32,7 +32,7 @@
   let advanceModeMsg = "";
   let isLoading = false;
 
-  let redirectPath = get(useLocation()).state.redirect;
+  let redirectPath: string | undefined = get(useLocation()).state.redirect;
 
   let email = "";
   let rawPassword = "";
@@ -68,7 +68,7 @@
         captchaToken,
         email,
         {
-          _id: toProve.id,
+          _id: toProve._id,
           signature: base64Encode(
             sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
           ),
@@ -98,6 +98,11 @@
         auth: {
           // Should never be loaded from the server.
           public_key: base64Encode(rawAuthKeys.publicKey),
+        },
+        keypair: {
+          cipher_text: loggedInUser.keypair.cipher_text,
+          iv: loggedInUser.keypair.iv,
+          public_key: loggedInUser.keypair.public_key,
         },
         signature: "",
       } as CreateUserModel)
@@ -131,12 +136,22 @@
       rawDerivedKey
     );
 
+    const rawKeypairPrivateKey =
+      sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+        null,
+        base64Decode(loggedInUser.keypair.cipher_text),
+        null,
+        base64Decode(loggedInUser.keypair.iv),
+        rawKeychain
+      );
+
     // Should never store derivedKey or private key.
     // If IndexDB compromised, authorization can't be acquired.
     await setLocalSecrets({
       email: loggedInUser.email,
-      userId: loggedInUser.id,
+      userId: loggedInUser._id,
       rawKeychain: base64Encode(rawKeychain),
+      rawKeypairPrivateKey: base64Encode(rawKeypairPrivateKey),
     });
   }
 
@@ -236,10 +251,11 @@
       sodium.crypto_pwhash_ALG_DEFAULT
     );
 
-    advanceModeMsg = "Seeding keypair.";
+    advanceModeMsg = "Seeding auth keypair.";
     rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
 
     if (isRegister) {
+      advanceModeMsg = "Generating keychain";
       const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
       const rawKeychainIv = sodium.randombytes_buf(
         sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
@@ -256,6 +272,23 @@
       );
       const TransmitSafeKeychainIv = base64Encode(rawKeychainIv);
 
+      advanceModeMsg = "Creating keypair";
+      let rawKeypair = sodium.crypto_box_keypair();
+
+      const rawKeypairIv = sodium.randombytes_buf(
+        sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
+      );
+      const TransmitSafeKeypairPrivate = base64Encode(
+        sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
+          rawKeypair.privateKey,
+          null,
+          null,
+          rawKeypairIv,
+          rawKeychain
+        )
+      );
+      const TransmitSafeKeypairIv = base64Encode(rawKeypairIv);
+
       const createUser: CreateUserModel = {
         email: email,
         kdf: {
@@ -269,6 +302,11 @@
         },
         auth: {
           public_key: base64Encode(rawAuthKeys.publicKey),
+        },
+        keypair: {
+          cipher_text: TransmitSafeKeypairPrivate,
+          iv: TransmitSafeKeypairIv,
+          public_key: base64Encode(rawKeypair.publicKey),
         },
         signature: "",
       };

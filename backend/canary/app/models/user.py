@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import pyotp
 from app.env import SETTINGS
-from app.models.customs import IvField, ObjectIdStr
+from app.models.customs import CustomJsonEncoder, IvField
 from argon2.profiles import RFC_9106_LOW_MEMORY
+from bson import ObjectId
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -40,6 +43,17 @@ class AccountEd25199Modal(BaseModel):
     )
 
 
+class AccountX25519Model(IvField):
+    public_key: str = Field(
+        ..., max_length=44, description="X25519 public key, base64 encoded"
+    )
+    cipher_text: str = Field(
+        ...,
+        max_length=240,
+        description="X25519 private key, encrypted with keychain, base64 encoded",
+    )
+
+
 class AccountKeychainModal(IvField):
     cipher_text: str = Field(
         ...,
@@ -50,8 +64,11 @@ class AccountKeychainModal(IvField):
 
 class __CreateUserShared(EmailModel):
     auth: AccountEd25199Modal
+    keypair: AccountX25519Model
     keychain: AccountKeychainModal
     kdf: Argon2Modal
+
+    ip_lookup_consent: bool = False
 
     signature: str = Field(
         ...,
@@ -62,7 +79,7 @@ class __CreateUserShared(EmailModel):
     # Assumed client side algorithms being used, help for future proofing
     # if we need to move away from outdated algorithms.
     algorithms: str = Field(
-        "XCHACHA20_POLY1305+ED25519+ARGON2+BLAKE2b+IV24+SALT16+KEY32",
+        "XCHACHA20_POLY1305+ED25519+ARGON2+X25519_XSalsa20Poly1305+BLAKE2b+IV24+SALT16+KEY32",
         max_length=120,
         description="Algorithms used by client.",
     )
@@ -87,8 +104,9 @@ class OtpModel(BaseModel):
         )
 
 
-class UserModel(__CreateUserShared, EmailModel):
-    id: ObjectIdStr = Field(..., alias="_id")
+class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):
+    id: ObjectId = Field(..., alias="_id")
+    created: datetime
     otp: OtpModel
     email_verified: bool = False
 
@@ -100,6 +118,6 @@ class UserLoginSignatureModel(BaseModel):
     id: str = Field(..., alias="_id")
 
 
-class UserToSignModel(BaseModel):
+class UserToSignModel(CustomJsonEncoder):
     to_sign: str = Field(..., description="to be signed with ed25519 private key")
-    id: ObjectIdStr = Field(..., alias="_id")
+    id: ObjectId = Field(..., alias="_id")

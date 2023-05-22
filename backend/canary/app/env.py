@@ -68,6 +68,11 @@ class DomainVerify(BaseModel):
     timeout: int = 20
 
 
+class Proxycheck(BaseModel):
+    api_key: Optional[str] = None
+    url: str = "https://proxycheck.io/v2/"
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
@@ -77,6 +82,7 @@ class Settings(BaseSettings):
     documents: Documents = Documents()
     site_name = "canarystat.us"
     domain_verify: DomainVerify = DomainVerify()
+    proxy_check: Optional[Proxycheck] = None
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
