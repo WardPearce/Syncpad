@@ -5,6 +5,7 @@
   export let component: any;
   export let delayMs: number | null = null;
   export let componentProps = null;
+  export let requiresAuth = false;
 
   let props: Record<any, any>;
   $: {
@@ -15,7 +16,7 @@
 </script>
 
 <Route {...props} let:params>
-  <Lazy {component} {delayMs} {...params} {componentProps}>
+  <Lazy {component} {delayMs} {...params} {componentProps} {requiresAuth}>
     <slot />
   </Lazy>
 </Route>

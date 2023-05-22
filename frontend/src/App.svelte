@@ -77,18 +77,21 @@
     <LazyRoute
       path="/dashboard"
       component={() => import("./routes/Dashboard/Dashboard.svelte")}
+      requiresAuth={true}
     >
       <PageLoading />
     </LazyRoute>
     <LazyRoute
       path="/dashboard/add-site"
       component={() => import("./routes/Dashboard/AddSite.svelte")}
+      requiresAuth={true}
     >
       <PageLoading />
     </LazyRoute>
     <LazyRoute
       path="/dashboard/verify-site/:domainName"
       component={() => import("./routes/Dashboard/VerifySite.svelte")}
+      requiresAuth={true}
     >
       <PageLoading />
     </LazyRoute>

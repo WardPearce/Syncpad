@@ -1,7 +1,7 @@
 <script lang="ts">
   import QrCode from "svelte-qrcode";
   import { get } from "svelte/store";
-  import { link, navigate } from "svelte-navigator";
+  import { link, navigate, useLocation } from "svelte-navigator";
   import { zxcvbn } from "@zxcvbn-ts/core";
 
   import sodium from "libsodium-wrappers-sumo";
@@ -31,6 +31,8 @@
   let errorMsg = "";
   let advanceModeMsg = "";
   let isLoading = false;
+
+  let redirectPath = get(useLocation()).state.redirect;
 
   let email = "";
   let rawPassword = "";
@@ -165,7 +167,9 @@
       }
     }
 
-    navigate("/dashboard", { replace: true });
+    navigate(redirectPath !== undefined ? redirectPath : "/dashboard", {
+      replace: true,
+    });
 
     isLoading = false;
   }
@@ -330,6 +334,11 @@
       </div>
     {:else}
       <h4>{mode}</h4>
+      {#if redirectPath !== undefined}
+        <p style="margin-bottom: 1em;">
+          Authorization required to access that page.
+        </p>
+      {/if}
 
       {#if errorMsg}
         <div class="red5">
