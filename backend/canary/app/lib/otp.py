@@ -31,7 +31,7 @@ class OneTimePassword:
 
         otp_search = {
             "otp_code": given_code,
-            "owner_id": ObjectId(model.id),
+            "user_id": ObjectId(model.id),
         }
 
         otp_count = await state.mongo.old_otp.count_documents(otp_search)

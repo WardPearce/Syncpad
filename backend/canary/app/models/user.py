@@ -94,7 +94,9 @@ class UserModel(__CreateUserShared, EmailModel):
 
 
 class UserLoginSignatureModel(BaseModel):
-    signature: str = Field(..., description="to_sign signed with ed25519 private key")
+    signature: str = Field(
+        ..., description="to_sign signed with ed25519 private key, base64 encoded"
+    )
     id: str = Field(..., alias="_id")
 
 
