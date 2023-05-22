@@ -20,7 +20,7 @@ async def retrieve_user_handler(
 
     if whitelisted is None:
         if await state.mongo.session.count_documents({"_id": ObjectId(jti)}) > 0:
-            await state.redis.set(jti, "true", 60)
+            await state.redis.set(jti, "true", 360)
 
             return ObjectId(token.sub)
         else:
