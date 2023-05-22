@@ -103,6 +103,13 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
+      path="/account"
+      requiresAuth={true}
+      component={() => import("./routes/Account.svelte")}
+    >
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
       path="/:domainName"
       component={() => import("./routes/Canary.svelte")}
     >

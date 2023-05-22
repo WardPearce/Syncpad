@@ -10,7 +10,7 @@
   }
 </script>
 
-<h4>Add site</h4>
+<h3>Add site</h3>
 <div class="field label border" class:invalid={siteDomain.length > 50}>
   <input type="text" bind:value={siteDomain} />
   <label for="domain">Domain name</label>

@@ -152,7 +152,7 @@ class LoginController(Controller):
 
                 resp = await state.aiohttp.get(
                     url=f"{SETTINGS.proxy_check.url}/{client_ip}",
-                    params={"key": SETTINGS.proxy_check.api_key},
+                    params={"key": SETTINGS.proxy_check.api_key, "asn": "1"},
                 )
                 if resp.status == 200:
                     resp_json = await resp.json()

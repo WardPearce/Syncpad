@@ -4,7 +4,7 @@
   let verifyCode = "canarystat.us__verify=t6V4NtZmaWD4Mt";
 </script>
 
-<h4>Verify domain</h4>
+<h3>Verify domain</h3>
 <h6>Step 1</h6>
 <p>Log in to your DNS provider's control panel or dashboard.</p>
 

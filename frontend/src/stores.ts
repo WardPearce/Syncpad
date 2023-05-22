@@ -10,7 +10,10 @@ export interface LocalSecretsModel {
     userId: string,
     jti: string,
     rawKeychain: string,
-    rawKeypairPrivateKey: string
+    rawKeypair: {
+        publicKey: string,
+        privateKey: string
+    }
 }
 
 export const localSecrets: Writable<LocalSecretsModel | undefined> = writable(

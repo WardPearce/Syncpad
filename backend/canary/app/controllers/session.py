@@ -14,7 +14,9 @@ async def get_sessions(
     request: Request[ObjectId, Token, Any], state: "State"
 ) -> List[SessionModel]:
     sessions = []
-    async for session in state.mongo.session.find({"user_id": request.user}):
+    async for session in state.mongo.session.find({"user_id": request.user}).sort(
+        "created", -1
+    ):
         sessions.append(SessionModel(**session))
 
     return sessions

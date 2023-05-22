@@ -151,7 +151,10 @@
       email: loggedInUser.user.email,
       userId: loggedInUser.user._id,
       rawKeychain: base64Encode(rawKeychain),
-      rawKeypairPrivateKey: base64Encode(rawKeypairPrivateKey),
+      rawKeypair: {
+        privateKey: base64Encode(rawKeypairPrivateKey),
+        publicKey: loggedInUser.user.keypair.public_key,
+      },
       jti: loggedInUser.jti,
     });
   }
