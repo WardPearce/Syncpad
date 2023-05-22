@@ -6,7 +6,12 @@
 
   import sodium from "libsodium-wrappers-sumo";
 
-  import { advanceModeStore, setLocalSecrets, themeStore } from "../stores";
+  import {
+    advanceModeStore,
+    setLocalSecrets,
+    localSecrets,
+    themeStore,
+  } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
   import {
@@ -16,6 +21,7 @@
   } from "../lib/client";
   import { timeout } from "../lib/misc";
   import { base64Decode, base64Encode } from "../lib/base64";
+  import { onMount } from "svelte";
 
   export let isRegister = false;
 
@@ -35,11 +41,17 @@
   let rawDerivedKey: Uint8Array;
   let loggedInUser: UserModel;
 
-  $: theme = get(themeStore);
+  let theme;
   themeStore.subscribe((value) => (theme = value));
 
   let advanceMode;
   advanceModeStore.subscribe((value) => (advanceMode = value));
+
+  onMount(() => {
+    if (get(localSecrets) !== undefined) {
+      navigate("/dashboard", { replace: true });
+    }
+  });
 
   async function attemptAuthorization() {
     advanceModeMsg = "Getting data to sign";
