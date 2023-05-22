@@ -4,8 +4,8 @@
 import type { CreateUserModel } from '../models/CreateUserModel';
 import type { OtpModel } from '../models/OtpModel';
 import type { PublicUserModel } from '../models/PublicUserModel';
+import type { UserJtiModel } from '../models/UserJtiModel';
 import type { UserLoginSignatureModel } from '../models/UserLoginSignatureModel';
-import type { UserModel } from '../models/UserModel';
 import type { UserToSignModel } from '../models/UserToSignModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -22,7 +22,7 @@ export class AccountService {
      * @param email
      * @param requestBody
      * @param otp
-     * @returns UserModel Document created, URL follows
+     * @returns UserJtiModel Document created, URL follows
      * @throws ApiError
      */
     public controllersAccountEmailLoginLogin(
@@ -30,7 +30,7 @@ export class AccountService {
         email: string,
         requestBody: UserLoginSignatureModel,
         otp?: (null | string),
-    ): CancelablePromise<UserModel> {
+    ): CancelablePromise<UserJtiModel> {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/{email}/login',

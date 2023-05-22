@@ -18,6 +18,7 @@ export type { OtpModel } from './models/OtpModel';
 export type { PublicUserModel } from './models/PublicUserModel';
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';
+export type { UserJtiModel } from './models/UserJtiModel';
 export type { UserLoginSignatureModel } from './models/UserLoginSignatureModel';
 export type { UserModel } from './models/UserModel';
 export type { UserToSignModel } from './models/UserToSignModel';

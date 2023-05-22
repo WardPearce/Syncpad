@@ -13,6 +13,8 @@ from app.errors import (
 from app.lib.jwt import jwt_cookie_auth
 from app.lib.otp import OneTimePassword
 from app.lib.user import User
+from app.models.jwt import UserJtiModel
+from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
     CreateUserModel,
     OtpModel,
@@ -29,7 +31,6 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
-from models.session import CreateSessionModel, SessionLocationModel
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
 from nacl.public import PublicKey, SealedBox
@@ -91,7 +92,7 @@ class LoginController(Controller):
         otp: Optional[str],
         data: UserLoginSignatureModel,
         email: str,
-    ) -> Response[UserModel]:
+    ) -> Response[UserJtiModel]:
         user = await User(state, email).get()
 
         proof_search = {"user_id": ObjectId(user.id), "_id": ObjectId(data.id)}
@@ -197,7 +198,7 @@ class LoginController(Controller):
         return jwt_cookie_auth.login(
             identifier=str(user.id),
             token_expiration=token_timedelta,
-            response_body=user,
+            response_body=UserJtiModel(jti=session.inserted_id, user=user),
             token_unique_jwt_id=str(session.inserted_id),
         )
 

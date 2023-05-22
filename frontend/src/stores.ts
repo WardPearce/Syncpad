@@ -8,6 +8,7 @@ export const themeStore = writable({});
 export interface LocalSecretsModel {
     email: string,
     userId: string,
+    jti: string,
     rawKeychain: string,
     rawKeypairPrivateKey: string
 }

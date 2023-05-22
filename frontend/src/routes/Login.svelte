@@ -17,7 +17,7 @@
   import {
     type CreateUserModel,
     type PublicUserModel,
-    type UserModel,
+    type UserJtiModel,
   } from "../lib/client";
   import { timeout } from "../lib/misc";
   import { base64Decode, base64Encode } from "../lib/base64";
@@ -41,7 +41,7 @@
 
   let rawAuthKeys: sodium.KeyPair;
   let rawDerivedKey: Uint8Array;
-  let loggedInUser: UserModel;
+  let loggedInUser: UserJtiModel;
 
   let theme;
   themeStore.subscribe((value) => (theme = value));
@@ -87,22 +87,22 @@
       JSON.stringify({
         email: email,
         kdf: {
-          time_cost: loggedInUser.kdf.time_cost,
-          memory_cost: loggedInUser.kdf.memory_cost,
-          salt: loggedInUser.kdf.salt,
+          time_cost: loggedInUser.user.kdf.time_cost,
+          memory_cost: loggedInUser.user.kdf.memory_cost,
+          salt: loggedInUser.user.kdf.salt,
         },
         keychain: {
-          iv: loggedInUser.keychain.iv,
-          cipher_text: loggedInUser.keychain.cipher_text,
+          iv: loggedInUser.user.keychain.iv,
+          cipher_text: loggedInUser.user.keychain.cipher_text,
         },
         auth: {
           // Should never be loaded from the server.
           public_key: base64Encode(rawAuthKeys.publicKey),
         },
         keypair: {
-          cipher_text: loggedInUser.keypair.cipher_text,
-          iv: loggedInUser.keypair.iv,
-          public_key: loggedInUser.keypair.public_key,
+          cipher_text: loggedInUser.user.keypair.cipher_text,
+          iv: loggedInUser.user.keypair.iv,
+          public_key: loggedInUser.user.keypair.public_key,
         },
         signature: "",
       } as CreateUserModel)
@@ -115,7 +115,7 @@
         ) !==
         sodium.to_hex(
           sodium.crypto_sign_open(
-            base64Decode(loggedInUser.signature),
+            base64Decode(loggedInUser.user.signature),
             rawAuthKeys.publicKey
           )
         )
@@ -130,28 +130,29 @@
 
     const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
       null,
-      base64Decode(loggedInUser.keychain.cipher_text),
+      base64Decode(loggedInUser.user.keychain.cipher_text),
       null,
-      base64Decode(loggedInUser.keychain.iv),
+      base64Decode(loggedInUser.user.keychain.iv),
       rawDerivedKey
     );
 
     const rawKeypairPrivateKey =
       sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
         null,
-        base64Decode(loggedInUser.keypair.cipher_text),
+        base64Decode(loggedInUser.user.keypair.cipher_text),
         null,
-        base64Decode(loggedInUser.keypair.iv),
+        base64Decode(loggedInUser.user.keypair.iv),
         rawKeychain
       );
 
     // Should never store derivedKey or private key.
     // If IndexDB compromised, authorization can't be acquired.
     await setLocalSecrets({
-      email: loggedInUser.email,
-      userId: loggedInUser._id,
+      email: loggedInUser.user.email,
+      userId: loggedInUser.user._id,
       rawKeychain: base64Encode(rawKeychain),
       rawKeypairPrivateKey: base64Encode(rawKeypairPrivateKey),
+      jti: loggedInUser.jti,
     });
   }
 
@@ -424,13 +425,15 @@
             style="display: flex;flex-direction: column;align-items: center;row-gap: 1em;"
           >
             <QrCode
-              value={loggedInUser.otp.provisioning_uri}
+              value={loggedInUser.user.otp.provisioning_uri}
               background={theme["--surface"]}
               color={theme["--primary"]}
             />
             <button
               on:click={async () => {
-                await navigator.clipboard.writeText(loggedInUser.otp.secret);
+                await navigator.clipboard.writeText(
+                  loggedInUser.user.otp.secret
+                );
               }}
             >
               <i>vpn_key</i>
