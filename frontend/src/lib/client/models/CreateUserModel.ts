@@ -8,7 +8,7 @@ import type { Argon2Modal } from './Argon2Modal';
 
 export type CreateUserModel = {
     email: string;
-    ed25199: AccountEd25199Modal;
+    auth: AccountEd25199Modal;
     keychain: AccountKeychainModal;
     kdf: Argon2Modal;
     signature: string;

@@ -93,12 +93,12 @@
           iv: loggedInUser.keychain.iv,
           cipher_text: loggedInUser.keychain.cipher_text,
         },
-        ed25199: {
+        auth: {
           // Should never be loaded from the server.
           public_key: base64Encode(rawAuthKeys.publicKey),
         },
         signature: "",
-      })
+      } as CreateUserModel)
     );
 
     try {
@@ -178,8 +178,6 @@
     await timeout(10); // Stop libsodium from blocking loop before updating loading
 
     await sodium.ready;
-
-    console.log(advanceMode);
 
     if (captchaToken === "") {
       errorMsg = "Please complete captcha.";
@@ -265,7 +263,7 @@
           iv: TransmitSafeKeychainIv,
           cipher_text: TransmitSafeKeychain,
         },
-        ed25199: {
+        auth: {
           public_key: base64Encode(rawAuthKeys.publicKey),
         },
         signature: "",

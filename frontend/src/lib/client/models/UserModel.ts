@@ -9,7 +9,7 @@ import type { OtpModel } from './OtpModel';
 
 export type UserModel = {
     email: string;
-    ed25199: AccountEd25199Modal;
+    auth: AccountEd25199Modal;
     keychain: AccountKeychainModal;
     kdf: Argon2Modal;
     signature: string;

@@ -49,7 +49,7 @@ class AccountKeychainModal(IvField):
 
 
 class __CreateUserShared(EmailModel):
-    ed25199: AccountEd25199Modal
+    auth: AccountEd25199Modal
     keychain: AccountKeychainModal
     kdf: Argon2Modal
 
@@ -62,7 +62,7 @@ class __CreateUserShared(EmailModel):
     # Assumed client side algorithms being used, help for future proofing
     # if we need to move away from outdated algorithms.
     algorithms: str = Field(
-        "XSALSA20_POLY1305_MAC+ED25519+X25519+ARGON2+BLAKE2b+IV16+SALT16",
+        "XSALSA20_POLY1305_MAC+ED25519+ARGON2+BLAKE2b+IV16+SALT16",
         max_length=120,
         description="Algorithms used by client.",
     )

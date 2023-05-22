@@ -110,7 +110,7 @@ class LoginController(Controller):
                 raise
 
         try:
-            public_key = Base64Encoder.decode(user.ed25199.public_key.encode())
+            public_key = Base64Encoder.decode(user.auth.public_key.encode())
         except ValueError:
             raise InvalidAccountAuth()
 
