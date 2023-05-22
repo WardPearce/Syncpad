@@ -23,4 +23,26 @@ export class SessionService {
         });
     }
 
+    /**
+     * InvalidateSession
+     * Invalidate a session
+     * @param sessionId
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersSessionSessionIdInvalidateSession(
+        sessionId: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/session/{session_id}',
+            path: {
+                'session_id': sessionId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
 }

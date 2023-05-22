@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, List
 
 from app.models.session import SessionModel
 from bson import ObjectId
-from litestar import Request, Router, get
+from litestar import Request, Response, Router, delete, get
 from litestar.contrib.jwt import Token
 
 if TYPE_CHECKING:
@@ -22,4 +22,15 @@ async def get_sessions(
     return sessions
 
 
-router = Router(path="/session", route_handlers=[get_sessions])
+@delete(path="/{session_id:str}", description="Invalidate a session", tags=["session"])
+async def invalidate_session(
+    request: Request[ObjectId, Token, Any], state: "State", session_id: str
+) -> None:
+    await state.redis.delete(session_id)
+
+    await state.mongo.session.delete_one(
+        {"user_id": request.user, "_id": ObjectId(session_id)}
+    )
+
+
+router = Router(path="/session", route_handlers=[get_sessions, invalidate_session])
