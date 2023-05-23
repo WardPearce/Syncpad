@@ -35,7 +35,10 @@
   let advanceModeMsg = "";
   let isLoading = false;
 
-  let redirectPath: string | undefined = get(useLocation()).state.redirect;
+  let currentLocation = get(useLocation());
+  let redirectPath: string | undefined = currentLocation.state
+    ? currentLocation.state.redirect
+    : undefined;
 
   let email = "";
   let rawPassword = "";
