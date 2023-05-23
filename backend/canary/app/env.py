@@ -60,7 +60,7 @@ class Documents(BaseModel):
 
 class Jwt(BaseModel):
     secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
-    expire_days: int = 1
+    expire_days: int = 30
 
 
 class DomainVerify(BaseModel):

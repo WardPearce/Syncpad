@@ -187,7 +187,7 @@ class LoginController(Controller):
         session = await state.mongo.session.insert_one(
             CreateSessionModel(
                 expires=now + token_timedelta,
-                record_kept_till=now + timedelta(days=SETTINGS.jwt.expire_days * 7),
+                record_kept_till=now + timedelta(days=SETTINGS.jwt.expire_days * 3),
                 created=now,
                 location=location,
                 device=device,
