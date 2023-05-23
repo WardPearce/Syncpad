@@ -3,6 +3,7 @@
   import { get } from "svelte/store";
   import { link, navigate, useLocation } from "svelte-navigator";
   import { zxcvbn } from "@zxcvbn-ts/core";
+  import { tooltip } from "@svelte-plugins/tooltips";
 
   import sodium from "libsodium-wrappers-sumo";
 
@@ -38,6 +39,7 @@
   let email = "";
   let rawPassword = "";
   let captchaToken = "";
+  let deviceSessionLogs: bool = true;
 
   let rawAuthKeys: sodium.KeyPair;
   let rawDerivedKey: Uint8Array;
@@ -324,6 +326,8 @@
         )
       );
 
+      createUser.ip_lookup_consent = deviceSessionLogs;
+
       try {
         await client.account.controllersAccountCreateCreateAccount(
           captchaToken,
@@ -406,6 +410,19 @@
             <input type="password" bind:value={rawPassword} />
             <label for="password">Password</label>
           </div>
+
+          {#if isRegister}
+            <label
+              class="checkbox"
+              use:tooltip={{
+                content:
+                  "IP & device processed for session logs on login. Encrypted with your public key.",
+              }}
+            >
+              <input type="checkbox" bind:checked={deviceSessionLogs} />
+              <span>Device session logs</span>
+            </label>
+          {/if}
 
           <Mcaptcha bind:captchaToken />
 

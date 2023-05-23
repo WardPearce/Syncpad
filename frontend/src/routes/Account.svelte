@@ -82,6 +82,7 @@
 </script>
 
 <h3>Account</h3>
+
 <article>
   <h5>Email reset</h5>
 </article>
@@ -90,12 +91,13 @@
 </article>
 <article>
   <h5>OTP reset</h5>
+  <p>Enter your current OTP code to reset it.</p>
   <div style="display: flex;">
     {#if otpError}
       <p>{otpError}</p>
     {/if}
 
-    <OtpInput OnOtpEnter={resetOtp} otpLabel="Current OTP code" />
+    <OtpInput OnOtpEnter={resetOtp} />
   </div>
 </article>
 <article>
@@ -128,12 +130,14 @@
   <button class="tertiary">Delete account</button>
 </article>
 
-<h4>Sessions</h4>
+<h3>Sessions</h3>
 
 {#if activeSessions.length === 0}
   <span class="loader medium" />
 {:else}
-  <button on:click={logoutAllOther}>Logout all other sessions</button>
+  {#if activeSessions.length > 1}
+    <button on:click={logoutAllOther}>Logout all other sessions</button>
+  {/if}
 
   {#each activeSessions as session}
     <article class:primary-container={session._id === loggedInSecrets.jti}>
