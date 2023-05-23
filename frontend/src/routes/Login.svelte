@@ -39,7 +39,7 @@
   let email = "";
   let rawPassword = "";
   let captchaToken = "";
-  let deviceSessionLogs: bool = true;
+  let deviceSessionLogs = true;
 
   let rawAuthKeys: sodium.KeyPair;
   let rawDerivedKey: Uint8Array;
