@@ -35,10 +35,10 @@
   }
 
   async function logoutSession(sessionId: string) {
-    activeSessions = activeSessions.filter((v) => v._id !== sessionId);
     await client.session.controllersSessionSessionIdInvalidateSession(
       sessionId
     );
+    activeSessions = activeSessions.filter((v) => v._id !== sessionId);
     if (sessionId === loggedInSecrets.jti) {
       await logout();
     }
