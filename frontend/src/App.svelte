@@ -166,11 +166,11 @@
 
 <footer>
   <nav class="center-align">
-    <a use:link href="/privacy-policy" class="button border">
+    <a use:link href="/privacy-policy" class="link">
       <i>policy</i>
       <span>Privacy Policy</span>
     </a>
-    <a use:link href="/terms-of-service" class="button border">
+    <a use:link href="/terms-of-service" class="link">
       <i>gavel</i>
       <span>Terms of Service</span>
     </a>
