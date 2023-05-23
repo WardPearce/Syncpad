@@ -3,7 +3,7 @@
   import { concat } from "../../lib/misc";
 </script>
 
-<h3>My surveys</h3>
+<h3>Surveys</h3>
 <p>placeholder</p>
 
 <h3>Canaries</h3>

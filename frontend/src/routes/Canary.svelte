@@ -81,7 +81,7 @@
         <div class="row">
           <div class="max">
             <h5>Concern</h5>
-            <h6 class="green-text">None</h6>
+            <h6 class="deep-purple-text">None</h6>
           </div>
         </div>
       </article>

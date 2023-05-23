@@ -4,10 +4,6 @@
   let siteDomain = "";
   let aboutSite = "";
   let siteLogo: File;
-
-  async function onLogoChange(event) {
-    await ui("theme", event.target.files[0]);
-  }
 </script>
 
 <h3>Add site</h3>
@@ -32,7 +28,6 @@
     <input
       type="file"
       bind:value={siteLogo}
-      on:input={onLogoChange}
       multiple={false}
       accept="image/png, image/jpeg, image/jpg"
     />

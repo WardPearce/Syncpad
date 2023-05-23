@@ -7,9 +7,8 @@
     background-color: var(--on-background) !important;
 }
 
-
 .logo img {
-    width: 30px;
+    width: 35px;
 }
 
 @media only screen and (max-width: 600px) {
