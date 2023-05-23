@@ -234,7 +234,10 @@ class LoginController(Controller):
 )
 async def email_resend(state: "State", request: Request[ObjectId, Token, Any]) -> None:
     user = await User(state, request.user).get()
-    await send_email_verify(to=user.email, email_secret=user.email_verification.secret)
+    if not user.email_verification.completed:
+        await send_email_verify(
+            to=user.email, email_secret=user.email_verification.secret
+        )
 
 
 @post(
