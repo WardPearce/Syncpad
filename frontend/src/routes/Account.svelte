@@ -135,12 +135,6 @@
           </p>
         </div>
         <div class="s12 m6 l3">
-          <h6>Expires</h6>
-          <p>
-            {session.expires}
-          </p>
-        </div>
-        <div class="s12 m6 l3">
           <h6>Device</h6>
           <p>
             <span style="font-weight: bold;">Browser:</span>
@@ -153,6 +147,12 @@
           <p>
             <span style="font-weight: bold;">OS:</span>
             {session.uaparser.getOS().name}
+          </p>
+        </div>
+        <div class="s12 m6 l3">
+          <h6>Expires</h6>
+          <p>
+            {session.expires}
           </p>
         </div>
         <div class="s12 m6 l3">
