@@ -102,10 +102,7 @@
   <button on:click={logoutAllOther}>Logout all other sessions</button>
 
   {#each activeSessions as session}
-    <article>
-      {#if session._id === loggedInSecrets.jti}
-        <p class="green-text" style="font-size: 1.5em;">Current session</p>
-      {/if}
+    <article class:primary-container={session._id === loggedInSecrets.jti}>
       <div class="grid">
         <div class="s12 m6 l3">
           <h6>Location</h6>
@@ -157,8 +154,11 @@
         </div>
         <div class="s12 m6 l3">
           <button on:click={async () => await logoutSession(session._id)}
-            >Logout</button
-          >
+            >Logout
+            {#if session._id === loggedInSecrets.jti}
+              current session
+            {/if}
+          </button>
         </div>
       </div>
     </article>
