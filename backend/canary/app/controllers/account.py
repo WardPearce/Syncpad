@@ -276,6 +276,7 @@ async def create_account(
     await state.mongo.user.insert_one(
         {
             **data.dict(),
+            "email": email,
             "email_verified": False,
             "created": datetime.now(),
             "otp": {"secret": pyotp.random_base32(), "completed": False},
