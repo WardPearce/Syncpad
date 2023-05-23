@@ -84,10 +84,10 @@
 <h3>Account</h3>
 
 <article>
-  <h5>Email reset</h5>
+  <h5>Change email</h5>
 </article>
 <article>
-  <h5>Password reset</h5>
+  <h5>Change password</h5>
 </article>
 <article>
   <h5>OTP reset</h5>

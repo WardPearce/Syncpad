@@ -14,7 +14,7 @@ from app.lib.jwt import delete_all_user_sessions, delete_session, jwt_cookie_aut
 from app.lib.mCaptcha import validate_captcha
 from app.lib.otp import OneTimePassword
 from app.lib.smtp import send_email_verify
-from app.lib.user import User
+from app.lib.user import User, generate_email_validation
 from app.models.jwt import UserJtiModel
 from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
@@ -32,7 +32,6 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
-from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.response import RedirectResponse
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
@@ -246,9 +245,12 @@ async def email_resend(state: "State", request: Request[ObjectId, Token, Any]) -
             {"email": user.email}
         )
         if email_verification:
-            await send_email_verify(
-                to=user.email, email_secret=email_verification["secret"]
-            )
+            email_secret = email_verification["secret"]
+        else:
+            # If no validation code, create a new one.
+            email_secret = await generate_email_validation(state, user.email)
+
+        await send_email_verify(to=user.email, email_secret=email_secret)
 
 
 @post(
@@ -271,16 +273,6 @@ async def create_account(
     if await state.mongo.user.count_documents({"email": email}) > 0:
         raise EmailTaken()
 
-    email_secret = secrets.token_urlsafe(32)
-
-    await state.mongo.email_verification.insert_one(
-        {
-            "secret": email_secret,
-            "email": email,
-            "expires": datetime.now() + timedelta(hours=24),
-        }
-    )
-
     await state.mongo.user.insert_one(
         {
             **data.dict(),
@@ -294,7 +286,9 @@ async def create_account(
         None,
         status_code=201,
         background=BackgroundTask(
-            send_email_verify, to=data.email, email_secret=email_secret
+            send_email_verify,
+            to=data.email,
+            email_secret=await generate_email_validation(state, email),
         ),
     )
 

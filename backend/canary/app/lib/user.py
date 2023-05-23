@@ -1,13 +1,37 @@
+import secrets
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Union
 
-import pyotp
 from app.errors import UserNotFoundException
 from app.models.user import UserModel
 from bson import ObjectId
-from env import SETTINGS
 
 if TYPE_CHECKING:
     from app.types import State
+
+
+async def generate_email_validation(state: "State", email: str) -> str:
+    """Generate email validation code.
+
+    Args:
+        state (State)
+        email (str)
+
+    Returns:
+        str: Validation code
+    """
+
+    email_secret = secrets.token_urlsafe(32)
+
+    await state.mongo.email_verification.insert_one(
+        {
+            "secret": email_secret,
+            "email": email,
+            "expires": datetime.now() + timedelta(hours=24),
+        }
+    )
+
+    return email_secret
 
 
 class User:
