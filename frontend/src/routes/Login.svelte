@@ -12,6 +12,7 @@
     setLocalSecrets,
     localSecrets,
     themeStore,
+    emailVerificationRequired,
   } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
@@ -146,6 +147,10 @@
         base64Decode(loggedInUser.user.keypair.iv),
         rawKeychain
       );
+
+    emailVerificationRequired.set(
+      !loggedInUser.user.email_verification.completed
+    );
 
     // Should never store derivedKey or private key.
     // If IndexDB compromised, authorization can't be acquired.

@@ -124,8 +124,7 @@
   </label>
 </article>
 <article>
-  <h5 class="red-text">Danger zone</h5>
-  <p>These actions are not reversible.</p>
+  <h5>Danger zone</h5>
   <button class="secondary">Rotate keychain</button>
   <button class="tertiary">Delete account</button>
 </article>

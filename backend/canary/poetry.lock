@@ -140,6 +140,22 @@ files = [
 frozenlist = ">=1.1.0"
 
 [[package]]
+name = "aiosmtplib"
+version = "2.0.1"
+description = "asyncio SMTP client"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "aiosmtplib-2.0.1-py3-none-any.whl", hash = "sha256:2f619f900d1bfe25a8f453005958ba78870abbfeeffb2fdef11265be0df26913"},
+    {file = "aiosmtplib-2.0.1.tar.gz", hash = "sha256:a20aae28f67169dd761beef4c62e4bb3073d035f9ee20c2e4f18baa1a73e7c88"},
+]
+
+[package.extras]
+docs = ["sphinx (>=5.3.0,<6.0.0)", "sphinx_autodoc_typehints (>=1.7.0,<2.0.0)"]
+uvloop = ["uvloop (>=0.14,<0.15)", "uvloop (>=0.14,<0.15)", "uvloop (>=0.17,<0.18)"]
+
+[[package]]
 name = "alembic"
 version = "1.10.4"
 description = "A database migration tool for SQLAlchemy."
@@ -2631,4 +2647,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "71ea24a3abd3b59fc97f1badfc6f34e291958d646fe85fb1558592a3aa5a171f"
+content-hash = "c130a8fe7c1453da4df9e2616b45c7199aeaa41472f46f0d20869e960fcabfb4"

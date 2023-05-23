@@ -11,7 +11,9 @@ from app.errors import (
     UserNotFoundException,
 )
 from app.lib.jwt import delete_all_user_sessions, delete_session, jwt_cookie_auth
+from app.lib.mCaptcha import validate_captcha
 from app.lib.otp import OneTimePassword
+from app.lib.smtp import send_email_verify
 from app.lib.user import User
 from app.models.jwt import UserJtiModel
 from app.models.session import CreateSessionModel, SessionLocationModel
@@ -20,17 +22,18 @@ from app.models.user import (
     OtpModel,
     PublicUserModel,
     UserLoginSignatureModel,
-    UserModel,
     UserToSignModel,
 )
 from bson import ObjectId
 from env import SETTINGS
-from lib.mCaptcha import validate_captcha
 from litestar import Request, Response, Router, delete
+from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import ValidationException
 from litestar.handlers import get, post
+from litestar.middleware.rate_limit import RateLimitConfig
+from litestar.response import RedirectResponse
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
 from nacl.public import PublicKey, SealedBox
@@ -53,6 +56,27 @@ class LoginController(Controller):
         user = await User(state, email).get()
 
         return PublicUserModel(kdf=user.kdf, otp_completed=user.otp.completed)
+
+    @get(
+        "/email/verify/{email_secret: str}",
+        description="Verify email for given account",
+        tags=["account"],
+        exclude_from_auth=True,
+    )
+    async def verify_email(
+        self, state: "State", email: str, email_secret: str
+    ) -> RedirectResponse:
+        user = await User(state, email).get()
+
+        if user.email_verification.completed:
+            return RedirectResponse(SETTINGS.proxy_urls.frontend)
+
+        await state.mongo.user.update_one(
+            {"email": email, "email_verification.secret": email_secret},
+            {"$set": {"email_verification.completed": True}},
+        )
+
+        return RedirectResponse(SETTINGS.proxy_urls.frontend + "/email-verified")
 
     @get(
         path="/to-sign",
@@ -204,6 +228,16 @@ class LoginController(Controller):
 
 
 @post(
+    "/email/resend",
+    description="Resends email verification email",
+    tags=["account"],
+)
+async def email_resend(state: "State", request: Request[ObjectId, Token, Any]) -> None:
+    user = await User(state, request.user).get()
+    await send_email_verify(to=user.email, email_secret=user.email_verification.secret)
+
+
+@post(
     path="/create",
     description="Create a user account",
     tags=["account"],
@@ -223,24 +257,36 @@ async def create_account(
     if await state.mongo.user.count_documents({"email": email}) > 0:
         raise EmailTaken()
 
+    email_secret = secrets.token_urlsafe(32)
+
     await state.mongo.user.insert_one(
         {
             **data.dict(),
+            "email_verification": {
+                "completed": False,
+                "secret": email_secret,
+            },
             "created": datetime.now(),
             "otp": {"secret": pyotp.random_base32(), "completed": False},
         }
     )
 
-    return Response(None, status_code=201)
+    return Response(
+        None,
+        status_code=201,
+        background=BackgroundTask(
+            send_email_verify, to=data.email, email_secret=email_secret
+        ),
+    )
 
 
 @get(
-    path="/me",
+    path="/jwt",
     description="Get JWT sub for user",
     tags=["account"],
     sync_to_thread=False,
 )
-def me(request: Request[ObjectId, Token, Any]) -> str:
+def jwt_info(request: Request[ObjectId, Token, Any]) -> str:
     return str(request.user)
 
 
@@ -316,5 +362,12 @@ async def logout(request: Request[ObjectId, Token, Any], state: "State") -> Resp
 
 router = Router(
     path="/account",
-    route_handlers=[LoginController, OtpController, create_account, me, logout],
+    route_handlers=[
+        LoginController,
+        OtpController,
+        create_account,
+        jwt_info,
+        email_resend,
+        logout,
+    ],
 )

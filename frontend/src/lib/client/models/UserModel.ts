@@ -6,6 +6,7 @@ import type { AccountEd25199Modal } from './AccountEd25199Modal';
 import type { AccountKeychainModal } from './AccountKeychainModal';
 import type { AccountX25519Model } from './AccountX25519Model';
 import type { Argon2Modal } from './Argon2Modal';
+import type { EmailVerificationModel } from './EmailVerificationModel';
 import type { OtpModel } from './OtpModel';
 
 export type UserModel = {
@@ -20,6 +21,6 @@ export type UserModel = {
     _id: any;
     created: string;
     otp: OtpModel;
-    email_verified?: boolean;
+    email_verification: EmailVerificationModel;
 };
 

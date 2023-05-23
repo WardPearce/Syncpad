@@ -11,8 +11,8 @@ class MongoDB(BaseModel):
 
 
 class ProxiedUrls(BaseModel):
-    frontend: AnyHttpUrl = AnyHttpUrl(url="localhost", scheme="http")
-    backend: AnyHttpUrl = AnyHttpUrl(url="localhost/api", scheme="http")
+    frontend: AnyHttpUrl = AnyHttpUrl(url="http://localhost", scheme="http")
+    backend: AnyHttpUrl = AnyHttpUrl(url="http://localhost/api", scheme="http")
 
 
 class S3(BaseModel):
@@ -73,6 +73,14 @@ class Proxycheck(BaseModel):
     url: str = "https://proxycheck.io/v2/"
 
 
+class Smtp(BaseModel):
+    host: str
+    port: int
+    username: Optional[str] = None
+    password: Optional[str] = None
+    email: str
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
@@ -83,6 +91,7 @@ class Settings(BaseSettings):
     site_name = "canarystat.us"
     domain_verify: DomainVerify = DomainVerify()
     proxy_check: Optional[Proxycheck] = None
+    smtp: Optional[Smtp] = None
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)

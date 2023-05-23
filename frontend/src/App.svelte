@@ -8,12 +8,28 @@
 
   import { client } from "./lib/canary";
   import { logout } from "./lib/logout";
-  import { localSecrets, type LocalSecretsModel } from "./stores";
+  import {
+    emailVerificationRequired,
+    localSecrets,
+    type LocalSecretsModel,
+  } from "./stores";
 
   let mobileNavShow = false;
 
   let loggedInUser: LocalSecretsModel | undefined;
   localSecrets.subscribe((secrets) => (loggedInUser = secrets));
+
+  let emailVerification: boolean;
+  emailVerificationRequired.subscribe(
+    (required) => (emailVerification = required)
+  );
+
+  let emailResent = false;
+  async function resendEmail() {
+    emailResent = true;
+    await client.account.controllersAccountEmailResendEmailResend();
+    emailResent = false;
+  }
 
   onMount(async () => {
     // Default UI color
@@ -26,7 +42,7 @@
 
     // Validate JWT session.
     try {
-      const userId = await client.account.controllersAccountMeMe();
+      const userId = await client.account.controllersAccountJwtJwtInfo();
       if (userId !== loggedInUser.userId) {
         await logout();
       }
@@ -72,6 +88,26 @@
   </nav>
 
   <main class="responsive">
+    {#if emailVerification}
+      <article style="margin-bottom: 2em;">
+        <nav>
+          <h6>Please verify your email.</h6>
+          {#if !emailResent}
+            <button class="extend square round small" on:click={resendEmail}>
+              <i>loop</i>
+              <span>Resend email</span>
+            </button>
+          {:else}
+            <span class="loader small" />
+          {/if}
+        </nav>
+        <p>
+          {import.meta.env.VITE_SITE_NAME} has sent you a verification email, please
+          check your spam.
+        </p>
+      </article>
+    {/if}
+
     <Route path="/">
       <PageLoading />
     </Route>
@@ -96,6 +132,12 @@
       path="/dashboard/verify-site/:domainName"
       component={() => import("./routes/Dashboard/VerifySite.svelte")}
       requiresAuth={true}
+    >
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
+      path="/email-verified"
+      component={() => import("./routes/EmailVerified.svelte")}
     >
       <PageLoading />
     </LazyRoute>

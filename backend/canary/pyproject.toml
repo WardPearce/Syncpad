@@ -25,6 +25,7 @@ argon2-cffi = "^21.3.0"
 redis = "^4.5.5"
 aiodns = "^3.0.0"
 yarl = "^1.9.2"
+aiosmtplib = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

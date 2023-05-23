@@ -96,6 +96,31 @@ export class AccountService {
     }
 
     /**
+     * VerifyEmail
+     * Verify email for given account
+     * @param email
+     * @param emailSecret
+     * @returns any Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
+        email: string,
+        emailSecret: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
+            path: {
+                'email': email,
+                'email_secret': emailSecret,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * OtpSetup
      * Used to confirm OTP is completed
      * @param otp
@@ -166,15 +191,28 @@ export class AccountService {
     }
 
     /**
-     * Me
+     * JwtInfo
      * Get JWT sub for user
      * @returns string Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountMeMe(): CancelablePromise<string> {
+    public controllersAccountJwtJwtInfo(): CancelablePromise<string> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/account/me',
+            url: '/controllers/account/jwt',
+        });
+    }
+
+    /**
+     * EmailResend
+     * Resends email verification email
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailResendEmailResend(): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/email/resend',
         });
     }
 

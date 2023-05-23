@@ -16,6 +16,8 @@ export interface LocalSecretsModel {
     }
 }
 
+export const emailVerificationRequired = writable(false);
+
 async function getLocalSecrets(): Promise<LocalSecretsModel | undefined> {
     try {
         return await get("localSecrets")
