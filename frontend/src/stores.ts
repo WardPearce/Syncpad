@@ -16,8 +16,16 @@ export interface LocalSecretsModel {
     }
 }
 
+async function getLocalSecrets(): Promise<LocalSecretsModel | undefined> {
+    try {
+        return await get("localSecrets")
+    } catch {
+        return undefined
+    }
+}
+
 export const localSecrets: Writable<LocalSecretsModel | undefined> = writable(
-    await get("localSecrets")
+    await getLocalSecrets()
 );
 
 
