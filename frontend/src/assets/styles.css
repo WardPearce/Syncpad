@@ -6,3 +6,22 @@
     color: var(--on-secondary) !important;
     background-color: var(--on-background) !important;
 }
+
+
+.logo img {
+    width: 30px;
+}
+
+@media only screen and (max-width: 600px) {
+    .logo {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .logo img {
+        margin-left: 1em;
+        margin-top: 1em;
+    }
+}

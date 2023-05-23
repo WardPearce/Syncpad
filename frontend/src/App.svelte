@@ -50,20 +50,22 @@
 
   <div class={`modal left ${mobileNavShow ? "active" : ""}`}>
     <header class="fixed">
-      <nav>
+      <nav style="display: flex;justify-content: space-between;">
+        <div class="logo">
+          <img src="/logo.png" alt="logo" />
+        </div>
         <button
           class="transparent circle large"
           on:click={() => (mobileNavShow = false)}
         >
           <i>close</i>
         </button>
-        <h6 class="max">{import.meta.env.VITE_SITE_NAME}</h6>
       </nav>
     </header>
     <NavItems isMobile={true} />
   </div>
 
-  <nav class="m l right">
+  <nav class="m l left">
     <NavItems isMobile={false} />
   </nav>
 

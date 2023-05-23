@@ -68,6 +68,14 @@
   });
 </script>
 
+{#if !isMobile}
+  <a href="/" use:link>
+    <div class="logo">
+      <img src="/logo.png" alt="logo" />
+    </div>
+  </a>
+{/if}
+
 {#if loggedInUser === undefined}
   <a
     use:link
