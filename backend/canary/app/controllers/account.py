@@ -229,7 +229,7 @@ class LoginController(Controller):
 
 @post(
     "/email/resend",
-    description="Resends email verification email",
+    description="Resends email verification",
     tags=["account"],
 )
 async def email_resend(state: "State", request: Request[ObjectId, Token, Any]) -> None:
