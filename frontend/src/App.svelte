@@ -122,15 +122,15 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
-      path="/dashboard/add-site"
-      component={() => import("./routes/Dashboard/AddSite.svelte")}
+      path="/dashboard/canary/add-site"
+      component={() => import("./routes/Dashboard/Canary/AddSite.svelte")}
       requiresAuth={true}
     >
       <PageLoading />
     </LazyRoute>
     <LazyRoute
-      path="/dashboard/verify-site/:domainName"
-      component={() => import("./routes/Dashboard/VerifySite.svelte")}
+      path="/dashboard/canary/verify-site/:domainName"
+      component={() => import("./routes/Dashboard/Canary/VerifySite.svelte")}
       requiresAuth={true}
     >
       <PageLoading />
@@ -156,7 +156,7 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
-      path="/:domainName"
+      path="/c/:domainName"
       component={() => import("./routes/Canary.svelte")}
     >
       <PageLoading />

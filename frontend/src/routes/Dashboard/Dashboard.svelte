@@ -4,7 +4,16 @@
 </script>
 
 <h3>Surveys</h3>
-<p>placeholder</p>
+<div class="grid">
+  <div class="s12 m6 l4">
+    <article class="border center-align middle-align" style="height: 100%;">
+      <a class="button" href="/dashboard/survery/create" use:link>
+        <i>add</i>
+        <span>Create survey</span>
+      </a>
+    </article>
+  </div>
+</div>
 
 <h3>Canaries</h3>
 <div class="grid">
@@ -16,7 +25,7 @@
           src="https://www.privacyguides.org/en/assets/brand/SVG/Logo/privacy-guides-logo-notext-darkbg.svg#only-dark"
         />
         <div class="max">
-          <a href="/privacyguides.org" use:link class="link">
+          <a href="/c/privacyguides.org" use:link class="link">
             <h6>{concat("privacyguides.org")}</h6>
           </a>
         </div>
@@ -29,7 +38,7 @@
   </div>
   <div class="s12 m6 l4">
     <article class="border center-align middle-align" style="height: 100%;">
-      <a class="button" href="/dashboard/add-site" use:link>
+      <a class="button" href="/dashboard/canary/add-site" use:link>
         <i>add</i>
         <span>Add site</span>
       </a>
