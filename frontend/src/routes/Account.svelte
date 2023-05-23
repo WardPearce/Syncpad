@@ -35,6 +35,14 @@
     }
   }
 
+  async function logoutAllOther() {
+    activeSessions.forEach(async (session) => {
+      if (session._id !== loggedInSecrets.jti) {
+        await logoutSession(session._id);
+      }
+    });
+  }
+
   onMount(async () => {
     await sodium.ready;
 
@@ -75,53 +83,58 @@
 {#if activeSessions.length === 0}
   <span class="loader medium" />
 {:else}
+  <button on:click={logoutAllOther}>Logout all other sessions</button>
+
   {#each activeSessions as session}
     <article>
-      <div class="max">
-        <h5>
-          {session._id}
-        </h5>
-        {#if session._id === loggedInSecrets.jti}
-          <p class="green-text">Current session</p>
-        {/if}
-        <h6>Expires</h6>
-        <p>
-          {session.expires}
-        </p>
-        <h6>Device</h6>
-        <p>
-          {decryptInfo(session.device)}
-        </p>
-        <h6>Location</h6>
-        <p>
-          <span style="font-weight: bold;">Country:</span>
-          {#if session.location.country}
-            {decryptInfo(session.location.country)}
-          {:else}
-            Unknown
-          {/if}
-        </p>
-        <p>
-          <span style="font-weight: bold;">Region:</span>
-          {#if session.location.region}
-            {decryptInfo(session.location.region)}
-          {:else}
-            Unknown
-          {/if}
-        </p>
-        <p>
-          <span style="font-weight: bold;">IP Address:</span>
-          {#if session.location.ip}
-            {decryptInfo(session.location.ip)}
-          {:else}
-            Unknown
-          {/if}
-        </p>
-      </div>
-      <div class="right-align" style="margin-top: 1em;">
-        <button on:click={async () => await logoutSession(session._id)}
-          >Logout</button
-        >
+      {#if session._id === loggedInSecrets.jti}
+        <p class="green-text" style="font-size: 1.5em;">Current session</p>
+      {/if}
+      <div class="grid">
+        <div class="s12 m6 l3">
+          <h6>Location</h6>
+          <p>
+            <span style="font-weight: bold;">Country:</span>
+            {#if session.location.country}
+              {decryptInfo(session.location.country)}
+            {:else}
+              Unknown
+            {/if}
+          </p>
+          <p>
+            <span style="font-weight: bold;">Region:</span>
+            {#if session.location.region}
+              {decryptInfo(session.location.region)}
+            {:else}
+              Unknown
+            {/if}
+          </p>
+          <p>
+            <span style="font-weight: bold;">IP Address:</span>
+            {#if session.location.ip}
+              {decryptInfo(session.location.ip)}
+            {:else}
+              Unknown
+            {/if}
+          </p>
+        </div>
+        <div class="s12 m6 l3">
+          <h6>Expires</h6>
+          <p>
+            {session.expires}
+          </p>
+        </div>
+        <div class="s12 m6 l3">
+          <h6>Device</h6>
+          <p>
+            {decryptInfo(session.device)}
+          </p>
+        </div>
+        <div class="s12 m6 l3">
+          <button on:click={async () => await logoutSession(session._id)}
+            >Logout</button
+          >
+        </div>
       </div>
     </article>
   {/each}
@@ -131,5 +144,15 @@
   h6 {
     margin: 0;
     font-size: 1.6em;
+  }
+
+  .s12 p {
+    margin: 0;
+  }
+
+  .s12 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 </style>
