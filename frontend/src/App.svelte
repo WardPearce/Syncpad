@@ -10,6 +10,7 @@
   import { logout } from "./lib/logout";
   import {
     emailVerificationRequired,
+    isDarkMode,
     localSecrets,
     type LocalSecretsModel,
   } from "./stores";
@@ -18,6 +19,9 @@
 
   let loggedInUser: LocalSecretsModel | undefined;
   localSecrets.subscribe((secrets) => (loggedInUser = secrets));
+
+  let darkMode: boolean;
+  isDarkMode.subscribe((isDark) => (darkMode = isDark));
 
   let emailVerification: boolean;
   emailVerificationRequired.subscribe(
@@ -64,7 +68,11 @@
     </nav>
   </header>
 
-  <div class={`modal left ${mobileNavShow ? "active" : ""}`}>
+  <div
+    class="modal left"
+    class:active={mobileNavShow}
+    class:deep-purple1={!darkMode}
+  >
     <header class="fixed">
       <nav style="display: flex;justify-content: space-between;">
         <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
@@ -83,7 +91,7 @@
     <NavItems isMobile={true} />
   </div>
 
-  <nav class="m l left">
+  <nav class="m l left" class:deep-purple1={!darkMode}>
     <NavItems isMobile={false} />
   </nav>
 
@@ -164,7 +172,7 @@
   </main>
 </Router>
 
-<footer>
+<footer class:deep-purple1={!darkMode}>
   <nav class="center-align">
     <a use:link href="/privacy-policy" class="link">
       <i>policy</i>

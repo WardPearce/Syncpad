@@ -322,6 +322,7 @@
         signature: "",
       };
 
+      advanceModeMsg = "Signing user data";
       createUser.signature = base64Encode(
         sodium.crypto_sign(
           sodium.crypto_generichash(
@@ -334,6 +335,7 @@
 
       createUser.ip_lookup_consent = deviceSessionLogs;
 
+      advanceModeMsg = "Sending account data to server";
       try {
         await client.account.controllersAccountCreateCreateAccount(
           captchaToken,

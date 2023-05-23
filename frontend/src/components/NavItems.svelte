@@ -6,6 +6,7 @@
     themeStore,
     localSecrets,
     type LocalSecretsModel,
+    isDarkMode,
   } from "../stores";
   import { get } from "svelte/store";
   import { getDynamicTheme } from "../lib/theme";
@@ -45,6 +46,8 @@
     mode = mode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     await window.ui("mode", mode);
     localStorage.setItem("mode", mode);
+
+    isDarkMode.set(mode === ThemeMode.dark);
     themeStore.set(await getDynamicTheme(mode));
   }
 
@@ -63,6 +66,8 @@
       mode = ThemeMode.dark;
       await window.ui("mode", mode);
     }
+
+    isDarkMode.set(mode === ThemeMode.dark);
 
     themeStore.set(await getDynamicTheme());
   });

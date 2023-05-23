@@ -4,6 +4,8 @@ import { get, set } from "idb-keyval";
 export const advanceModeStore = writable(localStorage.getItem("advanceMode") === "true");
 export const themeStore = writable({});
 
+export const isDarkMode = writable(true);
+
 
 export interface LocalSecretsModel {
     email: string,
