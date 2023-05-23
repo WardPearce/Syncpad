@@ -82,10 +82,6 @@
 </script>
 
 <h3>Account</h3>
-
-<article>
-  <h5>Change email</h5>
-</article>
 <article>
   <h5>Change password</h5>
 </article>

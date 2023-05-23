@@ -164,6 +164,19 @@
   </main>
 </Router>
 
+<footer>
+  <nav class="center-align">
+    <a use:link href="/privacy-policy" class="button border">
+      <i>policy</i>
+      <span>Privacy Policy</span>
+    </a>
+    <a use:link href="/terms-of-service" class="button border">
+      <i>gavel</i>
+      <span>Terms of Service</span>
+    </a>
+  </nav>
+</footer>
+
 <style>
   .mobile-nav {
     display: none;
