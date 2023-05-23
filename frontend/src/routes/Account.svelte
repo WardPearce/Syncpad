@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import sodium from "libsodium-wrappers-sumo";
   import { get } from "svelte/store";
+  import UAParser from "ua-parser-js";
 
   import type { SessionModel } from "../lib/client";
   import { client } from "../lib/canary";
@@ -9,20 +10,28 @@
   import { base64Decode } from "../lib/base64";
   import { logout } from "../lib/logout";
 
-  let activeSessions: SessionModel[] = [];
+  interface SessionDeviceModel extends SessionModel {
+    uaparser: UAParser;
+  }
+
+  let activeSessions: SessionDeviceModel[] = [];
   let loggedInSecrets = get(localSecrets);
 
   let privateKey: Uint8Array;
   let publicKey: Uint8Array;
 
   function decryptInfo(base64CipherText: string): string {
-    return new TextDecoder().decode(
-      sodium.crypto_box_seal_open(
-        base64Decode(base64CipherText),
-        publicKey,
-        privateKey
-      )
-    );
+    try {
+      return new TextDecoder().decode(
+        sodium.crypto_box_seal_open(
+          base64Decode(base64CipherText),
+          publicKey,
+          privateKey
+        )
+      );
+    } catch (error) {
+      return "Failed to decrypted";
+    }
   }
 
   async function logoutSession(sessionId: string) {
@@ -49,7 +58,14 @@
     privateKey = base64Decode(loggedInSecrets.rawKeypair.privateKey);
     publicKey = base64Decode(loggedInSecrets.rawKeypair.publicKey);
 
-    activeSessions = await client.session.controllersSessionGetSessions();
+    (await client.session.controllersSessionGetSessions()).forEach((session) =>
+      activeSessions.push({
+        uaparser: new UAParser(decryptInfo(session.device)),
+        ...session,
+      })
+    );
+
+    activeSessions = activeSessions;
   });
 </script>
 
@@ -127,7 +143,16 @@
         <div class="s12 m6 l3">
           <h6>Device</h6>
           <p>
-            {decryptInfo(session.device)}
+            <span style="font-weight: bold;">Browser:</span>
+            {session.uaparser.getBrowser().name}
+          </p>
+          <p>
+            <span style="font-weight: bold;">Engine:</span>
+            {session.uaparser.getEngine().name}
+          </p>
+          <p>
+            <span style="font-weight: bold;">OS:</span>
+            {session.uaparser.getOS().name}
           </p>
         </div>
         <div class="s12 m6 l3">
@@ -153,6 +178,5 @@
   .s12 {
     display: flex;
     flex-direction: column;
-    justify-content: center;
   }
 </style>
