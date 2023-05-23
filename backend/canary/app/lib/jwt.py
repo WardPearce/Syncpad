@@ -10,6 +10,24 @@ if TYPE_CHECKING:
     from app.types import State
 
 
+async def delete_all_user_sessions(state: "State", user_id: ObjectId) -> None:
+    search = {"user_id": user_id}
+
+    async for session in state.mongo.session.find(search):
+        await state.redis.delete(str(session["_id"]))
+
+    await state.mongo.session.delete_many(search)
+
+
+async def delete_session(
+    state: "State", session_id: ObjectId, user_id: ObjectId
+) -> None:
+    search = {"_id": session_id, "user_id": user_id}
+    if await state.mongo.session.count_documents(search) > 0:
+        await state.mongo.session.delete_one(search)
+        await state.redis.delete(str(session_id))
+
+
 async def retrieve_user_handler(
     token: Token, connection: ASGIConnection
 ) -> Optional[ObjectId]:

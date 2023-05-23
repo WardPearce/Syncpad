@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, Any, List
 
+from app.lib.jwt import delete_session
 from app.models.session import SessionModel
 from bson import ObjectId
-from litestar import Request, Response, Router, delete, get
+from bson.errors import InvalidId
+from litestar import Request, Router, delete, get
 from litestar.contrib.jwt import Token
 
 if TYPE_CHECKING:
@@ -26,11 +28,10 @@ async def get_sessions(
 async def invalidate_session(
     request: Request[ObjectId, Token, Any], state: "State", session_id: str
 ) -> None:
-    await state.redis.delete(session_id)
-
-    await state.mongo.session.delete_one(
-        {"user_id": request.user, "_id": ObjectId(session_id)}
-    )
+    try:
+        await delete_session(state, ObjectId(session_id), request.user)
+    except InvalidId:
+        pass
 
 
 router = Router(path="/session", route_handlers=[get_sessions, invalidate_session])

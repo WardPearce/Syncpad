@@ -22,6 +22,7 @@
   import { timeout } from "../lib/misc";
   import { base64Decode, base64Encode } from "../lib/base64";
   import { onMount } from "svelte";
+  import OtpInput from "../components/OtpInput.svelte";
 
   export let isRegister = false;
 
@@ -37,7 +38,6 @@
   let email = "";
   let rawPassword = "";
   let captchaToken = "";
-  let optCode = "";
 
   let rawAuthKeys: sodium.KeyPair;
   let rawDerivedKey: Uint8Array;
@@ -55,7 +55,7 @@
     }
   });
 
-  async function attemptAuthorization() {
+  async function attemptAuthorization(otpCode?: string) {
     advanceModeMsg = "Getting data to sign";
 
     const toProve = await client.account.controllersAccountEmailToSignToSign(
@@ -73,7 +73,7 @@
             sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
           ),
         },
-        otpSetupRequired ? "" : optCode
+        otpSetupRequired ? "" : otpCode
       );
     } catch (error) {
       throw error.body.detail;
@@ -159,7 +159,7 @@
     });
   }
 
-  async function OnOtpEnter() {
+  async function OnOtpEnter(otpCode: string) {
     isLoading = true;
     errorMsg = "";
 
@@ -167,7 +167,7 @@
 
     if (otpSetupRequired) {
       try {
-        await client.account.controllersAccountOtpSetupOtpSetup(optCode);
+        await client.account.controllersAccountOtpSetupOtpSetup(otpCode);
       } catch (error) {
         errorMsg = error.body.detail;
         isLoading = false;
@@ -175,12 +175,11 @@
       }
     } else {
       try {
-        await attemptAuthorization();
+        await attemptAuthorization(otpCode);
       } catch (error) {
         errorMsg = error;
         passwordScreen = true;
         rawPassword = "";
-        optCode = "";
         isLoading = false;
         return;
       }
@@ -445,17 +444,7 @@
           </div>
         {/if}
 
-        <form on:submit|preventDefault={OnOtpEnter}>
-          <nav>
-            <div class="max field label fill border">
-              <input type="text" bind:value={optCode} />
-              <label for="otp">OTP code</label>
-            </div>
-            <button class="square extra">
-              <i>arrow_forward_ios</i>
-            </button>
-          </nav>
-        </form>
+        <OtpInput {OnOtpEnter} />
       {/if}
     {/if}
   </article>

@@ -166,5 +166,5 @@
     />
     <span />
   </label>
-  <p>Advance mode</p>
+  <p>Advanced mode</p>
 </div>

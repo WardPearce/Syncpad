@@ -10,7 +10,7 @@ from app.errors import (
     OtpAlreadyCompleted,
     UserNotFoundException,
 )
-from app.lib.jwt import jwt_cookie_auth
+from app.lib.jwt import delete_all_user_sessions, delete_session, jwt_cookie_auth
 from app.lib.otp import OneTimePassword
 from app.lib.user import User
 from app.models.jwt import UserJtiModel
@@ -293,6 +293,8 @@ class OtpController(Controller):
             {"$set": {"otp.completed": False, "otp.secret": otp_secret}},
         )
 
+        await delete_all_user_sessions(state, request.user)
+
         return OtpModel(secret=otp_secret, completed=False)
 
 
@@ -302,9 +304,13 @@ class OtpController(Controller):
     tags=["account"],
     status_code=200,
 )
-async def logout() -> Response:
+async def logout(request: Request[ObjectId, Token, Any], state: "State") -> Response:
     response = Response(content=None)
     response.delete_cookie(jwt_cookie_auth.key)
+
+    # Invalidate session.
+    await delete_session(state, ObjectId(request.auth.jti), request.user)
+
     return response
 
 

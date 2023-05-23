@@ -9,6 +9,7 @@
   import { localSecrets } from "../stores";
   import { base64Decode } from "../lib/base64";
   import { logout } from "../lib/logout";
+  import OtpInput from "../components/OtpInput.svelte";
 
   interface SessionDeviceModel extends SessionModel {
     uaparser: UAParser;
@@ -20,7 +21,9 @@
   let privateKey: Uint8Array;
   let publicKey: Uint8Array;
 
-  function decryptInfo(base64CipherText: string): string {
+  let otpError = "";
+
+  function decryptSessionInfo(base64CipherText: string): string {
     try {
       return new TextDecoder().decode(
         sodium.crypto_box_seal_open(
@@ -52,6 +55,15 @@
     });
   }
 
+  async function resetOtp(otpCode: string) {
+    try {
+      await client.account.controllersAccountOtpResetResetOtp(otpCode);
+      await logout();
+    } catch (error) {
+      otpError = error.body.detail;
+    }
+  }
+
   onMount(async () => {
     await sodium.ready;
 
@@ -60,7 +72,7 @@
 
     (await client.session.controllersSessionGetSessions()).forEach((session) =>
       activeSessions.push({
-        uaparser: new UAParser(decryptInfo(session.device)),
+        uaparser: new UAParser(decryptSessionInfo(session.device)),
         ...session,
       })
     );
@@ -70,7 +82,23 @@
 </script>
 
 <h3>Account</h3>
-<article style="margin-top: 1em;">
+<article>
+  <h5>Email reset</h5>
+</article>
+<article>
+  <h5>Password reset</h5>
+</article>
+<article>
+  <h5>OTP reset</h5>
+  <div style="display: flex;">
+    {#if otpError}
+      <p>{otpError}</p>
+    {/if}
+
+    <OtpInput OnOtpEnter={resetOtp} otpLabel="Current OTP code" />
+  </div>
+</article>
+<article>
   <h5>Login IP processing</h5>
   <p>
     Upon logging in, we utilize your IP address to provide you with details
@@ -93,6 +121,12 @@
     <span />
   </label>
 </article>
+<article>
+  <h5 class="red-text">Danger zone</h5>
+  <p>These actions are not reversible.</p>
+  <button class="secondary">Rotate keychain</button>
+  <button class="tertiary">Delete account</button>
+</article>
 
 <h4>Sessions</h4>
 
@@ -109,7 +143,7 @@
           <p>
             <span style="font-weight: bold;">Country:</span>
             {#if session.location.country}
-              {decryptInfo(session.location.country)}
+              {decryptSessionInfo(session.location.country)}
             {:else}
               Unknown
             {/if}
@@ -117,7 +151,7 @@
           <p>
             <span style="font-weight: bold;">Region:</span>
             {#if session.location.region}
-              {decryptInfo(session.location.region)}
+              {decryptSessionInfo(session.location.region)}
             {:else}
               Unknown
             {/if}
@@ -125,7 +159,7 @@
           <p>
             <span style="font-weight: bold;">IP Address:</span>
             {#if session.location.ip}
-              {decryptInfo(session.location.ip)}
+              {decryptSessionInfo(session.location.ip)}
             {:else}
               Unknown
             {/if}
