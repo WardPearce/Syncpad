@@ -14,7 +14,6 @@ export type { AccountKeychainModal } from './models/AccountKeychainModal';
 export type { AccountX25519Model } from './models/AccountX25519Model';
 export type { Argon2Modal } from './models/Argon2Modal';
 export type { CreateUserModel } from './models/CreateUserModel';
-export type { EmailVerificationModel } from './models/EmailVerificationModel';
 export type { OtpModel } from './models/OtpModel';
 export type { PublicUserModel } from './models/PublicUserModel';
 export type { SessionLocationModel } from './models/SessionLocationModel';

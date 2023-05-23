@@ -58,7 +58,7 @@ class LoginController(Controller):
         return PublicUserModel(kdf=user.kdf, otp_completed=user.otp.completed)
 
     @get(
-        "/email/verify/{email_secret: str}",
+        "/email/verify/{email_secret:str}",
         description="Verify email for given account",
         tags=["account"],
         exclude_from_auth=True,
@@ -68,15 +68,22 @@ class LoginController(Controller):
     ) -> RedirectResponse:
         user = await User(state, email).get()
 
-        if user.email_verification.completed:
-            return RedirectResponse(SETTINGS.proxy_urls.frontend)
+        email_search = {"email": user.email, "secret": email_secret}
 
-        await state.mongo.user.update_one(
-            {"email": email, "email_verification.secret": email_secret},
-            {"$set": {"email_verification.completed": True}},
-        )
+        if (
+            not user.email_verified
+            and await state.mongo.email_verification.count_documents(email_search) > 0
+        ):
+            await state.mongo.user.update_one(
+                {"email": email},
+                {"$set": {"email_verified": True}},
+            )
 
-        return RedirectResponse(SETTINGS.proxy_urls.frontend + "/email-verified")
+            await state.mongo.email_verification.delete_one(email_search)
+
+            return RedirectResponse(SETTINGS.proxy_urls.frontend + "/email-verified")
+
+        return RedirectResponse(SETTINGS.proxy_urls.frontend)
 
     @get(
         path="/to-sign",
@@ -234,10 +241,14 @@ class LoginController(Controller):
 )
 async def email_resend(state: "State", request: Request[ObjectId, Token, Any]) -> None:
     user = await User(state, request.user).get()
-    if not user.email_verification.completed:
-        await send_email_verify(
-            to=user.email, email_secret=user.email_verification.secret
+    if not user.email_verified:
+        email_verification = await state.mongo.email_verification.find_one(
+            {"email": user.email}
         )
+        if email_verification:
+            await send_email_verify(
+                to=user.email, email_secret=email_verification["secret"]
+            )
 
 
 @post(
@@ -262,13 +273,18 @@ async def create_account(
 
     email_secret = secrets.token_urlsafe(32)
 
+    await state.mongo.email_verification.insert_one(
+        {
+            "secret": email_secret,
+            "email": email,
+            "expires": datetime.now() + timedelta(hours=24),
+        }
+    )
+
     await state.mongo.user.insert_one(
         {
             **data.dict(),
-            "email_verification": {
-                "completed": False,
-                "secret": email_secret,
-            },
+            "email_verified": False,
             "created": datetime.now(),
             "otp": {"secret": pyotp.random_base32(), "completed": False},
         }

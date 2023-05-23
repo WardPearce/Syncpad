@@ -104,16 +104,11 @@ class OtpModel(BaseModel):
         )
 
 
-class EmailVerificationModel(BaseModel):
-    completed: bool = False
-    secret: str
-
-
 class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):
     id: ObjectId = Field(..., alias="_id")
     created: datetime
     otp: OtpModel
-    email_verification: EmailVerificationModel
+    email_verified: bool = False
 
 
 class UserLoginSignatureModel(BaseModel):

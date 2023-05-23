@@ -148,9 +148,7 @@
         rawKeychain
       );
 
-    emailVerificationRequired.set(
-      !loggedInUser.user.email_verification.completed
-    );
+    emailVerificationRequired.set(!loggedInUser.user.email_verified);
 
     // Should never store derivedKey or private key.
     // If IndexDB compromised, authorization can't be acquired.

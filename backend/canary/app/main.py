@@ -36,6 +36,9 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
         await state.mongo.old_otp.create_index("expires", expireAfterSeconds=0)
         await state.mongo.proof.create_index("expires", expireAfterSeconds=0)
         await state.mongo.session.create_index("record_kept_till", expireAfterSeconds=0)
+        await state.mongo.email_verification.create_index(
+            "expires", expireAfterSeconds=0
+        )
 
     return state.mongo
 

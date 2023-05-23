@@ -205,7 +205,7 @@ export class AccountService {
 
     /**
      * EmailResend
-     * Resends email verification email
+     * Resends email verification
      * @returns any Document created, URL follows
      * @throws ApiError
      */
