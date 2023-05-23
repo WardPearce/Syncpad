@@ -69,7 +69,7 @@
 </script>
 
 {#if !isMobile}
-  <a href="/" use:link>
+  <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
     <div class="logo">
       <img src="/logo.png" alt="logo" />
     </div>
@@ -106,15 +106,6 @@
     <span>Dashboard</span>
   </a>
 {/if}
-<a
-  use:link
-  href="/dashboard/add-site"
-  class:active={currentPage === "/dashboard/add-site"}
-  class={isMobile ? "row round" : ""}
->
-  <i>add</i>
-  <span>Add a site</span>
-</a>
 {#if loggedInUser !== undefined}
   <a
     use:link

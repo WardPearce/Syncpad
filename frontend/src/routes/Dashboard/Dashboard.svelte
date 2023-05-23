@@ -3,7 +3,10 @@
   import { concat } from "../../lib/misc";
 </script>
 
-<h3>My sites</h3>
+<h3>My surveys</h3>
+<p>placeholder</p>
+
+<h3>Canaries</h3>
 <div class="grid">
   <div class="s12 m6 l4">
     <article>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-navigator";
+  import { Router, Route, link } from "svelte-navigator";
   import { onMount } from "svelte";
 
   import LazyRoute from "./components/LazyRoute.svelte";
@@ -51,9 +51,11 @@
   <div class={`modal left ${mobileNavShow ? "active" : ""}`}>
     <header class="fixed">
       <nav style="display: flex;justify-content: space-between;">
-        <div class="logo">
-          <img src="/logo.png" alt="logo" />
-        </div>
+        <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
+          <div class="logo">
+            <img src="/logo.png" alt="logo" />
+          </div>
+        </a>
         <button
           class="transparent circle large"
           on:click={() => (mobileNavShow = false)}
