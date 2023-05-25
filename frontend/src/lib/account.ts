@@ -1,13 +1,13 @@
 import { del } from "idb-keyval";
 import { navigate } from "svelte-navigator";
 
-import sodium from "libsodium-wrappers-sumo";
 import { zxcvbn } from "@zxcvbn-ts/core";
+import sodium from "libsodium-wrappers-sumo";
 
-import apiClient from "./apiClient";
 import { emailVerificationRequired, localSecrets, setLocalSecrets } from "../stores";
-import { base64Decode, base64Encode } from "./crypto/codecUtils";
+import apiClient from "./apiClient";
 import type { CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
+import { base64Decode, base64Encode } from "./crypto/codecUtils";
 import secretKey from "./crypto/secretKey";
 
 
@@ -34,7 +34,7 @@ export class OtpRequiredError extends Error {
 export async function logout() {
   // Catch if private tab.
   try {
-      await del("localSecrets");
+    await del("localSecrets");
   } catch { }
 
   // Wipe localSecrets store.
@@ -45,39 +45,39 @@ export async function logout() {
 
   // Attempt logout request, may 401.
   try {
-      await apiClient.account.controllersAccountLogoutLogout();
-  } catch {}
+    await apiClient.account.controllersAccountLogoutLogout();
+  } catch { }
 }
 
 export async function* login(
   email: string, password: string,
   captchaToken?: string, otpCode?: string,
-  passwordCache?: { pastPassword: { raw: string, derived: Uint8Array } }
-): AsyncIterable<string | UserModel > {
+  passwordCache?: { pastPassword: { raw: string, derived: Uint8Array; }; }
+): AsyncIterable<string | UserModel> {
   yield "libsodium blocks :(";
 
   if (captchaToken === "" && import.meta.env.VITE_MCAPTCHA_ENABLED === "true") {
-      throw new LoginError("Captcha not completed");
+    throw new LoginError("Captcha not completed");
   }
 
   let publicUser: PublicUserModel;
   try {
-      publicUser = await apiClient.account.controllersAccountEmailPublicPublic(
-          email
-      );
+    publicUser = await apiClient.account.controllersAccountEmailPublicPublic(
+      email
+    );
   } catch (error) {
-      throw new LoginError(error.body.detail);
+    throw new LoginError(error.body.detail);
   }
 
   // Somewhat hackie in memory caching system, so OTP code doesn't
   // expire to key deriving taking too long.
   let rawDerivedKey: Uint8Array;
   if (typeof passwordCache !== "undefined" && passwordCache.pastPassword.raw === password) {
-    rawDerivedKey = passwordCache.pastPassword.derived
+    rawDerivedKey = passwordCache.pastPassword.derived;
   } else {
     const rawSalt = base64Decode(publicUser.kdf.salt);
 
-    yield "Deriving key from password"
+    yield "Deriving key from password";
 
     rawDerivedKey = sodium.crypto_pwhash(
       32,
@@ -86,28 +86,28 @@ export async function* login(
       publicUser.kdf.time_cost,
       publicUser.kdf.memory_cost,
       sodium.crypto_pwhash_ALG_DEFAULT
-    )
+    );
 
     passwordCache.pastPassword = {
       derived: rawDerivedKey,
       raw: password
-    }
+    };
   }
 
   if (publicUser.otp_completed && !otpCode)
     throw new OtpRequiredError();
 
-  yield "Seeding auth keypair"
+  yield "Seeding auth keypair";
 
   const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
 
-  yield "Getting data to sign"
+  yield "Getting data to sign";
 
   const toProve = await apiClient.account.controllersAccountEmailToSignToSign(
     email
   );
 
-  yield "Sending signed data to server"
+  yield "Sending signed data to server";
 
   let loggedInUser: UserJtiModel;
   try {
@@ -157,7 +157,7 @@ export async function* login(
 
   yield "Validating signature";
 
-  const failedToValidate = "Failed to validate given data from server"
+  const failedToValidate = "Failed to validate given data from server";
   try {
     if (
       sodium.to_hex(
@@ -179,18 +179,18 @@ export async function* login(
   yield "Decrypting keychain";
 
   const rawKeychain = secretKey.decrypt(
-      rawDerivedKey,
-      loggedInUser.user.keychain.iv,
-      loggedInUser.user.keychain.cipher_text
-  )
+    rawDerivedKey,
+    loggedInUser.user.keychain.iv,
+    loggedInUser.user.keychain.cipher_text
+  );
 
   yield "Decrypting private key";
 
   const rawKeypairPrivateKey = secretKey.decrypt(
-      rawKeychain as Uint8Array,
-      loggedInUser.user.keypair.iv,
-      loggedInUser.user.keypair.cipher_text
-  )
+    rawKeychain as Uint8Array,
+    loggedInUser.user.keypair.iv,
+    loggedInUser.user.keypair.cipher_text
+  );
 
   emailVerificationRequired.set(!loggedInUser.user.email_verified);
 
@@ -203,42 +203,42 @@ export async function* login(
       publicKey: loggedInUser.user.keypair.public_key,
     },
     jti: loggedInUser.jti,
-  })
+  });
 
   yield loggedInUser.user;
 }
 
 export async function* register(email: string, password: string, captchaToken?: string, ipConsent: boolean = false) {
   if (captchaToken === "" && import.meta.env.VITE_MCAPTCHA_ENABLED === "true") {
-      throw new RegisterError("Captcha not completed");
+    throw new RegisterError("Captcha not completed");
   }
 
   yield "Checking password strength";
 
   if (zxcvbn(password).score < 3) {
-      throw new RegisterError("Please use a stronger password");
+    throw new RegisterError("Please use a stronger password");
   }
 
   yield "Checking if email is taken";
 
   try {
-      await apiClient.account.controllersAccountEmailPublicPublic(email);
-      throw new RegisterError("Email taken");
+    await apiClient.account.controllersAccountEmailPublicPublic(email);
+    throw new RegisterError("Email taken");
   } catch (error) {
-      if (error instanceof RegisterError) {
-          throw error;
-      }
+    if (error instanceof RegisterError) {
+      throw error;
+    }
   }
 
   yield "Generating salt";
-  
+
   const rawSalt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
 
   const kdf = {
-      salt: base64Encode(rawSalt),
-      time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
-      memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
-  }
+    salt: base64Encode(rawSalt),
+    time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
+    memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
+  };
 
   yield "Deriving key from password.";
 
@@ -260,51 +260,51 @@ export async function* register(email: string, password: string, captchaToken?: 
   const rawKeychain = secretKey.generateKey();
 
   const safeKeychain = secretKey.encrypt(
-      rawDerivedKey,
-      rawKeychain
-  )
+    rawDerivedKey,
+    rawKeychain
+  );
 
   yield "Generating keypair";
 
   const rawKeypair = sodium.crypto_box_keypair();
 
   const safePrivateKey = secretKey.encrypt(
-      rawKeychain,
-      rawKeypair.privateKey
-  )
+    rawKeychain,
+    rawKeypair.privateKey
+  );
 
   const createUser: CreateUserModel = {
-      email: email,
-      kdf: {
-          time_cost: kdf.time_cost,
-          memory_cost: kdf.memory_cost,
-          salt: kdf.salt,
-      },
-      keychain: {
-          iv: safeKeychain.iv,
-          cipher_text: safeKeychain.cipherText,
-      },
-      auth: {
-          public_key: base64Encode(rawAuthKeys.publicKey),
-      },
-      keypair: {
-          cipher_text: safePrivateKey.cipherText,
-          iv: safePrivateKey.iv,
-          public_key: base64Encode(rawKeypair.publicKey),
-      },
-      signature: "",
+    email: email,
+    kdf: {
+      time_cost: kdf.time_cost,
+      memory_cost: kdf.memory_cost,
+      salt: kdf.salt,
+    },
+    keychain: {
+      iv: safeKeychain.iv,
+      cipher_text: safeKeychain.cipherText,
+    },
+    auth: {
+      public_key: base64Encode(rawAuthKeys.publicKey),
+    },
+    keypair: {
+      cipher_text: safePrivateKey.cipherText,
+      iv: safePrivateKey.iv,
+      public_key: base64Encode(rawKeypair.publicKey),
+    },
+    signature: "",
   };
 
   yield "Signing user data";
 
   createUser.signature = base64Encode(
-      sodium.crypto_sign(
-          sodium.crypto_generichash(
-          sodium.crypto_generichash_BYTES,
-          JSON.stringify(createUser)
-          ),
-          rawAuthKeys.privateKey
-      )
+    sodium.crypto_sign(
+      sodium.crypto_generichash(
+        sodium.crypto_generichash_BYTES,
+        JSON.stringify(createUser)
+      ),
+      rawAuthKeys.privateKey
+    )
   );
 
   createUser.ip_lookup_consent = ipConsent;
@@ -312,12 +312,12 @@ export async function* register(email: string, password: string, captchaToken?: 
   yield "Sending account data to server";
 
   try {
-  await apiClient.account.controllersAccountCreateCreateAccount(
+    await apiClient.account.controllersAccountCreateCreateAccount(
       captchaToken,
       createUser
-  );
+    );
   } catch (error) {
-      throw new RegisterError(error.body.detail);
+    throw new RegisterError(error.body.detail);
   }
 }
 
@@ -325,4 +325,4 @@ export default {
   logout,
   register,
   login
-}
+};

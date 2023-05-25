@@ -1,9 +1,9 @@
 import { CanaryClient } from "./client";
 
-import { request } from "./client/core/request";
-import type { CancelablePromise } from "./client/core/CancelablePromise";
 import type { ApiRequestOptions } from "./client/core/ApiRequestOptions";
+import type { CancelablePromise } from "./client/core/CancelablePromise";
 import { FetchHttpRequest } from "./client/core/FetchHttpRequest";
+import { request } from "./client/core/request";
 import { getCookie } from "./misc";
 
 
@@ -23,4 +23,4 @@ class CSrfHttpRequest extends FetchHttpRequest {
 
 export default new CanaryClient({
     BASE: import.meta.env.VITE_API_URL
-}, CSrfHttpRequest)
+}, CSrfHttpRequest);

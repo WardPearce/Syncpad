@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import sodium from "libsodium-wrappers-sumo";
+  import { onMount } from "svelte";
   import { get } from "svelte/store";
   import UAParser from "ua-parser-js";
 
-  import type { SessionModel } from "../lib/client";
-  import apiClient from "../lib/apiClient";
-  import { localSecrets } from "../stores";
-  import { base64Decode } from "../lib/crypto/codecUtils";
-  import account from "../lib/account";
   import OtpInput from "../components/OtpInput.svelte";
+  import account from "../lib/account";
+  import apiClient from "../lib/apiClient";
+  import type { SessionModel } from "../lib/client";
+  import { base64Decode } from "../lib/crypto/codecUtils";
+  import { localSecrets } from "../stores";
 
   interface SessionDeviceModel extends SessionModel {
     uaparser: UAParser;

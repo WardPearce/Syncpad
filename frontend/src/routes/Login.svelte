@@ -1,16 +1,16 @@
 <script lang="ts">
+  import { tooltip } from "@svelte-plugins/tooltips";
+  import { link, navigate, useLocation } from "svelte-navigator";
   import QrCode from "svelte-qrcode";
   import { get } from "svelte/store";
-  import { link, navigate, useLocation } from "svelte-navigator";
-  import { tooltip } from "@svelte-plugins/tooltips";
 
-  import { advanceModeStore, localSecrets, themeStore } from "../stores";
-  import Mcaptcha from "../components/Mcaptcha.svelte";
-  import { type UserModel } from "../lib/client";
   import { onMount } from "svelte";
+  import Mcaptcha from "../components/Mcaptcha.svelte";
   import OtpInput from "../components/OtpInput.svelte";
   import account, { OtpRequiredError } from "../lib/account";
   import apiClient from "../lib/apiClient";
+  import { type UserModel } from "../lib/client";
+  import { advanceModeStore, localSecrets, themeStore } from "../stores";
 
   export let isRegister = false;
 

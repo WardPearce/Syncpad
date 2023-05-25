@@ -1,4 +1,3 @@
-import sodium from "libsodium-wrappers-sumo";
 
 export enum PublickeyLocation {
     localPublic = "localPublic",

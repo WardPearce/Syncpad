@@ -1,26 +1,26 @@
 import sodium from "libsodium-wrappers-sumo";
-import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 import { get } from "svelte/store";
 import { localSecrets } from "../../stores";
+import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 
 export enum SecretkeyLocation {
-    localKeychain = "localKeychain",
-    generate = "generate"
+  localKeychain = "localKeychain",
+  generate = "generate"
 }
 
 export type Key = Uint8Array | SecretkeyLocation;
 
 export interface encryptedData {
-  cipherText: string
+  cipherText: string;
   iv: string,
-  key: string
+  key: string;
 }
 
 export class KeychainUndefinedError extends Error {
   constructor() {
     super();
     this.message = "Keychain can not be undefined";
-    this.name = "KeychainUndefinedError"
+    this.name = "KeychainUndefinedError";
   }
 }
 
@@ -38,7 +38,7 @@ export function determineKeyLocation(key: Key): Uint8Array {
   } else if (key === SecretkeyLocation.localKeychain) {
     const keychain = get(localSecrets).rawKeychain;
     if (typeof keychain === "undefined") {
-        throw new KeychainUndefinedError();
+      throw new KeychainUndefinedError();
     }
     return base64Decode(keychain);
   } else {
@@ -47,8 +47,8 @@ export function determineKeyLocation(key: Key): Uint8Array {
 }
 
 export function encrypt(
-    key: Key,
-    toEncrypt: Uint8Array | string,
+  key: Key,
+  toEncrypt: Uint8Array | string,
 ): encryptedData {
   const rawKey = determineKeyLocation(key);
   const rawIv = generateIv();
@@ -65,14 +65,14 @@ export function encrypt(
     cipherText: base64Encode(cipher),
     iv: base64Encode(rawIv),
     key: base64Encode(key)
-  }
+  };
 }
 
 export function decrypt(
-    key: Key,
-    iv: string,
-    toDecrypt: string,
-    utf8: boolean = false
+  key: Key,
+  iv: string,
+  toDecrypt: string,
+  utf8: boolean = false
 ): Uint8Array | string {
   const rawKey = determineKeyLocation(key);
 
@@ -92,4 +92,4 @@ export default {
   decrypt,
   generateIv,
   generateKey
-}
+};

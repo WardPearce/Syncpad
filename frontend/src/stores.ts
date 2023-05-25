@@ -1,5 +1,5 @@
-import { writable, type Writable } from "svelte/store";
 import { get, set } from "idb-keyval";
+import { writable, type Writable } from "svelte/store";
 
 export const advanceModeStore = writable(localStorage.getItem("advanceMode") === "true");
 export const themeStore = writable({});
@@ -14,17 +14,17 @@ export interface LocalSecretsModel {
     rawKeychain: string,
     rawKeypair: {
         publicKey: string,
-        privateKey: string
-    }
+        privateKey: string;
+    };
 }
 
 export const emailVerificationRequired = writable(false);
 
 async function getLocalSecrets(): Promise<LocalSecretsModel | undefined> {
     try {
-        return await get("localSecrets")
+        return await get("localSecrets");
     } catch {
-        return undefined
+        return undefined;
     }
 }
 
