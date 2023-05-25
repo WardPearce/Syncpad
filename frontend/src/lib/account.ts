@@ -83,15 +83,17 @@ export async function* login(
       32,
       password,
       rawSalt,
-      publicUser.kdf.time_cost,
-      publicUser.kdf.memory_cost,
+      publicUser.kdf.time_cost as number,
+      publicUser.kdf.memory_cost as number,
       sodium.crypto_pwhash_ALG_DEFAULT
     );
 
-    passwordCache.pastPassword = {
-      derived: rawDerivedKey,
-      raw: password
-    };
+    if (typeof passwordCache !== "undefined") {
+      passwordCache.pastPassword = {
+        derived: rawDerivedKey,
+        raw: password
+      };
+    }
   }
 
   if (publicUser.otp_completed && !otpCode)
@@ -112,7 +114,7 @@ export async function* login(
   let loggedInUser: UserJtiModel;
   try {
     loggedInUser = await apiClient.account.controllersAccountEmailLoginLogin(
-      captchaToken,
+      captchaToken as string,
       email,
       {
         _id: toProve._id,
@@ -313,7 +315,7 @@ export async function* register(email: string, password: string, captchaToken?: 
 
   try {
     await apiClient.account.controllersAccountCreateCreateAccount(
-      captchaToken,
+      captchaToken as string,
       createUser
     );
   } catch (error) {

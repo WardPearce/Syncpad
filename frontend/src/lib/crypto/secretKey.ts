@@ -36,11 +36,11 @@ export function determineKeyLocation(key: Key): Uint8Array {
   if (key instanceof Uint8Array) {
     return key;
   } else if (key === SecretkeyLocation.localKeychain) {
-    const keychain = get(localSecrets).rawKeychain;
-    if (typeof keychain === "undefined") {
+    const keychain = get(localSecrets);
+    if (typeof keychain === "undefined" || !keychain.rawKeychain) {
       throw new KeychainUndefinedError();
     }
-    return base64Decode(keychain);
+    return base64Decode(keychain.rawKeychain);
   } else {
     return generateKey();
   }
