@@ -17,6 +17,7 @@ class ErrorCodes(Enum):
     otp_completed = 2005
     domain_validation = 2006
     local_domain = 2007
+    domain_taken = 2008
 
 
 class UserNotFoundException(NotFoundException):
@@ -86,4 +87,14 @@ class LocalDomainInvalid(ValidationException):
         super().__init__(
             detail="Local domains can't be used",
             extra={ERROR_CODE_KEY: ErrorCodes.local_domain.value},
+        )
+
+
+class DomainTaken(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Domain has already been registered",
+            extra={ERROR_CODE_KEY: ErrorCodes.domain_taken.value},
         )

@@ -39,6 +39,6 @@ async def send_email_verify(to: str, email_secret: str) -> None:
 
     await send_email(
         to=to,
-        subject=f"{SETTINGS.open_api.title} requires email verification.",
-        content=f"Please verify your email for {SETTINGS.open_api.title} by following the link below.\n\n{SETTINGS.proxy_urls.backend}/controllers/account/{quote_plus(to)}/email/verify/{email_secret}\n\nIf you didn't create this account, please ignore this email.",
+        subject=f"{SETTINGS.site_name} requires email verification.",
+        content=f"Please verify your email for {SETTINGS.site_name} by following the link below.\n\n{SETTINGS.proxy_urls.backend}/controllers/account/{quote_plus(to)}/email/verify/{email_secret}\n\nIf you didn't create this account, please ignore this email.",
     )

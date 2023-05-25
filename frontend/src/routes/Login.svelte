@@ -424,7 +424,7 @@
               class="checkbox"
               use:tooltip={{
                 content:
-                  "IP & device processed for session logs on login. Encrypted with your public key.",
+                  "IP & device processed for session logs on login. Encrypted with your public key. Your IP will be processed with Proxycheck.io",
               }}
             >
               <input type="checkbox" bind:checked={deviceSessionLogs} />

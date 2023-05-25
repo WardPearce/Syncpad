@@ -7,12 +7,12 @@ from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 class MongoDB(BaseModel):
     host: str = "localhost"
     port: int = 27017
-    collection: str = "canary"
+    collection: str = "purplix"
 
 
 class ProxiedUrls(BaseModel):
-    frontend: AnyHttpUrl = AnyHttpUrl(url="http://localhost", scheme="http")
-    backend: AnyHttpUrl = AnyHttpUrl(url="http://localhost/api", scheme="http")
+    frontend: str = "http://localhost"
+    backend: str = "http://localhost/api"
 
 
 class S3(BaseModel):
@@ -20,13 +20,13 @@ class S3(BaseModel):
     secret_access_key: str
     access_key_id: str
     bucket: str
-    folder: str = "canary"
+    folder: str = "purplix"
     download_url: str
     endpoint_url: Optional[str] = None
 
 
 class OpenAPI(BaseModel):
-    title: str = "canary"
+    title: str = "Purplix.io"
     version: str = "0.0.1"
 
 
@@ -64,7 +64,7 @@ class Jwt(BaseModel):
 
 
 class DomainVerify(BaseModel):
-    prefix: str = "canarystat.us__verify="
+    prefix: str = "purplix.io__verify="
     timeout: int = 20
 
 
@@ -81,23 +81,27 @@ class Smtp(BaseModel):
     email: str
 
 
+class Canary(BaseModel):
+    domain_verify: DomainVerify = DomainVerify()
+    documents: Documents = Documents()
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
     proxy_urls: ProxiedUrls = ProxiedUrls()
     open_api: OpenAPI = OpenAPI()
     mcaptcha: Optional[mCaptcha] = None
-    documents: Documents = Documents()
-    site_name = "canarystat.us"
-    domain_verify: DomainVerify = DomainVerify()
+    site_name = "Purplix.io"
     proxy_check: Optional[Proxycheck] = None
     smtp: Optional[Smtp] = None
+    canary: Canary = Canary()
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
 
     class Config:
-        env_prefix = "canary_"
+        env_prefix = "purplix_"
 
 
 SETTINGS = Settings()  # type: ignore

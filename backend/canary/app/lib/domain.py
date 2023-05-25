@@ -34,7 +34,9 @@ async def get_localhost_aliases() -> List[str]:
 class Domain:
     def __init__(self, domain: str) -> None:
         self.__domain = yarl.URL(domain).host
-        self.__resolver = aiodns.DNSResolver(timeout=SETTINGS.domain_verify.timeout)
+        self.__resolver = aiodns.DNSResolver(
+            timeout=SETTINGS.canary.domain_verify.timeout
+        )
 
     async def attempt_verify(self, state: "State", user_id: ObjectId) -> None:
         """Attempt to verify a canary domain.
@@ -60,8 +62,10 @@ class Domain:
             if attempts > 100:
                 break
 
-            if record.text.startswith(SETTINGS.domain_verify.prefix):
-                canary_code = record.text.replace(SETTINGS.domain_verify.prefix, "", 1)
+            if record.text.startswith(SETTINGS.canary.domain_verify.prefix):
+                canary_code = record.text.replace(
+                    SETTINGS.canary.domain_verify.prefix, "", 1
+                )
                 break
 
         canary_code = canary_code.strip()

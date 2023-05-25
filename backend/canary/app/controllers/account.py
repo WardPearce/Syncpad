@@ -25,6 +25,7 @@ from app.models.user import (
     UserToSignModel,
 )
 from bson import ObjectId
+from bson.errors import InvalidId
 from env import SETTINGS
 from litestar import Request, Response, Router, delete
 from litestar.background_tasks import BackgroundTask
@@ -125,7 +126,11 @@ class LoginController(Controller):
     ) -> Response[UserJtiModel]:
         user = await User(state, email).get()
 
-        proof_search = {"user_id": ObjectId(user.id), "_id": ObjectId(data.id)}
+        try:
+            proof_search = {"user_id": ObjectId(user.id), "_id": ObjectId(data.id)}
+        except InvalidId:
+            raise InvalidAccountAuth()
+
         proof = await state.mongo.proof.find_one(proof_search)
         if not proof:
             raise InvalidAccountAuth()
