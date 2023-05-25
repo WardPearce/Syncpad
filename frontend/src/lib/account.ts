@@ -187,7 +187,7 @@ export async function* login(
   yield "Decrypting private key";
 
   const rawKeypairPrivateKey = secretKey.decrypt(
-      rawKeychain,
+      rawKeychain as Uint8Array,
       loggedInUser.user.keypair.iv,
       loggedInUser.user.keypair.cipher_text
   )

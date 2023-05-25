@@ -8,7 +8,7 @@ export enum SecretkeyLocation {
     generate = "generate"
 }
 
-export type Key = Uint8Array | string | SecretkeyLocation;
+export type Key = Uint8Array | SecretkeyLocation;
 
 export interface encryptedData {
   cipherText: string
@@ -40,10 +40,8 @@ export function determineKeyLocation(key: Key): Uint8Array {
     if (typeof keychain === "undefined") {
         throw new KeychainUndefinedError();
     }
-  } else if (key === SecretkeyLocation.generate) {
-    return generateKey();
   } else {
-    return base64Decode(key);
+    return generateKey();
   }
 }
 

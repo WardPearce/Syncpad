@@ -100,7 +100,7 @@ class OtpModel(BaseModel):
 
     def __provisioning_uri(self) -> str:
         return pyotp.totp.TOTP(self.secret).provisioning_uri(
-            issuer_name=SETTINGS.site_name
+            issuer_name=SETTINGS.site_name, name=SETTINGS.site_name
         )
 
 
