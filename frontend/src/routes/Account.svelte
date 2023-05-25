@@ -8,7 +8,7 @@
   import { client } from "../lib/canary";
   import { localSecrets } from "../stores";
   import { base64Decode } from "../lib/base64";
-  import { logout } from "../lib/logout";
+  import { logout } from "../lib/account";
   import OtpInput from "../components/OtpInput.svelte";
 
   interface SessionDeviceModel extends SessionModel {

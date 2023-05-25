@@ -26,10 +26,12 @@ redis = "^4.5.5"
 aiodns = "^3.0.0"
 yarl = "^1.9.2"
 aiosmtplib = "^2.0.1"
+aiobotocore = "^2.5.0"
 
 
 [tool.poetry.group.dev.dependencies]
 motor-types = "^1.0.0b1"
+types-aiobotocore = "^2.5.0.post2"
 
 [build-system]
 requires = ["poetry-core"]

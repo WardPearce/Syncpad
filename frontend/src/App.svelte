@@ -7,7 +7,7 @@
   import NavItems from "./components/NavItems.svelte";
 
   import { client } from "./lib/canary";
-  import { logout } from "./lib/logout";
+  import { logout } from "./lib/account";
   import {
     emailVerificationRequired,
     isDarkMode,

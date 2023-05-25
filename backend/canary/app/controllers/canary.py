@@ -1,8 +1,12 @@
 import secrets
 from datetime import datetime
+from os import path
 from typing import TYPE_CHECKING, Annotated, Any
 
-from app.errors import DomainTaken
+from app.env import SETTINGS
+from app.errors import CanaryTaken, FileTooBig, UnsupportedFileType
+from app.lib.canary import Canary
+from app.lib.s3 import format_path, s3_create_client
 from app.models.canary import CanaryModel, CreateCanaryModel
 from bson import ObjectId
 from litestar import Controller, Request, Router, post, put
@@ -27,12 +31,14 @@ async def create_canary(
         )
         > 0
     ):
-        raise DomainTaken()
+        raise CanaryTaken()
 
     to_insert = {
         **data.dict(),
+        "domain": domain,
         "user_id": request.user,
         "created": datetime.now(),
+        "logo": None,
         "domain_verification": {"completed": False, "code": secrets.token_urlsafe(32)},
     }
 
@@ -48,9 +54,31 @@ class CanaryController(Controller):
     async def update_logo(
         self,
         domain: str,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
         data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
     ) -> None:
-        await data.read()
+        _, logo_ext = path.splitext(data.filename)
+        if logo_ext not in SETTINGS.canary.logo.allowed_extensions:
+            raise UnsupportedFileType()
+
+        canary = await Canary(state, domain).user(request.user).get()
+
+        logo = await data.read(SETTINGS.canary.logo.max_size + 24)
+        if len(logo) > SETTINGS.canary.logo.max_size:
+            raise FileTooBig()
+
+        logo_filename = f"{canary.id}{logo_ext}"
+
+        async with s3_create_client() as s3:
+            await s3.put_object(
+                Bucket=SETTINGS.s3.bucket,
+                Key=format_path("canary", "logos", logo_filename),
+            )
+
+        await state.mongo.canary.update_one(
+            {"_id": canary.id}, {"$set": {"logo": logo_filename}}
+        )
 
 
 router = Router(path="/canary", route_handlers=[create_canary, CanaryController])

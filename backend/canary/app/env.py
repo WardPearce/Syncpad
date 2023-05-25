@@ -46,15 +46,15 @@ class Documents(BaseModel):
     max_amount: int = 3
     max_size: int = 5243000
     allowed_extensions: List[str] = [
-        "pdf",
-        "html",
-        "png",
-        "jpeg",
-        "jpg",
-        "mp4",
-        "mp3",
-        "gif",
-        "7z",
+        ".pdf",
+        ".html",
+        ".png",
+        ".jpeg",
+        ".jpg",
+        ".mp4",
+        ".mp3",
+        ".gif",
+        ".7z",
     ]
 
 
@@ -81,9 +81,19 @@ class Smtp(BaseModel):
     email: str
 
 
+class CanaryLogo(BaseModel):
+    max_size = 1049000
+    allowed_extensions: List[str] = [
+        ".png",
+        ".jpeg",
+        ".jpg",
+    ]
+
+
 class Canary(BaseModel):
     domain_verify: DomainVerify = DomainVerify()
     documents: Documents = Documents()
+    logo: CanaryLogo = CanaryLogo()
 
 
 class Settings(BaseSettings):
@@ -96,6 +106,7 @@ class Settings(BaseSettings):
     proxy_check: Optional[Proxycheck] = None
     smtp: Optional[Smtp] = None
     canary: Canary = Canary()
+    s3: S3
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)

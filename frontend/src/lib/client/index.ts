@@ -13,7 +13,11 @@ export type { AccountEd25199Modal } from './models/AccountEd25199Modal';
 export type { AccountKeychainModal } from './models/AccountKeychainModal';
 export type { AccountX25519Model } from './models/AccountX25519Model';
 export type { Argon2Modal } from './models/Argon2Modal';
+export type { CanaryEd25519Model } from './models/CanaryEd25519Model';
+export type { CanaryModel } from './models/CanaryModel';
+export type { CreateCanaryModel } from './models/CreateCanaryModel';
 export type { CreateUserModel } from './models/CreateUserModel';
+export type { DomainVerification } from './models/DomainVerification';
 export type { OtpModel } from './models/OtpModel';
 export type { PublicUserModel } from './models/PublicUserModel';
 export type { SessionLocationModel } from './models/SessionLocationModel';
@@ -24,4 +28,5 @@ export type { UserModel } from './models/UserModel';
 export type { UserToSignModel } from './models/UserToSignModel';
 
 export { AccountService } from './services/AccountService';
+export { CanaryService } from './services/CanaryService';
 export { SessionService } from './services/SessionService';

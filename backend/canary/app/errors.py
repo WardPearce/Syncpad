@@ -17,7 +17,10 @@ class ErrorCodes(Enum):
     otp_completed = 2005
     domain_validation = 2006
     local_domain = 2007
-    domain_taken = 2008
+    canary_taken = 2008
+    upload_too_big = 2009
+    canary_not_found = 2010
+    unsupported_file_type = 2011
 
 
 class UserNotFoundException(NotFoundException):
@@ -90,11 +93,41 @@ class LocalDomainInvalid(ValidationException):
         )
 
 
-class DomainTaken(ValidationException):
+class CanaryTaken(ValidationException):
     def __init__(
         self,
     ) -> None:
         super().__init__(
             detail="Domain has already been registered",
-            extra={ERROR_CODE_KEY: ErrorCodes.domain_taken.value},
+            extra={ERROR_CODE_KEY: ErrorCodes.canary_taken.value},
+        )
+
+
+class FileTooBig(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Uploaded file is larger then the max upload size",
+            extra={ERROR_CODE_KEY: ErrorCodes.upload_too_big.value},
+        )
+
+
+class UnsupportedFileType(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Uploaded file is not supported",
+            extra={ERROR_CODE_KEY: ErrorCodes.unsupported_file_type.value},
+        )
+
+
+class CanaryNotFoundException(NotFoundException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Canary not found",
+            extra={ERROR_CODE_KEY: ErrorCodes.canary_not_found.value},
         )

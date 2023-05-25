@@ -2,27 +2,12 @@
   import QrCode from "svelte-qrcode";
   import { get } from "svelte/store";
   import { link, navigate, useLocation } from "svelte-navigator";
-  import { zxcvbn } from "@zxcvbn-ts/core";
   import { tooltip } from "@svelte-plugins/tooltips";
 
-  import sodium from "libsodium-wrappers-sumo";
-
-  import {
-    advanceModeStore,
-    setLocalSecrets,
-    localSecrets,
-    themeStore,
-    emailVerificationRequired,
-  } from "../stores";
+  import { advanceModeStore, localSecrets, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
   import { client } from "../lib/canary";
-  import {
-    type CreateUserModel,
-    type PublicUserModel,
-    type UserJtiModel,
-  } from "../lib/client";
-  import { timeout } from "../lib/misc";
-  import { base64Decode, base64Encode } from "../lib/base64";
+  import { type UserJtiModel } from "../lib/client";
   import { onMount } from "svelte";
   import OtpInput from "../components/OtpInput.svelte";
 
@@ -45,8 +30,6 @@
   let captchaToken = "";
   let deviceSessionLogs = true;
 
-  let rawAuthKeys: sodium.KeyPair;
-  let rawDerivedKey: Uint8Array;
   let loggedInUser: UserJtiModel;
 
   let theme;
@@ -60,112 +43,6 @@
       navigate("/dashboard", { replace: true });
     }
   });
-
-  async function attemptAuthorization(otpCode?: string) {
-    advanceModeMsg = "Getting data to sign";
-
-    const toProve = await client.account.controllersAccountEmailToSignToSign(
-      email
-    );
-
-    advanceModeMsg = "Sending signed data to server";
-    try {
-      loggedInUser = await client.account.controllersAccountEmailLoginLogin(
-        captchaToken,
-        email,
-        {
-          _id: toProve._id,
-          signature: base64Encode(
-            sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
-          ),
-        },
-        otpSetupRequired ? "" : otpCode
-      );
-    } catch (error) {
-      throw error.body.detail;
-    }
-
-    // Manually defining the whole object, must
-    // be in the same order as the createUser var
-    // for hashes to match.
-    const accountHash = sodium.crypto_generichash(
-      sodium.crypto_generichash_BYTES,
-      JSON.stringify({
-        email: email,
-        kdf: {
-          time_cost: loggedInUser.user.kdf.time_cost,
-          memory_cost: loggedInUser.user.kdf.memory_cost,
-          salt: loggedInUser.user.kdf.salt,
-        },
-        keychain: {
-          iv: loggedInUser.user.keychain.iv,
-          cipher_text: loggedInUser.user.keychain.cipher_text,
-        },
-        auth: {
-          // Should never be loaded from the server.
-          public_key: base64Encode(rawAuthKeys.publicKey),
-        },
-        keypair: {
-          cipher_text: loggedInUser.user.keypair.cipher_text,
-          iv: loggedInUser.user.keypair.iv,
-          public_key: loggedInUser.user.keypair.public_key,
-        },
-        signature: "",
-      } as CreateUserModel)
-    );
-
-    try {
-      if (
-        sodium.to_hex(
-          sodium.crypto_sign(accountHash, rawAuthKeys.privateKey).slice(64)
-        ) !==
-        sodium.to_hex(
-          sodium.crypto_sign_open(
-            base64Decode(loggedInUser.user.signature),
-            rawAuthKeys.publicKey
-          )
-        )
-      ) {
-        throw "Failed to validate given data from server";
-      }
-    } catch {
-      throw "Failed to validate given data from server";
-    }
-
-    advanceModeMsg = "Decrypting keychain";
-
-    const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-      null,
-      base64Decode(loggedInUser.user.keychain.cipher_text),
-      null,
-      base64Decode(loggedInUser.user.keychain.iv),
-      rawDerivedKey
-    );
-
-    const rawKeypairPrivateKey =
-      sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-        null,
-        base64Decode(loggedInUser.user.keypair.cipher_text),
-        null,
-        base64Decode(loggedInUser.user.keypair.iv),
-        rawKeychain
-      );
-
-    emailVerificationRequired.set(!loggedInUser.user.email_verified);
-
-    // Should never store derivedKey or private key.
-    // If IndexDB compromised, authorization can't be acquired.
-    await setLocalSecrets({
-      email: loggedInUser.user.email,
-      userId: loggedInUser.user._id,
-      rawKeychain: base64Encode(rawKeychain),
-      rawKeypair: {
-        privateKey: base64Encode(rawKeypairPrivateKey),
-        publicKey: loggedInUser.user.keypair.public_key,
-      },
-      jti: loggedInUser.jti,
-    });
-  }
 
   async function OnOtpEnter(otpCode: string) {
     isLoading = true;
@@ -196,175 +73,6 @@
     navigate(redirectPath !== undefined ? redirectPath : "/dashboard", {
       replace: true,
     });
-
-    isLoading = false;
-  }
-
-  async function onLogin() {
-    isLoading = true;
-    errorMsg = "";
-
-    advanceModeMsg = "libsodium blocks :(";
-    await timeout(10); // Stop libsodium from blocking loop before updating loading
-
-    await sodium.ready;
-
-    if (captchaToken === "") {
-      errorMsg = "Please complete captcha.";
-      isLoading = false;
-      return;
-    }
-
-    let rawSalt: Uint8Array;
-    let publicUser: PublicUserModel;
-
-    if (!isRegister) {
-      advanceModeMsg = "Fetching account KDF parameters";
-      publicUser = await client.account.controllersAccountEmailPublicPublic(
-        email
-      );
-      rawSalt = base64Decode(publicUser.kdf.salt);
-    } else {
-      // Add a bare min for a decent password.
-      if (zxcvbn(rawPassword).score < 3) {
-        errorMsg = "Please use a stronger password.";
-        isLoading = false;
-        return;
-      }
-
-      try {
-        await client.account.controllersAccountEmailPublicPublic(email);
-        errorMsg = "Email taken.";
-        isLoading = false;
-        return;
-      } catch (error) {}
-
-      advanceModeMsg = "Generating salt.";
-
-      rawSalt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
-
-      publicUser = {
-        kdf: {
-          salt: base64Encode(rawSalt),
-          time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
-          memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
-        },
-      };
-    }
-
-    advanceModeMsg = "Deriving key from password.";
-    rawDerivedKey = sodium.crypto_pwhash(
-      32,
-      rawPassword,
-      rawSalt,
-      publicUser.kdf.time_cost,
-      publicUser.kdf.memory_cost,
-      sodium.crypto_pwhash_ALG_DEFAULT
-    );
-
-    advanceModeMsg = "Seeding auth keypair.";
-    rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
-
-    if (isRegister) {
-      advanceModeMsg = "Generating keychain";
-      const rawKeychain = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
-      const rawKeychainIv = sodium.randombytes_buf(
-        sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-      );
-
-      const TransmitSafeKeychain = base64Encode(
-        sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
-          rawKeychain,
-          null,
-          null,
-          rawKeychainIv,
-          rawDerivedKey
-        )
-      );
-      const TransmitSafeKeychainIv = base64Encode(rawKeychainIv);
-
-      advanceModeMsg = "Creating keypair";
-      let rawKeypair = sodium.crypto_box_keypair();
-
-      const rawKeypairIv = sodium.randombytes_buf(
-        sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-      );
-      const TransmitSafeKeypairPrivate = base64Encode(
-        sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
-          rawKeypair.privateKey,
-          null,
-          null,
-          rawKeypairIv,
-          rawKeychain
-        )
-      );
-      const TransmitSafeKeypairIv = base64Encode(rawKeypairIv);
-
-      const createUser: CreateUserModel = {
-        email: email,
-        kdf: {
-          time_cost: publicUser.kdf.time_cost,
-          memory_cost: publicUser.kdf.memory_cost,
-          salt: publicUser.kdf.salt,
-        },
-        keychain: {
-          iv: TransmitSafeKeychainIv,
-          cipher_text: TransmitSafeKeychain,
-        },
-        auth: {
-          public_key: base64Encode(rawAuthKeys.publicKey),
-        },
-        keypair: {
-          cipher_text: TransmitSafeKeypairPrivate,
-          iv: TransmitSafeKeypairIv,
-          public_key: base64Encode(rawKeypair.publicKey),
-        },
-        signature: "",
-      };
-
-      advanceModeMsg = "Signing user data";
-      createUser.signature = base64Encode(
-        sodium.crypto_sign(
-          sodium.crypto_generichash(
-            sodium.crypto_generichash_BYTES,
-            JSON.stringify(createUser)
-          ),
-          rawAuthKeys.privateKey
-        )
-      );
-
-      createUser.ip_lookup_consent = deviceSessionLogs;
-
-      advanceModeMsg = "Sending account data to server";
-      try {
-        await client.account.controllersAccountCreateCreateAccount(
-          captchaToken,
-          createUser
-        );
-      } catch (error) {
-        errorMsg = error.body.detail;
-        isLoading = false;
-        return;
-      }
-
-      rawPassword = "";
-      isRegister = false;
-    } else {
-      if (!publicUser.otp_completed) {
-        try {
-          await attemptAuthorization();
-        } catch (error) {
-          errorMsg = error;
-          isLoading = false;
-          return;
-        }
-        otpSetupRequired = true;
-      } else {
-        otpSetupRequired = false;
-      }
-
-      passwordScreen = false;
-    }
 
     isLoading = false;
   }

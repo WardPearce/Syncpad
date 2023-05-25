@@ -6,6 +6,7 @@ import type { OpenAPIConfig } from './core/OpenAPI';
 import { FetchHttpRequest } from './core/FetchHttpRequest';
 
 import { AccountService } from './services/AccountService';
+import { CanaryService } from './services/CanaryService';
 import { SessionService } from './services/SessionService';
 
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
@@ -13,6 +14,7 @@ type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 export class CanaryClient {
 
     public readonly account: AccountService;
+    public readonly canary: CanaryService;
     public readonly session: SessionService;
 
     public readonly request: BaseHttpRequest;
@@ -31,6 +33,7 @@ export class CanaryClient {
         });
 
         this.account = new AccountService(this.request);
+        this.canary = new CanaryService(this.request);
         this.session = new SessionService(this.request);
     }
 }

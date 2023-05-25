@@ -10,7 +10,7 @@
   } from "../stores";
   import { get } from "svelte/store";
   import { getDynamicTheme } from "../lib/theme";
-  import { logout } from "../lib/logout";
+  import { logout } from "../lib/account";
 
   export let isMobile: boolean = false;
 
@@ -134,7 +134,7 @@
 <a
   target="_blank"
   referrerpolicy="no-referrer"
-  href="https://github.com/WardPearce/canarystatus.com"
+  href="https://github.com/WardPearce/Purplix.io"
   class={isMobile ? "row round" : ""}
 >
   <i>code</i>
