@@ -50,8 +50,9 @@ export async function logout() {
 }
 
 export async function* login(
-    email: string, password: string | Uint8Array,
-    captchaToken?: string, otpCode?: string
+  email: string, password: string,
+  captchaToken?: string, otpCode?: string,
+  passwordCache?: { pastPassword: { raw: string, derived: Uint8Array } }
 ): AsyncIterable<string | UserModel > {
   yield "libsodium blocks :(";
 
@@ -68,21 +69,33 @@ export async function* login(
       throw new LoginError(error.body.detail);
   }
 
-  if (publicUser.otp_completed && !otpCode)
-    throw new OtpRequiredError();
+  // Somewhat hackie in memory caching system, so OTP code doesn't
+  // expire to key deriving taking too long.
+  let rawDerivedKey: Uint8Array;
+  if (typeof passwordCache !== "undefined" && passwordCache.pastPassword.raw === password) {
+    rawDerivedKey = passwordCache.pastPassword.derived
+  } else {
+    const rawSalt = base64Decode(publicUser.kdf.salt);
 
-  const rawSalt = base64Decode(publicUser.kdf.salt);
+    yield "Deriving key from password"
 
-  yield "Deriving key from password"
-
-  const rawDerivedKey = sodium.crypto_pwhash(
+    rawDerivedKey = sodium.crypto_pwhash(
       32,
       password,
       rawSalt,
       publicUser.kdf.time_cost,
       publicUser.kdf.memory_cost,
       sodium.crypto_pwhash_ALG_DEFAULT
-  )
+    )
+
+    passwordCache.pastPassword = {
+      derived: rawDerivedKey,
+      raw: password
+    }
+  }
+
+  if (publicUser.otp_completed && !otpCode)
+    throw new OtpRequiredError();
 
   yield "Seeding auth keypair"
 
@@ -309,7 +322,7 @@ export async function* register(email: string, password: string, captchaToken?: 
 }
 
 export default {
-    logout,
-    register,
-    login
+  logout,
+  register,
+  login
 }

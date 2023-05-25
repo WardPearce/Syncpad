@@ -35,6 +35,13 @@
 
   let loggedInUser: UserModel;
 
+  const passwordCache = {
+    pastPassword: {
+      raw: "",
+      derived: new Uint8Array([]),
+    },
+  };
+
   let theme;
   themeStore.subscribe((value) => (theme = value));
 
@@ -49,13 +56,16 @@
 
   async function onAuth() {
     isLoading = true;
+    errorMsg = "";
 
     try {
       if (!isRegister) {
         for await (const result of account.login(
           email,
           password,
-          captchaToken
+          captchaToken,
+          undefined,
+          passwordCache
         )) {
           if (typeof result === "string") {
             advanceModeMsg = result;
@@ -87,6 +97,7 @@
         passwordScreen = false;
         otpSetupRequired = false;
       } else {
+        passwordScreen = true;
         errorMsg = error.message;
       }
     }
@@ -96,6 +107,7 @@
 
   async function onOtpEnter(otpCode: string) {
     isLoading = true;
+    errorMsg = "";
 
     if (otpSetupRequired) {
       try {
@@ -112,7 +124,8 @@
           email,
           password,
           captchaToken,
-          otpCode
+          otpCode,
+          passwordCache
         )) {
           if (typeof result === "string") {
             advanceModeMsg = result;
