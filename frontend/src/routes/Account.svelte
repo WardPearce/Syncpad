@@ -93,7 +93,7 @@
       <p>{otpError}</p>
     {/if}
 
-    <OtpInput OnOtpEnter={resetOtp} />
+    <OtpInput onOtpEnter={resetOtp} />
   </div>
 </article>
 <article>

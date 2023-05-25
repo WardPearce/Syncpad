@@ -1,14 +1,14 @@
 <script lang="ts">
-  export let OnOtpEnter: Function;
+  export let onOtpEnter: Function;
   export let otpLabel: string = "OTP code";
 
   let otpCode: string = "";
   let isLoading = false;
 
-  async function loadOtpFun() {
+  async function loadOtpFunc() {
     isLoading = false;
     try {
-      await OnOtpEnter(otpCode);
+      await onOtpEnter(otpCode);
     } catch (error) {}
     otpCode = "";
     isLoading = true;
@@ -16,7 +16,7 @@
 </script>
 
 {#if !isLoading}
-  <form on:submit|preventDefault={loadOtpFun}>
+  <form on:submit|preventDefault={loadOtpFunc}>
     <nav>
       <div class="max field label fill border">
         <input type="text" bind:value={otpCode} />

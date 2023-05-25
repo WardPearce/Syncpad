@@ -24,15 +24,15 @@ export class KeychainUndefinedError extends Error {
     }
 }
 
-function generateIv(): Uint8Array {
+export function generateIv(): Uint8Array {
     return sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
 }
 
-function generateKey(): Uint8Array {
+export function generateKey(): Uint8Array {
     return sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
 }
 
-function determineKeyLocation(key: Key): Uint8Array {
+export function determineKeyLocation(key: Key): Uint8Array {
     if (key instanceof Uint8Array) {
         return key;
     } else if (key === SecretkeyLocation.localKeychain) {
@@ -47,8 +47,7 @@ function determineKeyLocation(key: Key): Uint8Array {
     }
 }
 
-
-function encrypt(
+export function encrypt(
     key: Key,
     toEncrypt: Uint8Array | string,
 ): encryptedData {
@@ -70,7 +69,7 @@ function encrypt(
     }
 }
 
-function decrypt(
+export function decrypt(
     key: Key,
     iv: string,
     toDecrypt: string,

@@ -23,7 +23,15 @@ export class RegisterError extends Error {
     }
 }
 
-async function logout() {
+export class OtpRequiredError extends Error {
+    constructor() {
+      super()
+      this.message = "OTP code required"
+    }
+}
+
+
+export async function logout() {
     // Catch if private tab.
     try {
         await del("localSecrets");
@@ -41,10 +49,10 @@ async function logout() {
     } catch {}
 }
 
-async function* login(
+export async function* login(
     email: string, password: string,
     captchaToken?: string, otpCode?: string
-): AsyncIterable<string | UserModel> {
+): AsyncIterable<string | UserModel > {
     yield "libsodium blocks :(";
 
     if (captchaToken === "" && import.meta.env.VITE_MCAPTCHA_ENABLED === "true") {
@@ -59,6 +67,9 @@ async function* login(
     } catch (error) {
         throw new LoginError(error.body.detail);
     }
+  
+    if (publicUser.otp_completed && !otpCode)
+      throw new OtpRequiredError();
 
     const rawSalt = base64Decode(publicUser.kdf.salt);
 
@@ -96,7 +107,7 @@ async function* login(
             sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
           ),
         },
-        otpCode ? "" : otpCode
+        otpCode ? otpCode : ""
       );
     } catch (error) {
       throw new LoginError(error.body.detail);
@@ -184,7 +195,7 @@ async function* login(
     yield loggedInUser.user;
 }
 
-async function* register(email: string, password: string, captchaToken?: string, ipConsent: boolean = false) {
+export async function* register(email: string, password: string, captchaToken?: string, ipConsent: boolean = false) {
     if (captchaToken === "" && import.meta.env.VITE_MCAPTCHA_ENABLED === "true") {
         throw new RegisterError("Captcha not completed");
     }
