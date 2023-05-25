@@ -12,8 +12,8 @@ export type Key = Uint8Array | SecretkeyLocation;
 
 export interface encryptedData {
   cipherText: string;
-  iv: string,
-  key: string;
+  iv: string;
+  rawSecretKey: Uint8Array;
 }
 
 export class KeychainUndefinedError extends Error {
@@ -64,7 +64,7 @@ export function encrypt(
   return {
     cipherText: base64Encode(cipher),
     iv: base64Encode(rawIv),
-    key: base64Encode(key)
+    rawSecretKey: rawKey,
   };
 }
 

@@ -9,6 +9,7 @@ import apiClient from "./apiClient";
 import type { CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
 import { base64Decode, base64Encode } from "./crypto/codecUtils";
 import secretKey from "./crypto/secretKey";
+import signatures from "./crypto/signatures";
 
 
 export class LoginError extends Error {
@@ -39,6 +40,7 @@ export async function logout() {
 
   // Wipe localSecrets store.
   localSecrets.set(undefined);
+  emailVerificationRequired.set(false);
 
   // Navigate to home page.
   navigate("/", { replace: true });
@@ -101,7 +103,7 @@ export async function* login(
 
   yield "Seeding auth keypair";
 
-  const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
+  const rawAuthKeys = signatures.seedKeypair(rawDerivedKey);
 
   yield "Getting data to sign";
 
@@ -118,9 +120,7 @@ export async function* login(
       email,
       {
         _id: toProve._id,
-        signature: base64Encode(
-          sodium.crypto_sign(toProve.to_sign, rawAuthKeys.privateKey)
-        ),
+        signature: signatures.sign(rawAuthKeys.privateKey, toProve.to_sign),
       },
       otpCode ? otpCode : ""
     );
@@ -159,23 +159,10 @@ export async function* login(
 
   yield "Validating signature";
 
-  const failedToValidate = "Failed to validate given data from server";
   try {
-    if (
-      sodium.to_hex(
-        accountHash
-      ) !==
-      sodium.to_hex(
-        sodium.crypto_sign_open(
-          base64Decode(loggedInUser.user.signature),
-          rawAuthKeys.publicKey
-        )
-      )
-    ) {
-      throw new Error(failedToValidate);
-    }
-  } catch {
-    throw new Error(failedToValidate);
+    signatures.validate(rawAuthKeys.publicKey, loggedInUser.user.signature, accountHash);
+  } catch (error) {
+    throw new LoginError(error.message);
   }
 
   yield "Decrypting keychain";
@@ -255,7 +242,7 @@ export async function* register(email: string, password: string, captchaToken?: 
 
   yield "Seeding auth keypair";
 
-  const rawAuthKeys = sodium.crypto_sign_seed_keypair(rawDerivedKey);
+  const rawAuthKeys = signatures.seedKeypair(rawDerivedKey);
 
   yield "Generating keychain";
 
@@ -299,13 +286,11 @@ export async function* register(email: string, password: string, captchaToken?: 
 
   yield "Signing user data";
 
-  createUser.signature = base64Encode(
-    sodium.crypto_sign(
-      sodium.crypto_generichash(
-        sodium.crypto_generichash_BYTES,
-        JSON.stringify(createUser)
-      ),
-      rawAuthKeys.privateKey
+  createUser.signature = signatures.sign(
+    rawAuthKeys.privateKey,
+    sodium.crypto_generichash(
+      sodium.crypto_generichash_BYTES,
+      JSON.stringify(createUser)
     )
   );
 

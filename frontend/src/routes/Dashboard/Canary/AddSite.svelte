@@ -1,9 +1,22 @@
 <script lang="ts">
   import { link } from "svelte-navigator";
+  import apiClient from "../../../lib/apiClient";
 
   let siteDomain = "";
   let aboutSite = "";
   let siteLogo: File;
+
+  async function createCanary() {
+    await apiClient.canary.controllersCanaryCreateCreateCanary({
+      domain: siteDomain,
+      about: aboutSite,
+      keypair: {
+        cipher_text: "",
+        iv: "",
+        public_key: "",
+      },
+    });
+  }
 </script>
 
 <h3>Add site</h3>

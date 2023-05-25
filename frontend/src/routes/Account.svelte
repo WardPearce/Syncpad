@@ -9,14 +9,14 @@
   import apiClient from "../lib/apiClient";
   import type { SessionModel } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
-  import { localSecrets } from "../stores";
+  import { localSecrets, type LocalSecretsModel } from "../stores";
 
   interface SessionDeviceModel extends SessionModel {
     uaparser: UAParser;
   }
 
   let activeSessions: SessionDeviceModel[] = [];
-  let loggedInSecrets = get(localSecrets);
+  let loggedInSecrets = get(localSecrets) as LocalSecretsModel;
 
   let privateKey: Uint8Array;
   let publicKey: Uint8Array;
@@ -72,7 +72,7 @@
     (await apiClient.session.controllersSessionGetSessions()).forEach(
       (session) =>
         activeSessions.push({
-          uaparser: new UAParser(decryptSessionInfo(session.device)),
+          uaparser: new UAParser(decryptSessionInfo(session.device as string)),
           ...session,
         })
     );
