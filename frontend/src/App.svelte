@@ -2,12 +2,15 @@
   import { Router, Route, link } from "svelte-navigator";
   import { onMount } from "svelte";
 
+  import sodium from "libsodium-wrappers-sumo";
+
   import LazyRoute from "./components/LazyRoute.svelte";
   import PageLoading from "./components/PageLoading.svelte";
   import NavItems from "./components/NavItems.svelte";
 
-  import { client } from "./lib/canary";
-  import { logout } from "./lib/account";
+  import apiClient from "./lib/apiClient";
+  import account from "./lib/account";
+
   import {
     emailVerificationRequired,
     isDarkMode,
@@ -31,7 +34,7 @@
   let emailResent = false;
   async function resendEmail() {
     emailResent = true;
-    await client.account.controllersAccountEmailResendEmailResend();
+    await apiClient.account.controllersAccountEmailResendEmailResend();
     emailResent = false;
   }
 
@@ -40,18 +43,20 @@
     await ui("theme", import.meta.env.VITE_THEME);
     document.title = import.meta.env.VITE_SITE_NAME;
 
+    await sodium.ready;
+
     if (loggedInUser === undefined) {
       return;
     }
 
     // Validate JWT session.
     try {
-      const userId = await client.account.controllersAccountJwtJwtInfo();
+      const userId = await apiClient.account.controllersAccountJwtJwtInfo();
       if (userId !== loggedInUser.userId) {
-        await logout();
+        await account.logout();
       }
     } catch (error) {
-      await logout();
+      await account.logout();
     }
   });
 </script>

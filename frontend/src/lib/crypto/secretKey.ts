@@ -3,12 +3,12 @@ import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils
 import { get } from "svelte/store";
 import { localSecrets } from "../../stores";
 
-export enum keyLocation {
+export enum SecretkeyLocation {
     localKeychain = "localKeychain",
     generate = "generate"
 }
 
-export type Key = Uint8Array | string | keyLocation;
+export type Key = Uint8Array | string | SecretkeyLocation;
 
 export interface encryptedData {
     cipherText: string
@@ -33,17 +33,17 @@ function generateKey(): Uint8Array {
 }
 
 function determineKeyLocation(key: Key): Uint8Array {
-    if (key === keyLocation.localKeychain) {
+    if (key instanceof Uint8Array) {
+        return key;
+    } else if (key === SecretkeyLocation.localKeychain) {
         const keychain = get(localSecrets).rawKeychain;
         if (typeof keychain === "undefined") {
             throw new KeychainUndefinedError();
         }
-    } else if (key === keyLocation.generate) {
+    } else if (key === SecretkeyLocation.generate) {
         return generateKey();
-    } else if (typeof key === "string") {
+    } else {
         return base64Decode(key);
-    } else if (key instanceof Uint8Array) {
-        return key;
     }
 }
 
@@ -69,7 +69,6 @@ function encrypt(
         key: base64Encode(key)
     }
 }
-
 
 function decrypt(
     key: Key,

@@ -4,12 +4,11 @@ import { navigate } from "svelte-navigator";
 import sodium from "libsodium-wrappers-sumo";
 import { zxcvbn } from "@zxcvbn-ts/core";
 
-
-import { client } from "./canary";
+import apiClient from "./apiClient";
 import { emailVerificationRequired, localSecrets, setLocalSecrets } from "../stores";
 import { base64Decode, base64Encode } from "./crypto/codecUtils";
 import type { CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
-import secretKey, { keyLocation } from "./crypto/secretKey";
+import secretKey from "./crypto/secretKey";
 
 
 export class LoginError extends Error {
@@ -23,7 +22,6 @@ export class RegisterError extends Error {
         super(message)
     }
 }
-
 
 async function logout() {
     // Catch if private tab.
@@ -39,7 +37,7 @@ async function logout() {
 
     // Attempt logout request, may 401.
     try {
-        await client.account.controllersAccountLogoutLogout();
+        await apiClient.account.controllersAccountLogoutLogout();
     } catch {}
 }
 
@@ -55,7 +53,7 @@ async function* login(
 
     let publicUser: PublicUserModel;
     try {
-        publicUser = await client.account.controllersAccountEmailPublicPublic(
+        publicUser = await apiClient.account.controllersAccountEmailPublicPublic(
             email
         );
     } catch (error) {
@@ -81,7 +79,7 @@ async function* login(
 
     yield "Getting data to sign"
 
-    const toProve = await client.account.controllersAccountEmailToSignToSign(
+    const toProve = await apiClient.account.controllersAccountEmailToSignToSign(
       email
     );
 
@@ -89,7 +87,7 @@ async function* login(
 
     let loggedInUser: UserJtiModel;
     try {
-      loggedInUser = await client.account.controllersAccountEmailLoginLogin(
+      loggedInUser = await apiClient.account.controllersAccountEmailLoginLogin(
         captchaToken,
         email,
         {
@@ -200,7 +198,7 @@ async function* register(email: string, password: string, captchaToken?: string,
     yield "Checking if email is taken";
 
     try {
-        await client.account.controllersAccountEmailPublicPublic(email);
+        await apiClient.account.controllersAccountEmailPublicPublic(email);
         throw new RegisterError("Email taken");
     } catch (error) {
         if (error instanceof RegisterError) {
@@ -290,7 +288,7 @@ async function* register(email: string, password: string, captchaToken?: string,
     yield "Sending account data to server";
 
     try {
-    await client.account.controllersAccountCreateCreateAccount(
+    await apiClient.account.controllersAccountCreateCreateAccount(
         captchaToken,
         createUser
     );
@@ -301,5 +299,6 @@ async function* register(email: string, password: string, captchaToken?: string,
 
 export default {
     logout,
-    register
+    register,
+    login
 }

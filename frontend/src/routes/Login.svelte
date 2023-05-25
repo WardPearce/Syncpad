@@ -6,7 +6,7 @@
 
   import { advanceModeStore, localSecrets, themeStore } from "../stores";
   import Mcaptcha from "../components/Mcaptcha.svelte";
-  import { client } from "../lib/canary";
+  import apiClient from "../lib/apiClient";
   import { type UserJtiModel } from "../lib/client";
   import { onMount } from "svelte";
   import OtpInput from "../components/OtpInput.svelte";
@@ -52,7 +52,7 @@
 
     if (otpSetupRequired) {
       try {
-        await client.account.controllersAccountOtpSetupOtpSetup(otpCode);
+        await apiClient.account.controllersAccountOtpSetupOtpSetup(otpCode);
       } catch (error) {
         errorMsg = error.body.detail;
         isLoading = false;

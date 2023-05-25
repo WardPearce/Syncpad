@@ -5,10 +5,10 @@
   import UAParser from "ua-parser-js";
 
   import type { SessionModel } from "../lib/client";
-  import { client } from "../lib/canary";
+  import apiClient from "../lib/apiClient";
   import { localSecrets } from "../stores";
-  import { base64Decode } from "../lib/base64";
-  import { logout } from "../lib/account";
+  import { base64Decode } from "../lib/crypto/codecUtils";
+  import account from "../lib/account";
   import OtpInput from "../components/OtpInput.svelte";
 
   interface SessionDeviceModel extends SessionModel {
@@ -38,12 +38,13 @@
   }
 
   async function logoutSession(sessionId: string) {
-    await client.session.controllersSessionSessionIdInvalidateSession(
-      sessionId
-    );
-    activeSessions = activeSessions.filter((v) => v._id !== sessionId);
     if (sessionId === loggedInSecrets.jti) {
-      await logout();
+      await account.logout();
+    } else {
+      await apiClient.session.controllersSessionSessionIdInvalidateSession(
+        sessionId
+      );
+      activeSessions = activeSessions.filter((v) => v._id !== sessionId);
     }
   }
 
@@ -57,24 +58,23 @@
 
   async function resetOtp(otpCode: string) {
     try {
-      await client.account.controllersAccountOtpResetResetOtp(otpCode);
-      await logout();
+      await apiClient.account.controllersAccountOtpResetResetOtp(otpCode);
+      await account.logout();
     } catch (error) {
       otpError = error.body.detail;
     }
   }
 
   onMount(async () => {
-    await sodium.ready;
-
     privateKey = base64Decode(loggedInSecrets.rawKeypair.privateKey);
     publicKey = base64Decode(loggedInSecrets.rawKeypair.publicKey);
 
-    (await client.session.controllersSessionGetSessions()).forEach((session) =>
-      activeSessions.push({
-        uaparser: new UAParser(decryptSessionInfo(session.device)),
-        ...session,
-      })
+    (await apiClient.session.controllersSessionGetSessions()).forEach(
+      (session) =>
+        activeSessions.push({
+          uaparser: new UAParser(decryptSessionInfo(session.device)),
+          ...session,
+        })
     );
 
     activeSessions = activeSessions;
