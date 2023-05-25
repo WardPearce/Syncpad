@@ -124,6 +124,8 @@
         }
       } catch (error) {
         errorMsg = error.message;
+        password = "";
+        passwordScreen = true;
       }
     }
 
