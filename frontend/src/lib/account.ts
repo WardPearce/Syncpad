@@ -143,12 +143,12 @@ export async function* login(
     );
 
     yield "Validating signature";
-
+  
     const failedToValidate = "Failed to validate given data from server"
     try {
       if (
         sodium.to_hex(
-          sodium.crypto_sign(accountHash, rawAuthKeys.privateKey).slice(64)
+          accountHash
         ) !==
         sodium.to_hex(
           sodium.crypto_sign_open(
