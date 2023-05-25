@@ -40,6 +40,7 @@ export function determineKeyLocation(key: Key): Uint8Array {
     if (typeof keychain === "undefined") {
         throw new KeychainUndefinedError();
     }
+    return base64Decode(keychain);
   } else {
     return generateKey();
   }
