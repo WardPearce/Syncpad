@@ -1,6 +1,4 @@
 import sodium from "libsodium-wrappers-sumo";
-import { get } from "svelte/store";
-import { localSecrets } from "../../stores";
 import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 
 
@@ -40,12 +38,6 @@ export function seedKeypair(seed: Uint8Array): sodium.KeyPair {
 export function determineKeyLocation(key: PublicKey | PrivateKey): Uint8Array {
     if (key instanceof Uint8Array) {
         return key;
-    } else if (key === SignPrivateKeyLocation.localPrivate || key === SignPublickeyLocation.localPublic) {
-        const keypair = get(localSecrets);
-        if (typeof keypair === "undefined") {
-            throw new LocalKeypairUndefinedError();
-        }
-        return key === SignPrivateKeyLocation.localPrivate ? base64Decode(keypair.rawKeypair.privateKey) : base64Decode(keypair.rawKeypair.publicKey);
     } else {
         return base64Decode(key);
     }
