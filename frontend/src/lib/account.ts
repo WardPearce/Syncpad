@@ -131,36 +131,33 @@ export async function* login(
   // Manually defining the whole object, must
   // be in the same order as the createUser var
   // for hashes to match.
-  const accountHash = sodium.crypto_generichash(
-    sodium.crypto_generichash_BYTES,
-    JSON.stringify({
-      email: email,
-      kdf: {
-        time_cost: loggedInUser.user.kdf.time_cost,
-        memory_cost: loggedInUser.user.kdf.memory_cost,
-        salt: loggedInUser.user.kdf.salt,
-      },
-      keychain: {
-        iv: loggedInUser.user.keychain.iv,
-        cipher_text: loggedInUser.user.keychain.cipher_text,
-      },
-      auth: {
-        // Should never be loaded from the server.
-        public_key: base64Encode(rawAuthKeys.publicKey),
-      },
-      keypair: {
-        cipher_text: loggedInUser.user.keypair.cipher_text,
-        iv: loggedInUser.user.keypair.iv,
-        public_key: loggedInUser.user.keypair.public_key,
-      },
-      signature: "",
-    } as CreateUserModel)
-  );
+  const accountUnsigned = JSON.stringify({
+    email: email,
+    kdf: {
+      time_cost: loggedInUser.user.kdf.time_cost,
+      memory_cost: loggedInUser.user.kdf.memory_cost,
+      salt: loggedInUser.user.kdf.salt,
+    },
+    keychain: {
+      iv: loggedInUser.user.keychain.iv,
+      cipher_text: loggedInUser.user.keychain.cipher_text,
+    },
+    auth: {
+      // Should never be loaded from the server.
+      public_key: base64Encode(rawAuthKeys.publicKey),
+    },
+    keypair: {
+      cipher_text: loggedInUser.user.keypair.cipher_text,
+      iv: loggedInUser.user.keypair.iv,
+      public_key: loggedInUser.user.keypair.public_key,
+    },
+    signature: "",
+  } as CreateUserModel);
 
   yield "Validating signature";
 
   try {
-    signatures.validate(rawAuthKeys.publicKey, loggedInUser.user.signature, accountHash);
+    signatures.validateHash(rawAuthKeys.publicKey, loggedInUser.user.signature, accountUnsigned);
   } catch (error) {
     throw new LoginError(error.message);
   }
@@ -286,12 +283,9 @@ export async function* register(email: string, password: string, captchaToken?: 
 
   yield "Signing user data";
 
-  createUser.signature = signatures.sign(
+  createUser.signature = signatures.signHash(
     rawAuthKeys.privateKey,
-    sodium.crypto_generichash(
-      sodium.crypto_generichash_BYTES,
-      JSON.stringify(createUser)
-    )
+    JSON.stringify(createUser)
   );
 
   createUser.ip_lookup_consent = ipConsent;

@@ -1,10 +1,9 @@
 <script lang="ts">
-  import sodium from "libsodium-wrappers-sumo";
   import { navigate } from "svelte-navigator";
 
   import apiClient from "../../../lib/apiClient";
   import type { CreateCanaryModel } from "../../../lib/client";
-  import { base64Encode, utf8Encode } from "../../../lib/crypto/codecUtils";
+  import { base64Encode } from "../../../lib/crypto/codecUtils";
   import secretKey, { SecretkeyLocation } from "../../../lib/crypto/secretKey";
   import signatures from "../../../lib/crypto/signatures";
 
@@ -35,12 +34,9 @@
       signature: "",
     };
 
-    canaryData.signature = signatures.sign(
+    canaryData.signature = signatures.signHash(
       keyPair.privateKey,
-      sodium.crypto_generichash(
-        sodium.crypto_generichash_BYTES,
-        utf8Encode(JSON.stringify(canaryData))
-      )
+      JSON.stringify(canaryData)
     );
 
     try {

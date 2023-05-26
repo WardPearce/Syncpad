@@ -66,6 +66,25 @@ export function sign(privateKey: PrivateKey, toSign: string | Uint8Array): strin
     return base64Encode(signature);
 }
 
+export function signHash(privateKey: PrivateKey, toSign: string | Uint8Array): string {
+    const hash = sodium.crypto_generichash(
+        sodium.crypto_generichash_BYTES,
+        toSign instanceof Uint8Array ? toSign : utf8Encode(toSign)
+    );
+    return sign(privateKey, hash);
+}
+
+export function validateHash(
+    publicKey: PublicKey, signedMessage: string,
+    unsignedMessage: string | Uint8Array
+): void {
+    const hash = sodium.crypto_generichash(
+        sodium.crypto_generichash_BYTES,
+        unsignedMessage instanceof Uint8Array ? unsignedMessage : utf8Encode(unsignedMessage)
+    );
+    validate(publicKey, signedMessage, hash);
+}
+
 export function open(
     publicKey: PublicKey, signedMessage: string, utf8: boolean = false
 ): string | Uint8Array {
@@ -81,6 +100,7 @@ export function open(
 
     return utf8 ? utf8Decode(signedData) : signedData;
 }
+
 
 export function validate(
     publicKey: PublicKey, signedMessage: string,
@@ -106,5 +126,7 @@ export default {
     open,
     validate,
     seedKeypair,
-    generateKeypair
+    generateKeypair,
+    validateHash,
+    signHash
 };
