@@ -165,7 +165,11 @@ class LoginController(Controller):
             raise InvalidAccountAuth()
 
         now = datetime.now(tz=timezone.utc)
-        token_timedelta = timedelta(days=SETTINGS.jwt.expire_days)
+        token_timedelta = (
+            timedelta(days=SETTINGS.jwt.expire_days)
+            if not data.one_day_login
+            else timedelta(days=1)
+        )
 
         location = SessionLocationModel()
         device: Optional[str] = None

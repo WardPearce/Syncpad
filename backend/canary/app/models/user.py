@@ -115,6 +115,9 @@ class UserLoginSignatureModel(BaseModel):
     signature: str = Field(
         ..., description="to_sign signed with ed25519 private key, base64 encoded"
     )
+    one_day_login: bool = Field(
+        False, description="Overwrites the default JWT expire days to only one day"
+    )
     id: str = Field(..., alias="_id")
 
 

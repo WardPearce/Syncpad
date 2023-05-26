@@ -2,15 +2,6 @@ import sodium from "libsodium-wrappers-sumo";
 import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 
 
-
-export class LocalKeypairUndefinedError extends Error {
-    constructor() {
-        super();
-        this.message = "Local keypair can not be undefined";
-        this.name = "LocalKeypairUndefinedError";
-    }
-}
-
 export class InvalidSignature extends Error {
     constructor() {
         super();

@@ -32,6 +32,7 @@
   let password = "";
   let captchaToken = "";
   let ipConsent = false;
+  let rememberMe = false;
 
   let loggedInUser: UserModel;
 
@@ -65,7 +66,8 @@
           password,
           captchaToken,
           undefined,
-          passwordCache
+          passwordCache,
+          rememberMe
         )) {
           if (typeof result === "string") {
             advanceModeMsg = result;
@@ -125,7 +127,8 @@
           password,
           captchaToken,
           otpCode,
-          passwordCache
+          passwordCache,
+          rememberMe
         )) {
           if (typeof result === "string") {
             advanceModeMsg = result;
@@ -205,6 +208,11 @@
             >
               <input type="checkbox" bind:checked={ipConsent} />
               <span>Device session logs</span>
+            </label>
+          {:else}
+            <label class="checkbox">
+              <input type="checkbox" bind:checked={rememberMe} />
+              <span>Remember me</span>
             </label>
           {/if}
 

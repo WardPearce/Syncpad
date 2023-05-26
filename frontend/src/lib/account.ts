@@ -54,7 +54,8 @@ export async function logout() {
 export async function* login(
   email: string, password: string,
   captchaToken?: string, otpCode?: string,
-  passwordCache?: { pastPassword: { raw: string, derived: Uint8Array; }; }
+  passwordCache?: { pastPassword: { raw: string, derived: Uint8Array; }; },
+  rememberMe: boolean = true
 ): AsyncIterable<string | UserModel> {
   yield "libsodium blocks :(";
 
@@ -121,6 +122,7 @@ export async function* login(
       {
         _id: toProve._id,
         signature: signatures.sign(rawAuthKeys.privateKey, toProve.to_sign),
+        one_day_login: !rememberMe
       },
       otpCode ? otpCode : ""
     );
@@ -180,6 +182,8 @@ export async function* login(
 
   emailVerificationRequired.set(!loggedInUser.user.email_verified);
 
+  // Never store anything what can establish account auth.
+  // Private auth key nor OTP code.
   await setLocalSecrets({
     email: loggedInUser.user.email,
     userId: loggedInUser.user._id,
@@ -189,7 +193,7 @@ export async function* login(
       publicKey: loggedInUser.user.keypair.public_key,
     },
     jti: loggedInUser.jti,
-  });
+  }, rememberMe);
 
   yield loggedInUser.user;
 }

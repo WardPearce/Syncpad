@@ -33,10 +33,12 @@ export const localSecrets: Writable<LocalSecretsModel | undefined> = writable(
 );
 
 
-export async function setLocalSecrets(secrets: LocalSecretsModel) {
-    try {
-        // Catch if private tab.
-        await set("localSecrets", secrets);
-    } catch { }
+export async function setLocalSecrets(secrets: LocalSecretsModel, indexDb: boolean = true) {
+    if (indexDb) {
+        try {
+            // Catch if private tab.
+            await set("localSecrets", secrets);
+        } catch { }
+    }
     localSecrets.set(secrets);
 }
