@@ -4,13 +4,6 @@ import { localSecrets } from "../../stores";
 import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 
 
-export enum SignPublickeyLocation {
-    localPublic = "localPublic",
-}
-
-export enum SignPrivateKeyLocation {
-    localPrivate = "localPrivate",
-}
 
 export class LocalKeypairUndefinedError extends Error {
     constructor() {
@@ -28,8 +21,8 @@ export class InvalidSignature extends Error {
     }
 }
 
-export type PublicKey = Uint8Array | string | SignPublickeyLocation;
-export type PrivateKey = Uint8Array | SignPrivateKeyLocation;
+export type PublicKey = Uint8Array | string;
+export type PrivateKey = Uint8Array;
 
 export interface KeyPair {
     publicKey: PublicKey;
