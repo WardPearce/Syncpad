@@ -1,13 +1,16 @@
 <script lang="ts">
+  import sodium from "libsodium-wrappers-sumo";
   import { navigate } from "svelte-navigator";
+
   import apiClient from "../../../lib/apiClient";
-  import { base64Encode } from "../../../lib/crypto/codecUtils";
+  import type { CreateCanaryModel } from "../../../lib/client";
+  import { base64Encode, utf8Encode } from "../../../lib/crypto/codecUtils";
   import secretKey, { SecretkeyLocation } from "../../../lib/crypto/secretKey";
   import signatures from "../../../lib/crypto/signatures";
 
   let siteDomain = "";
   let aboutSite = "";
-  let siteLogo: File;
+  let logoFiles: FileList;
 
   let errorMsg = "";
   let isLoading = false;
@@ -15,23 +18,33 @@
   async function createCanary() {
     isLoading = true;
     errorMsg = "";
-
     const keyPair = signatures.generateKeypair();
     const safePrivateKey = secretKey.encrypt(
       SecretkeyLocation.localKeychain,
       keyPair.privateKey
     );
 
+    const canaryData: CreateCanaryModel = {
+      domain: siteDomain,
+      about: aboutSite,
+      keypair: {
+        cipher_text: safePrivateKey.cipherText,
+        iv: safePrivateKey.iv,
+        public_key: base64Encode(keyPair.publicKey),
+      },
+      signature: "",
+    };
+
+    canaryData.signature = signatures.sign(
+      keyPair.privateKey,
+      sodium.crypto_generichash(
+        sodium.crypto_generichash_BYTES,
+        utf8Encode(JSON.stringify(canaryData))
+      )
+    );
+
     try {
-      await apiClient.canary.controllersCanaryCreateCreateCanary({
-        domain: siteDomain,
-        about: aboutSite,
-        keypair: {
-          cipher_text: safePrivateKey.cipherText,
-          iv: safePrivateKey.iv,
-          public_key: base64Encode(keyPair.publicKey),
-        },
-      });
+      await apiClient.canary.controllersCanaryCreateCreateCanary(canaryData);
     } catch (error) {
       errorMsg = error.body.detail;
       isLoading = false;
@@ -41,12 +54,10 @@
     try {
       await apiClient.canary.controllersCanaryDomainLogoUpdateUpdateLogo(
         siteDomain,
-        siteLogo
+        logoFiles[0]
       );
     } catch (error) {}
-
     isLoading = false;
-
     navigate(`/dashboard/canary/verify-site/${siteDomain}`, { replace: true });
   }
 </script>
@@ -73,7 +84,7 @@
       <input type="text" />
       <input
         type="file"
-        bind:value={siteLogo}
+        bind:files={logoFiles}
         multiple={false}
         accept="image/png, image/jpeg, image/jpg"
       />

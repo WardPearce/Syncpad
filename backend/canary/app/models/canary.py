@@ -25,8 +25,11 @@ class CreateCanaryModel(CustomJsonEncoder):
     )
     about: str = Field(..., max_length=500)
     keypair: CanaryEd25519Model
+    signature: str = Field(..., max_length=128)
     algorithms: str = Field(
-        "ED25519+BLAKE2b", max_length=120, description="Algorithms used for canary"
+        "XCHACHA20_POLY1305+ED25519+BLAKE2b",
+        max_length=120,
+        description="Algorithms used for canary",
     )
 
 

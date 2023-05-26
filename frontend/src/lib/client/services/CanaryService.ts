@@ -37,7 +37,7 @@ export class CanaryService {
      * Update logo for given domain
      * @param domain
      * @param formData
-     * @returns any Request fulfilled, document follows
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
     public controllersCanaryDomainLogoUpdateUpdateLogo(
@@ -45,7 +45,7 @@ export class CanaryService {
         formData: Blob,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
-            method: 'PUT',
+            method: 'POST',
             url: '/controllers/canary/{domain}/logo/update',
             path: {
                 'domain': domain,

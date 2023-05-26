@@ -1,3 +1,4 @@
+import pathlib
 import secrets
 from datetime import datetime
 from os import path
@@ -9,7 +10,7 @@ from app.lib.canary import Canary
 from app.lib.s3 import format_path, s3_create_client
 from app.models.canary import CanaryModel, CreateCanaryModel
 from bson import ObjectId
-from litestar import Controller, Request, Router, post, put
+from litestar import Controller, Request, Router, post
 from litestar.contrib.jwt import Token
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
@@ -27,7 +28,12 @@ async def create_canary(
 
     if (
         await state.mongo.canary.count_documents(
-            {"domain": domain, "domain_verification.completed": True}
+            {
+                "$or": [
+                    {"domain": domain, "domain_verification.completed": True},
+                    {"domain": domain, "user_id": request.user},
+                ]
+            }
         )
         > 0
     ):
@@ -50,7 +56,7 @@ async def create_canary(
 class CanaryController(Controller):
     path = "/{domain:str}"
 
-    @put("/logo/update", description="Update logo for given domain", tags=["canary"])
+    @post("/logo/update", description="Update logo for given domain", tags=["canary"])
     async def update_logo(
         self,
         domain: str,
@@ -58,7 +64,7 @@ class CanaryController(Controller):
         state: "State",
         data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
     ) -> None:
-        _, logo_ext = path.splitext(data.filename)
+        logo_ext = pathlib.Path(data.filename).suffix
         if logo_ext not in SETTINGS.canary.logo.allowed_extensions:
             raise UnsupportedFileType()
 

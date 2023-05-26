@@ -8,6 +8,7 @@ export type CreateCanaryModel = {
     domain: string;
     about: string;
     keypair: CanaryEd25519Model;
+    signature: string;
     algorithms?: string;
 };
 
