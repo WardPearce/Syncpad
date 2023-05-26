@@ -42,7 +42,7 @@ export class CanaryService {
      */
     public controllersCanaryDomainLogoUpdateUpdateLogo(
         domain: string,
-        formData: Blob,
+        formData: Array<Blob>,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',

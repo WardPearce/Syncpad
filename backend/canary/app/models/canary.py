@@ -39,7 +39,7 @@ class PublicCanaryModel(CreateCanaryModel):
     user_id: ObjectId
     created: datetime
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         if self.logo:
@@ -49,6 +49,12 @@ class PublicCanaryModel(CreateCanaryModel):
 class DomainVerification(BaseModel):
     completed: bool = False
     code: str
+    code_prefixed: str = ""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.code_prefixed = f"{SETTINGS.canary.domain_verify.prefix}{self.code}"
 
 
 class CanaryModel(PublicCanaryModel):

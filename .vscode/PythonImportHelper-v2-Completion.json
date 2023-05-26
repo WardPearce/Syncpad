@@ -1,0 +1,2240 @@
+[
+    {
+        "label": "secrets",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "secrets",
+        "description": "secrets",
+        "detail": "secrets",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "cast",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Annotated",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "cast",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Union",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "TYPE_CHECKING",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "cast",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "pyotp",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pyotp",
+        "description": "pyotp",
+        "detail": "pyotp",
+        "documentation": {}
+    },
+    {
+        "label": "EmailTaken",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidAccountAuth",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidCaptcha",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "OtpAlreadyCompleted",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "UserNotFoundException",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryTaken",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "FileTooBig",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "UnsupportedFileType",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryNotFoundException",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "DomainValidationError",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidAccountAuth",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "LocalDomainInvalid",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "UserNotFoundException",
+        "importPath": "app.errors",
+        "description": "app.errors",
+        "isExtraImport": true,
+        "detail": "app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "delete_all_user_sessions",
+        "importPath": "app.lib.jwt",
+        "description": "app.lib.jwt",
+        "isExtraImport": true,
+        "detail": "app.lib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "delete_session",
+        "importPath": "app.lib.jwt",
+        "description": "app.lib.jwt",
+        "isExtraImport": true,
+        "detail": "app.lib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "jwt_cookie_auth",
+        "importPath": "app.lib.jwt",
+        "description": "app.lib.jwt",
+        "isExtraImport": true,
+        "detail": "app.lib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "delete_session",
+        "importPath": "app.lib.jwt",
+        "description": "app.lib.jwt",
+        "isExtraImport": true,
+        "detail": "app.lib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "jwt_cookie_auth",
+        "importPath": "app.lib.jwt",
+        "description": "app.lib.jwt",
+        "isExtraImport": true,
+        "detail": "app.lib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "validate_captcha",
+        "importPath": "app.lib.mCaptcha",
+        "description": "app.lib.mCaptcha",
+        "isExtraImport": true,
+        "detail": "app.lib.mCaptcha",
+        "documentation": {}
+    },
+    {
+        "label": "OneTimePassword",
+        "importPath": "app.lib.otp",
+        "description": "app.lib.otp",
+        "isExtraImport": true,
+        "detail": "app.lib.otp",
+        "documentation": {}
+    },
+    {
+        "label": "send_email_verify",
+        "importPath": "app.lib.smtp",
+        "description": "app.lib.smtp",
+        "isExtraImport": true,
+        "detail": "app.lib.smtp",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "app.lib.user",
+        "description": "app.lib.user",
+        "isExtraImport": true,
+        "detail": "app.lib.user",
+        "documentation": {}
+    },
+    {
+        "label": "generate_email_validation",
+        "importPath": "app.lib.user",
+        "description": "app.lib.user",
+        "isExtraImport": true,
+        "detail": "app.lib.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserJtiModel",
+        "importPath": "app.models.jwt",
+        "description": "app.models.jwt",
+        "isExtraImport": true,
+        "detail": "app.models.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "CreateSessionModel",
+        "importPath": "app.models.session",
+        "description": "app.models.session",
+        "isExtraImport": true,
+        "detail": "app.models.session",
+        "documentation": {}
+    },
+    {
+        "label": "SessionLocationModel",
+        "importPath": "app.models.session",
+        "description": "app.models.session",
+        "isExtraImport": true,
+        "detail": "app.models.session",
+        "documentation": {}
+    },
+    {
+        "label": "SessionModel",
+        "importPath": "app.models.session",
+        "description": "app.models.session",
+        "isExtraImport": true,
+        "detail": "app.models.session",
+        "documentation": {}
+    },
+    {
+        "label": "CreateUserModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "OtpModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "PublicUserModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserLoginSignatureModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserToSignModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserModel",
+        "importPath": "app.models.user",
+        "description": "app.models.user",
+        "isExtraImport": true,
+        "detail": "app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "Int64",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson",
+        "description": "bson",
+        "isExtraImport": true,
+        "detail": "bson",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidId",
+        "importPath": "bson.errors",
+        "description": "bson.errors",
+        "isExtraImport": true,
+        "detail": "bson.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidId",
+        "importPath": "bson.errors",
+        "description": "bson.errors",
+        "isExtraImport": true,
+        "detail": "bson.errors",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "env",
+        "description": "env",
+        "isExtraImport": true,
+        "detail": "env",
+        "documentation": {}
+    },
+    {
+        "label": "Request",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Response",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Router",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "delete",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Controller",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Request",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Router",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "post",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Request",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Router",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "delete",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "get",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "Litestar",
+        "importPath": "litestar",
+        "description": "litestar",
+        "isExtraImport": true,
+        "detail": "litestar",
+        "documentation": {}
+    },
+    {
+        "label": "BackgroundTask",
+        "importPath": "litestar.background_tasks",
+        "description": "litestar.background_tasks",
+        "isExtraImport": true,
+        "detail": "litestar.background_tasks",
+        "documentation": {}
+    },
+    {
+        "label": "Token",
+        "importPath": "litestar.contrib.jwt",
+        "description": "litestar.contrib.jwt",
+        "isExtraImport": true,
+        "detail": "litestar.contrib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "Token",
+        "importPath": "litestar.contrib.jwt",
+        "description": "litestar.contrib.jwt",
+        "isExtraImport": true,
+        "detail": "litestar.contrib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "Token",
+        "importPath": "litestar.contrib.jwt",
+        "description": "litestar.contrib.jwt",
+        "isExtraImport": true,
+        "detail": "litestar.contrib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "JWTCookieAuth",
+        "importPath": "litestar.contrib.jwt",
+        "description": "litestar.contrib.jwt",
+        "isExtraImport": true,
+        "detail": "litestar.contrib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "Token",
+        "importPath": "litestar.contrib.jwt",
+        "description": "litestar.contrib.jwt",
+        "isExtraImport": true,
+        "detail": "litestar.contrib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "Controller",
+        "importPath": "litestar.controller",
+        "description": "litestar.controller",
+        "isExtraImport": true,
+        "detail": "litestar.controller",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationException",
+        "importPath": "litestar.exceptions",
+        "description": "litestar.exceptions",
+        "isExtraImport": true,
+        "detail": "litestar.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "NotAuthorizedException",
+        "importPath": "litestar.exceptions",
+        "description": "litestar.exceptions",
+        "isExtraImport": true,
+        "detail": "litestar.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "NotFoundException",
+        "importPath": "litestar.exceptions",
+        "description": "litestar.exceptions",
+        "isExtraImport": true,
+        "detail": "litestar.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationException",
+        "importPath": "litestar.exceptions",
+        "description": "litestar.exceptions",
+        "isExtraImport": true,
+        "detail": "litestar.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "get",
+        "importPath": "litestar.handlers",
+        "description": "litestar.handlers",
+        "isExtraImport": true,
+        "detail": "litestar.handlers",
+        "documentation": {}
+    },
+    {
+        "label": "post",
+        "importPath": "litestar.handlers",
+        "description": "litestar.handlers",
+        "isExtraImport": true,
+        "detail": "litestar.handlers",
+        "documentation": {}
+    },
+    {
+        "label": "RedirectResponse",
+        "importPath": "litestar.response",
+        "description": "litestar.response",
+        "isExtraImport": true,
+        "detail": "litestar.response",
+        "documentation": {}
+    },
+    {
+        "label": "Base64Encoder",
+        "importPath": "nacl.encoding",
+        "description": "nacl.encoding",
+        "isExtraImport": true,
+        "detail": "nacl.encoding",
+        "documentation": {}
+    },
+    {
+        "label": "BadSignatureError",
+        "importPath": "nacl.exceptions",
+        "description": "nacl.exceptions",
+        "isExtraImport": true,
+        "detail": "nacl.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "PublicKey",
+        "importPath": "nacl.public",
+        "description": "nacl.public",
+        "isExtraImport": true,
+        "detail": "nacl.public",
+        "documentation": {}
+    },
+    {
+        "label": "SealedBox",
+        "importPath": "nacl.public",
+        "description": "nacl.public",
+        "isExtraImport": true,
+        "detail": "nacl.public",
+        "documentation": {}
+    },
+    {
+        "label": "VerifyKey",
+        "importPath": "nacl.signing",
+        "description": "nacl.signing",
+        "isExtraImport": true,
+        "detail": "nacl.signing",
+        "documentation": {}
+    },
+    {
+        "label": "pathlib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "importPath": "app.env",
+        "description": "app.env",
+        "isExtraImport": true,
+        "detail": "app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Canary",
+        "importPath": "app.lib.canary",
+        "description": "app.lib.canary",
+        "isExtraImport": true,
+        "detail": "app.lib.canary",
+        "documentation": {}
+    },
+    {
+        "label": "format_path",
+        "importPath": "app.lib.s3",
+        "description": "app.lib.s3",
+        "isExtraImport": true,
+        "detail": "app.lib.s3",
+        "documentation": {}
+    },
+    {
+        "label": "s3_create_client",
+        "importPath": "app.lib.s3",
+        "description": "app.lib.s3",
+        "isExtraImport": true,
+        "detail": "app.lib.s3",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryModel",
+        "importPath": "app.models.canary",
+        "description": "app.models.canary",
+        "isExtraImport": true,
+        "detail": "app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "CreateCanaryModel",
+        "importPath": "app.models.canary",
+        "description": "app.models.canary",
+        "isExtraImport": true,
+        "detail": "app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryModel",
+        "importPath": "app.models.canary",
+        "description": "app.models.canary",
+        "isExtraImport": true,
+        "detail": "app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "UploadFile",
+        "importPath": "litestar.datastructures",
+        "description": "litestar.datastructures",
+        "isExtraImport": true,
+        "detail": "litestar.datastructures",
+        "documentation": {}
+    },
+    {
+        "label": "RequestEncodingType",
+        "importPath": "litestar.enums",
+        "description": "litestar.enums",
+        "isExtraImport": true,
+        "detail": "litestar.enums",
+        "documentation": {}
+    },
+    {
+        "label": "Body",
+        "importPath": "litestar.params",
+        "description": "litestar.params",
+        "isExtraImport": true,
+        "detail": "litestar.params",
+        "documentation": {}
+    },
+    {
+        "label": "ip_address",
+        "importPath": "ipaddress",
+        "description": "ipaddress",
+        "isExtraImport": true,
+        "detail": "ipaddress",
+        "documentation": {}
+    },
+    {
+        "label": "ip_address",
+        "importPath": "ipaddress",
+        "description": "ipaddress",
+        "isExtraImport": true,
+        "detail": "ipaddress",
+        "documentation": {}
+    },
+    {
+        "label": "aiodns",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "aiodns",
+        "description": "aiodns",
+        "detail": "aiodns",
+        "documentation": {}
+    },
+    {
+        "label": "yarl",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "yarl",
+        "description": "yarl",
+        "detail": "yarl",
+        "documentation": {}
+    },
+    {
+        "label": "ObjectId",
+        "importPath": "bson.objectid",
+        "description": "bson.objectid",
+        "isExtraImport": true,
+        "detail": "bson.objectid",
+        "documentation": {}
+    },
+    {
+        "label": "ASGIConnection",
+        "importPath": "litestar.connection",
+        "description": "litestar.connection",
+        "isExtraImport": true,
+        "detail": "litestar.connection",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "EmailStr",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "AnyHttpUrl",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseSettings",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidCaptcha",
+        "importPath": "errors",
+        "description": "errors",
+        "isExtraImport": true,
+        "detail": "errors",
+        "documentation": {}
+    },
+    {
+        "label": "sha256",
+        "importPath": "hashlib",
+        "description": "hashlib",
+        "isExtraImport": true,
+        "detail": "hashlib",
+        "documentation": {}
+    },
+    {
+        "label": "path",
+        "importPath": "os",
+        "description": "os",
+        "isExtraImport": true,
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "get_session",
+        "importPath": "aiobotocore.session",
+        "description": "aiobotocore.session",
+        "isExtraImport": true,
+        "detail": "aiobotocore.session",
+        "documentation": {}
+    },
+    {
+        "label": "EmailMessage",
+        "importPath": "email.message",
+        "description": "email.message",
+        "isExtraImport": true,
+        "detail": "email.message",
+        "documentation": {}
+    },
+    {
+        "label": "quote_plus",
+        "importPath": "urllib.parse",
+        "description": "urllib.parse",
+        "isExtraImport": true,
+        "detail": "urllib.parse",
+        "documentation": {}
+    },
+    {
+        "label": "aiosmtplib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "aiosmtplib",
+        "description": "aiosmtplib",
+        "detail": "aiosmtplib",
+        "documentation": {}
+    },
+    {
+        "label": "CustomJsonEncoder",
+        "importPath": "models.customs",
+        "description": "models.customs",
+        "isExtraImport": true,
+        "detail": "models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "IvField",
+        "importPath": "models.customs",
+        "description": "models.customs",
+        "isExtraImport": true,
+        "detail": "models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "CustomJsonEncoder",
+        "importPath": "models.customs",
+        "description": "models.customs",
+        "isExtraImport": true,
+        "detail": "models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "CustomJsonEncoder",
+        "importPath": "app.models.customs",
+        "description": "app.models.customs",
+        "isExtraImport": true,
+        "detail": "app.models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "CustomJsonEncoder",
+        "importPath": "app.models.customs",
+        "description": "app.models.customs",
+        "isExtraImport": true,
+        "detail": "app.models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "IvField",
+        "importPath": "app.models.customs",
+        "description": "app.models.customs",
+        "isExtraImport": true,
+        "detail": "app.models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "CustomJsonEncoder",
+        "importPath": "app.models.customs",
+        "description": "app.models.customs",
+        "isExtraImport": true,
+        "detail": "app.models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "RFC_9106_LOW_MEMORY",
+        "importPath": "argon2.profiles",
+        "description": "argon2.profiles",
+        "isExtraImport": true,
+        "detail": "argon2.profiles",
+        "documentation": {}
+    },
+    {
+        "label": "Enum",
+        "importPath": "enum",
+        "description": "enum",
+        "isExtraImport": true,
+        "detail": "enum",
+        "documentation": {}
+    },
+    {
+        "label": "aiohttp",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "ClientSession",
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "isExtraImport": true,
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "routes",
+        "importPath": "app.controllers",
+        "description": "app.controllers",
+        "isExtraImport": true,
+        "detail": "app.controllers",
+        "documentation": {}
+    },
+    {
+        "label": "CORSConfig",
+        "importPath": "litestar.config.cors",
+        "description": "litestar.config.cors",
+        "isExtraImport": true,
+        "detail": "litestar.config.cors",
+        "documentation": {}
+    },
+    {
+        "label": "CSRFConfig",
+        "importPath": "litestar.config.csrf",
+        "description": "litestar.config.csrf",
+        "isExtraImport": true,
+        "detail": "litestar.config.csrf",
+        "documentation": {}
+    },
+    {
+        "label": "ResponseCacheConfig",
+        "importPath": "litestar.config.response_cache",
+        "description": "litestar.config.response_cache",
+        "isExtraImport": true,
+        "detail": "litestar.config.response_cache",
+        "documentation": {}
+    },
+    {
+        "label": "RateLimitConfig",
+        "importPath": "litestar.middleware.rate_limit",
+        "description": "litestar.middleware.rate_limit",
+        "isExtraImport": true,
+        "detail": "litestar.middleware.rate_limit",
+        "documentation": {}
+    },
+    {
+        "label": "OpenAPIConfig",
+        "importPath": "litestar.openapi",
+        "description": "litestar.openapi",
+        "isExtraImport": true,
+        "detail": "litestar.openapi",
+        "documentation": {}
+    },
+    {
+        "label": "RedisStore",
+        "importPath": "litestar.stores.redis",
+        "description": "litestar.stores.redis",
+        "isExtraImport": true,
+        "detail": "litestar.stores.redis",
+        "documentation": {}
+    },
+    {
+        "label": "RedisStore",
+        "importPath": "litestar.stores.redis",
+        "description": "litestar.stores.redis",
+        "isExtraImport": true,
+        "detail": "litestar.stores.redis",
+        "documentation": {}
+    },
+    {
+        "label": "motor_asyncio",
+        "importPath": "motor",
+        "description": "motor",
+        "isExtraImport": true,
+        "detail": "motor",
+        "documentation": {}
+    },
+    {
+        "label": "motor_asyncio",
+        "importPath": "motor",
+        "description": "motor",
+        "isExtraImport": true,
+        "detail": "motor",
+        "documentation": {}
+    },
+    {
+        "label": "Redis",
+        "importPath": "redis.asyncio",
+        "description": "redis.asyncio",
+        "isExtraImport": true,
+        "detail": "redis.asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "State",
+        "importPath": "litestar.datastructures.state",
+        "description": "litestar.datastructures.state",
+        "isExtraImport": true,
+        "detail": "litestar.datastructures.state",
+        "documentation": {}
+    },
+    {
+        "label": "uvicorn",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "uvicorn",
+        "description": "uvicorn",
+        "detail": "uvicorn",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "importPath": "app.main",
+        "description": "app.main",
+        "isExtraImport": true,
+        "detail": "app.main",
+        "documentation": {}
+    },
+    {
+        "label": "LoginController",
+        "kind": 6,
+        "importPath": "backend.canary.app.controllers.account",
+        "description": "backend.canary.app.controllers.account",
+        "peekOfCode": "class LoginController(Controller):\n    path = \"/{email:str}\"\n    @get(\n        path=\"/public\",\n        description=\"Public KDF details\",\n        tags=[\"account\"],\n        exclude_from_auth=True,\n    )\n    async def public(self, state: \"State\", email: str) -> PublicUserModel:\n        user = await User(state, email).get()",
+        "detail": "backend.canary.app.controllers.account",
+        "documentation": {}
+    },
+    {
+        "label": "OtpController",
+        "kind": 6,
+        "importPath": "backend.canary.app.controllers.account",
+        "description": "backend.canary.app.controllers.account",
+        "peekOfCode": "class OtpController(Controller):\n    path = \"/otp\"\n    @post(\n        path=\"/setup\",\n        description=\"Used to confirm OTP is completed\",\n        tags=[\"account\"],\n        status_code=201,\n        raises=[OtpAlreadyCompleted],\n    )\n    async def otp_setup(",
+        "detail": "backend.canary.app.controllers.account",
+        "documentation": {}
+    },
+    {
+        "label": "jwt_info",
+        "kind": 2,
+        "importPath": "backend.canary.app.controllers.account",
+        "description": "backend.canary.app.controllers.account",
+        "peekOfCode": "def jwt_info(request: Request[ObjectId, Token, Any]) -> str:\n    return str(request.user)\nclass OtpController(Controller):\n    path = \"/otp\"\n    @post(\n        path=\"/setup\",\n        description=\"Used to confirm OTP is completed\",\n        tags=[\"account\"],\n        status_code=201,\n        raises=[OtpAlreadyCompleted],",
+        "detail": "backend.canary.app.controllers.account",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "kind": 5,
+        "importPath": "backend.canary.app.controllers.account",
+        "description": "backend.canary.app.controllers.account",
+        "peekOfCode": "router = Router(\n    path=\"/account\",\n    route_handlers=[\n        LoginController,\n        OtpController,\n        create_account,\n        jwt_info,\n        email_resend,\n        logout,\n    ],",
+        "detail": "backend.canary.app.controllers.account",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryController",
+        "kind": 6,
+        "importPath": "backend.canary.app.controllers.canary",
+        "description": "backend.canary.app.controllers.canary",
+        "peekOfCode": "class CanaryController(Controller):\n    path = \"/{domain:str}\"\n    @post(\"/logo/update\", description=\"Update logo for given domain\", tags=[\"canary\"])\n    async def update_logo(\n        self,\n        domain: str,\n        request: Request[ObjectId, Token, Any],\n        state: \"State\",\n        data: Annotated[\n            List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)",
+        "detail": "backend.canary.app.controllers.canary",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "kind": 5,
+        "importPath": "backend.canary.app.controllers.canary",
+        "description": "backend.canary.app.controllers.canary",
+        "peekOfCode": "router = Router(path=\"/canary\", route_handlers=[create_canary, CanaryController])",
+        "detail": "backend.canary.app.controllers.canary",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "kind": 5,
+        "importPath": "backend.canary.app.controllers.session",
+        "description": "backend.canary.app.controllers.session",
+        "peekOfCode": "router = Router(path=\"/session\", route_handlers=[get_sessions, invalidate_session])",
+        "detail": "backend.canary.app.controllers.session",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryUser",
+        "kind": 6,
+        "importPath": "backend.canary.app.lib.canary",
+        "description": "backend.canary.app.lib.canary",
+        "peekOfCode": "class CanaryUser:\n    def __init__(self, upper: \"Canary\", user_id: ObjectId) -> None:\n        self.__upper = upper\n        self.__user_id = user_id\n    @property\n    def _canary_query(self) -> dict:\n        return {\"domain\": self.__upper._domain, \"user_id\": self.__user_id}\n    async def get(self) -> CanaryModel:\n        result = await self.__upper._state.mongo.canary.find_one(self._canary_query)\n        if not result:",
+        "detail": "backend.canary.app.lib.canary",
+        "documentation": {}
+    },
+    {
+        "label": "Canary",
+        "kind": 6,
+        "importPath": "backend.canary.app.lib.canary",
+        "description": "backend.canary.app.lib.canary",
+        "peekOfCode": "class Canary:\n    def __init__(self, state: \"State\", domain: str) -> None:\n        _domain = yarl.URL(domain).host\n        if not _domain:\n            self._domain = domain\n        else:\n            self._domain = _domain\n        self._state = state\n    def user(self, user_id: ObjectId) -> CanaryUser:\n        return CanaryUser(self, user_id)",
+        "detail": "backend.canary.app.lib.canary",
+        "documentation": {}
+    },
+    {
+        "label": "jwt_cookie_auth",
+        "kind": 5,
+        "importPath": "backend.canary.app.lib.jwt",
+        "description": "backend.canary.app.lib.jwt",
+        "peekOfCode": "jwt_cookie_auth = JWTCookieAuth[ObjectId](\n    retrieve_user_handler=retrieve_user_handler,\n    token_secret=SETTINGS.jwt.secret,\n    exclude=[\n        \"/schema\",\n    ],\n    samesite=\"strict\",\n    secure=SETTINGS.proxy_urls.frontend != \"localhost\",\n)",
+        "detail": "backend.canary.app.lib.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "OneTimePassword",
+        "kind": 6,
+        "importPath": "backend.canary.app.lib.otp",
+        "description": "backend.canary.app.lib.otp",
+        "peekOfCode": "class OneTimePassword:\n    def __init__(self, state: \"State\", key: str) -> None:\n        self.__hotp = pyotp.TOTP(key, digits=6)\n        self.get_provisioning_uri = self.__hotp.provisioning_uri\n        self.verify = self.__hotp.verify\n        self.state = state\n    @classmethod\n    def create(cls, state: \"State\") -> \"OneTimePassword\":\n        return OneTimePassword(state=state, key=pyotp.random_base32())\n    @classmethod",
+        "detail": "backend.canary.app.lib.otp",
+        "documentation": {}
+    },
+    {
+        "label": "format_path",
+        "kind": 2,
+        "importPath": "backend.canary.app.lib.s3",
+        "description": "backend.canary.app.lib.s3",
+        "peekOfCode": "def format_path(*paths: str) -> str:\n    return path.join(SETTINGS.s3.folder, *paths)\ndef s3_create_client():\n    session = get_session()\n    return session.create_client(\n        \"s3\",\n        region_name=SETTINGS.s3.region_name,\n        aws_secret_access_key=SETTINGS.s3.secret_access_key,\n        aws_access_key_id=SETTINGS.s3.access_key_id,\n        endpoint_url=SETTINGS.s3.endpoint_url,",
+        "detail": "backend.canary.app.lib.s3",
+        "documentation": {}
+    },
+    {
+        "label": "s3_create_client",
+        "kind": 2,
+        "importPath": "backend.canary.app.lib.s3",
+        "description": "backend.canary.app.lib.s3",
+        "peekOfCode": "def s3_create_client():\n    session = get_session()\n    return session.create_client(\n        \"s3\",\n        region_name=SETTINGS.s3.region_name,\n        aws_secret_access_key=SETTINGS.s3.secret_access_key,\n        aws_access_key_id=SETTINGS.s3.access_key_id,\n        endpoint_url=SETTINGS.s3.endpoint_url,\n    )",
+        "detail": "backend.canary.app.lib.s3",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 6,
+        "importPath": "backend.canary.app.lib.user",
+        "description": "backend.canary.app.lib.user",
+        "peekOfCode": "class User:\n    def __init__(self, state: \"State\", identifier: Union[str, ObjectId]) -> None:\n        self.state = state\n        self.__identifier = identifier\n        self.__is_str = isinstance(identifier, str)\n    @property\n    def _user_query(self) -> dict:\n        return (\n            {\"email\": self.__identifier}\n            if self.__is_str",
+        "detail": "backend.canary.app.lib.user",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryEd25519Model",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.canary",
+        "description": "backend.canary.app.models.canary",
+        "peekOfCode": "class CanaryEd25519Model(IvField):\n    public_key: str = Field(\n        ..., max_length=44, description=\"ed25519 public key, base64 encoded\"\n    )\n    cipher_text: str = Field(\n        ...,\n        max_length=240,\n        description=\"ed25519 private key, encrypted with keychain, base64 encoded\",\n    )\nclass CreateCanaryModel(CustomJsonEncoder):",
+        "detail": "backend.canary.app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "CreateCanaryModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.canary",
+        "description": "backend.canary.app.models.canary",
+        "peekOfCode": "class CreateCanaryModel(CustomJsonEncoder):\n    domain: str = Field(\n        ...,\n        regex=r\"(?i)^((?!(?:www|www\\d+)\\.)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z]{2,})$\",\n    )\n    about: str = Field(..., max_length=500)\n    keypair: CanaryEd25519Model\n    signature: str = Field(..., max_length=128)\n    algorithms: str = Field(\n        \"XCHACHA20_POLY1305+ED25519+BLAKE2b\",",
+        "detail": "backend.canary.app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "PublicCanaryModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.canary",
+        "description": "backend.canary.app.models.canary",
+        "peekOfCode": "class PublicCanaryModel(CreateCanaryModel):\n    id: ObjectId = Field(..., alias=\"_id\")\n    logo: Optional[str] = None\n    user_id: ObjectId\n    created: datetime\n    def __init__(self, *args, **kwargs) -> None:\n        super().__init__(*args, **kwargs)\n        if self.logo:\n            self.logo = f\"{SETTINGS.s3.download_url}/{self.logo}\"\nclass DomainVerification(BaseModel):",
+        "detail": "backend.canary.app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "DomainVerification",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.canary",
+        "description": "backend.canary.app.models.canary",
+        "peekOfCode": "class DomainVerification(BaseModel):\n    completed: bool = False\n    code: str\n    code_prefixed: str = \"\"\n    def __init__(self, *args, **kwargs) -> None:\n        super().__init__(*args, **kwargs)\n        self.code_prefixed = f\"{SETTINGS.canary.domain_verify.prefix}{self.code}\"\nclass CanaryModel(PublicCanaryModel):\n    domain_verification: DomainVerification",
+        "detail": "backend.canary.app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.canary",
+        "description": "backend.canary.app.models.canary",
+        "peekOfCode": "class CanaryModel(PublicCanaryModel):\n    domain_verification: DomainVerification",
+        "detail": "backend.canary.app.models.canary",
+        "documentation": {}
+    },
+    {
+        "label": "CustomJsonEncoder",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.customs",
+        "description": "backend.canary.app.models.customs",
+        "peekOfCode": "class CustomJsonEncoder(BaseModel):\n    class Config:\n        json_encoders = {\n            ObjectId: lambda v: str(v),\n            Int64: lambda v: int(v),\n        }\n        arbitrary_types_allowed = True\nclass IvField(BaseModel):\n    iv: str = Field(\n        ..., max_length=128, description=\"IV for cipher text, base64 encoded.\"",
+        "detail": "backend.canary.app.models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "IvField",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.customs",
+        "description": "backend.canary.app.models.customs",
+        "peekOfCode": "class IvField(BaseModel):\n    iv: str = Field(\n        ..., max_length=128, description=\"IV for cipher text, base64 encoded.\"\n    )",
+        "detail": "backend.canary.app.models.customs",
+        "documentation": {}
+    },
+    {
+        "label": "UserJtiModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.jwt",
+        "description": "backend.canary.app.models.jwt",
+        "peekOfCode": "class UserJtiModel(CustomJsonEncoder):\n    jti: ObjectId\n    user: UserModel",
+        "detail": "backend.canary.app.models.jwt",
+        "documentation": {}
+    },
+    {
+        "label": "SessionLocationModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.session",
+        "description": "backend.canary.app.models.session",
+        "peekOfCode": "class SessionLocationModel(BaseModel):\n    region: Optional[str] = None\n    country: Optional[str] = None\n    ip: Optional[str] = None\nclass CreateSessionModel(CustomJsonEncoder):\n    expires: datetime\n    record_kept_till: datetime\n    created: datetime\n    location: SessionLocationModel\n    device: Optional[str] = None",
+        "detail": "backend.canary.app.models.session",
+        "documentation": {}
+    },
+    {
+        "label": "CreateSessionModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.session",
+        "description": "backend.canary.app.models.session",
+        "peekOfCode": "class CreateSessionModel(CustomJsonEncoder):\n    expires: datetime\n    record_kept_till: datetime\n    created: datetime\n    location: SessionLocationModel\n    device: Optional[str] = None\n    user_id: ObjectId\nclass SessionModel(CreateSessionModel):\n    id: ObjectId = Field(..., alias=\"_id\")",
+        "detail": "backend.canary.app.models.session",
+        "documentation": {}
+    },
+    {
+        "label": "SessionModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.session",
+        "description": "backend.canary.app.models.session",
+        "peekOfCode": "class SessionModel(CreateSessionModel):\n    id: ObjectId = Field(..., alias=\"_id\")",
+        "detail": "backend.canary.app.models.session",
+        "documentation": {}
+    },
+    {
+        "label": "EmailModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class EmailModel(BaseModel):\n    email: EmailStr\nclass Argon2Modal(BaseModel):\n    salt: str = Field(\n        ...,\n        max_length=64,\n        description=\"Salt used for deriving account key, base64 encoded\",\n    )\n    time_cost: int = Field(\n        RFC_9106_LOW_MEMORY.time_cost,",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "Argon2Modal",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class Argon2Modal(BaseModel):\n    salt: str = Field(\n        ...,\n        max_length=64,\n        description=\"Salt used for deriving account key, base64 encoded\",\n    )\n    time_cost: int = Field(\n        RFC_9106_LOW_MEMORY.time_cost,\n        ge=RFC_9106_LOW_MEMORY.time_cost - 1,\n        le=12,",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "PublicUserModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class PublicUserModel(BaseModel):\n    kdf: Argon2Modal\n    otp_completed: bool = False\nclass AccountEd25199Modal(BaseModel):\n    public_key: str = Field(\n        ..., max_length=44, description=\"ed25519 public key, base64 encoded\"\n    )\nclass AccountX25519Model(IvField):\n    public_key: str = Field(\n        ..., max_length=44, description=\"X25519 public key, base64 encoded\"",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "AccountEd25199Modal",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class AccountEd25199Modal(BaseModel):\n    public_key: str = Field(\n        ..., max_length=44, description=\"ed25519 public key, base64 encoded\"\n    )\nclass AccountX25519Model(IvField):\n    public_key: str = Field(\n        ..., max_length=44, description=\"X25519 public key, base64 encoded\"\n    )\n    cipher_text: str = Field(\n        ...,",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "AccountX25519Model",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class AccountX25519Model(IvField):\n    public_key: str = Field(\n        ..., max_length=44, description=\"X25519 public key, base64 encoded\"\n    )\n    cipher_text: str = Field(\n        ...,\n        max_length=240,\n        description=\"X25519 private key, encrypted with keychain, base64 encoded\",\n    )\nclass AccountKeychainModal(IvField):",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "AccountKeychainModal",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class AccountKeychainModal(IvField):\n    cipher_text: str = Field(\n        ...,\n        max_length=82,\n        description=\"Locally encrypted 32 byte key for keychain, base64 encoded\",\n    )\nclass __CreateUserShared(EmailModel):\n    auth: AccountEd25199Modal\n    keypair: AccountX25519Model\n    keychain: AccountKeychainModal",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "__CreateUserShared",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class __CreateUserShared(EmailModel):\n    auth: AccountEd25199Modal\n    keypair: AccountX25519Model\n    keychain: AccountKeychainModal\n    kdf: Argon2Modal\n    ip_lookup_consent: bool = True\n    signature: str = Field(\n        ...,\n        max_length=128,\n        description=\"Locally signed with ed25519 private key to validate account data hasn't been changed. Base64 encoded\",",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "CreateUserModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class CreateUserModel(__CreateUserShared):\n    pass\nclass OtpModel(BaseModel):\n    secret: str\n    completed: bool = False\n    provisioning_uri: str = \"\"\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self.provisioning_uri = self.__provisioning_uri()\n    def __provisioning_uri(self) -> str:",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "OtpModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class OtpModel(BaseModel):\n    secret: str\n    completed: bool = False\n    provisioning_uri: str = \"\"\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self.provisioning_uri = self.__provisioning_uri()\n    def __provisioning_uri(self) -> str:\n        return pyotp.totp.TOTP(self.secret).provisioning_uri(\n            issuer_name=SETTINGS.site_name, name=SETTINGS.site_name",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):\n    id: ObjectId = Field(..., alias=\"_id\")\n    created: datetime\n    otp: OtpModel\n    email_verified: bool = False\nclass UserLoginSignatureModel(BaseModel):\n    signature: str = Field(\n        ..., description=\"to_sign signed with ed25519 private key, base64 encoded\"\n    )\n    one_day_login: bool = Field(",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserLoginSignatureModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class UserLoginSignatureModel(BaseModel):\n    signature: str = Field(\n        ..., description=\"to_sign signed with ed25519 private key, base64 encoded\"\n    )\n    one_day_login: bool = Field(\n        False, description=\"Overwrites the default JWT expire days to only one day\"\n    )\n    id: str = Field(..., alias=\"_id\")\nclass UserToSignModel(CustomJsonEncoder):\n    to_sign: str = Field(..., description=\"to be signed with ed25519 private key\")",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserToSignModel",
+        "kind": 6,
+        "importPath": "backend.canary.app.models.user",
+        "description": "backend.canary.app.models.user",
+        "peekOfCode": "class UserToSignModel(CustomJsonEncoder):\n    to_sign: str = Field(..., description=\"to be signed with ed25519 private key\")\n    id: ObjectId = Field(..., alias=\"_id\")",
+        "detail": "backend.canary.app.models.user",
+        "documentation": {}
+    },
+    {
+        "label": "MongoDB",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class MongoDB(BaseModel):\n    host: str = \"localhost\"\n    port: int = 27017\n    collection: str = \"purplix\"\nclass ProxiedUrls(BaseModel):\n    frontend: str = \"http://localhost\"\n    backend: str = \"http://localhost/api\"\nclass S3(BaseModel):\n    region_name: str\n    secret_access_key: str",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "ProxiedUrls",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class ProxiedUrls(BaseModel):\n    frontend: str = \"http://localhost\"\n    backend: str = \"http://localhost/api\"\nclass S3(BaseModel):\n    region_name: str\n    secret_access_key: str\n    access_key_id: str\n    bucket: str\n    folder: str = \"purplix\"\n    download_url: str",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "S3",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class S3(BaseModel):\n    region_name: str\n    secret_access_key: str\n    access_key_id: str\n    bucket: str\n    folder: str = \"purplix\"\n    download_url: str\n    endpoint_url: Optional[str] = None\nclass OpenAPI(BaseModel):\n    title: str = \"Purplix.io\"",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "OpenAPI",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class OpenAPI(BaseModel):\n    title: str = \"Purplix.io\"\n    version: str = \"0.0.1\"\nclass Redis(BaseModel):\n    host: str = \"localhost\"\n    port: int = 6379\n    db: int = 0\nclass mCaptcha(BaseModel):\n    verify_url: str\n    site_key: str",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Redis",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Redis(BaseModel):\n    host: str = \"localhost\"\n    port: int = 6379\n    db: int = 0\nclass mCaptcha(BaseModel):\n    verify_url: str\n    site_key: str\n    account_secret: str\nclass Documents(BaseModel):\n    max_amount: int = 3",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "mCaptcha",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class mCaptcha(BaseModel):\n    verify_url: str\n    site_key: str\n    account_secret: str\nclass Documents(BaseModel):\n    max_amount: int = 3\n    max_size: int = 5243000\n    allowed_extensions: List[str] = [\n        \".pdf\",\n        \".html\",",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Documents",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Documents(BaseModel):\n    max_amount: int = 3\n    max_size: int = 5243000\n    allowed_extensions: List[str] = [\n        \".pdf\",\n        \".html\",\n        \".png\",\n        \".jpeg\",\n        \".jpg\",\n        \".mp4\",",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Jwt",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Jwt(BaseModel):\n    secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)\n    expire_days: int = 30\nclass DomainVerify(BaseModel):\n    prefix: str = \"purplix.io__verify=\"\n    timeout: int = 20\nclass Proxycheck(BaseModel):\n    api_key: Optional[str] = None\n    url: str = \"https://proxycheck.io/v2/\"\nclass Smtp(BaseModel):",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "DomainVerify",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class DomainVerify(BaseModel):\n    prefix: str = \"purplix.io__verify=\"\n    timeout: int = 20\nclass Proxycheck(BaseModel):\n    api_key: Optional[str] = None\n    url: str = \"https://proxycheck.io/v2/\"\nclass Smtp(BaseModel):\n    host: str\n    port: int\n    username: Optional[str] = None",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Proxycheck",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Proxycheck(BaseModel):\n    api_key: Optional[str] = None\n    url: str = \"https://proxycheck.io/v2/\"\nclass Smtp(BaseModel):\n    host: str\n    port: int\n    username: Optional[str] = None\n    password: Optional[str] = None\n    email: str\nclass CanaryLogo(BaseModel):",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Smtp",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Smtp(BaseModel):\n    host: str\n    port: int\n    username: Optional[str] = None\n    password: Optional[str] = None\n    email: str\nclass CanaryLogo(BaseModel):\n    max_size = 1049000\n    allowed_extensions: List[str] = [\n        \".png\",",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryLogo",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class CanaryLogo(BaseModel):\n    max_size = 1049000\n    allowed_extensions: List[str] = [\n        \".png\",\n        \".jpeg\",\n        \".jpg\",\n    ]\nclass Canary(BaseModel):\n    domain_verify: DomainVerify = DomainVerify()\n    documents: Documents = Documents()",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Canary",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Canary(BaseModel):\n    domain_verify: DomainVerify = DomainVerify()\n    documents: Documents = Documents()\n    logo: CanaryLogo = CanaryLogo()\nclass Settings(BaseSettings):\n    mongo: MongoDB = MongoDB()\n    redis: Redis = Redis()\n    proxy_urls: ProxiedUrls = ProxiedUrls()\n    open_api: OpenAPI = OpenAPI()\n    mcaptcha: Optional[mCaptcha] = None",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "Settings",
+        "kind": 6,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "class Settings(BaseSettings):\n    mongo: MongoDB = MongoDB()\n    redis: Redis = Redis()\n    proxy_urls: ProxiedUrls = ProxiedUrls()\n    open_api: OpenAPI = OpenAPI()\n    mcaptcha: Optional[mCaptcha] = None\n    site_name = \"Purplix.io\"\n    proxy_check: Optional[Proxycheck] = None\n    smtp: Optional[Smtp] = None\n    canary: Canary = Canary()",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS",
+        "kind": 5,
+        "importPath": "backend.canary.app.env",
+        "description": "backend.canary.app.env",
+        "peekOfCode": "SETTINGS = Settings()  # type: ignore",
+        "detail": "backend.canary.app.env",
+        "documentation": {}
+    },
+    {
+        "label": "ErrorCodes",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class ErrorCodes(Enum):\n    user_not_found = 2001\n    invalid_auth = 2002\n    invalid_captcha = 2003\n    email_taken = 2004\n    otp_completed = 2005\n    domain_validation = 2006\n    local_domain = 2007\n    canary_taken = 2008\n    upload_too_big = 2009",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "UserNotFoundException",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class UserNotFoundException(NotFoundException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"User not found\",\n            extra={ERROR_CODE_KEY: ErrorCodes.user_not_found.value},\n        )\nclass InvalidAccountAuth(NotAuthorizedException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidAccountAuth",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class InvalidAccountAuth(NotAuthorizedException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Invalid account auth\",\n            extra={ERROR_CODE_KEY: ErrorCodes.invalid_auth.value},\n        )\nclass InvalidCaptcha(NotAuthorizedException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidCaptcha",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class InvalidCaptcha(NotAuthorizedException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Invalid captcha\",\n            extra={ERROR_CODE_KEY: ErrorCodes.invalid_captcha.value},\n        )\nclass OtpAlreadyCompleted(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "OtpAlreadyCompleted",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class OtpAlreadyCompleted(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"OTP setup is completed already\",\n            extra={ERROR_CODE_KEY: ErrorCodes.otp_completed.value},\n        )\nclass EmailTaken(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "EmailTaken",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class EmailTaken(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Email has already been registered\",\n            extra={ERROR_CODE_KEY: ErrorCodes.email_taken.value},\n        )\nclass DomainValidationError(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "DomainValidationError",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class DomainValidationError(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Domain validation failed\",\n            extra={ERROR_CODE_KEY: ErrorCodes.domain_validation.value},\n        )\nclass LocalDomainInvalid(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "LocalDomainInvalid",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class LocalDomainInvalid(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Local domains can't be used\",\n            extra={ERROR_CODE_KEY: ErrorCodes.local_domain.value},\n        )\nclass CanaryTaken(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryTaken",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class CanaryTaken(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Domain has already been registered\",\n            extra={ERROR_CODE_KEY: ErrorCodes.canary_taken.value},\n        )\nclass FileTooBig(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "FileTooBig",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class FileTooBig(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Uploaded file is larger then the max upload size\",\n            extra={ERROR_CODE_KEY: ErrorCodes.upload_too_big.value},\n        )\nclass UnsupportedFileType(ValidationException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "UnsupportedFileType",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class UnsupportedFileType(ValidationException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Uploaded file is not supported\",\n            extra={ERROR_CODE_KEY: ErrorCodes.unsupported_file_type.value},\n        )\nclass CanaryNotFoundException(NotFoundException):\n    def __init__(",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "CanaryNotFoundException",
+        "kind": 6,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "class CanaryNotFoundException(NotFoundException):\n    def __init__(\n        self,\n    ) -> None:\n        super().__init__(\n            detail=\"Canary not found\",\n            extra={ERROR_CODE_KEY: ErrorCodes.canary_not_found.value},\n        )",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "ERROR_CODE_KEY",
+        "kind": 5,
+        "importPath": "backend.canary.app.errors",
+        "description": "backend.canary.app.errors",
+        "peekOfCode": "ERROR_CODE_KEY = \"error_code\"\nclass ErrorCodes(Enum):\n    user_not_found = 2001\n    invalid_auth = 2002\n    invalid_captcha = 2003\n    email_taken = 2004\n    otp_completed = 2005\n    domain_validation = 2006\n    local_domain = 2007\n    canary_taken = 2008",
+        "detail": "backend.canary.app.errors",
+        "documentation": {}
+    },
+    {
+        "label": "redis",
+        "kind": 5,
+        "importPath": "backend.canary.app.main",
+        "description": "backend.canary.app.main",
+        "peekOfCode": "redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db)\ncache_store = RedisStore(redis=redis)\nasync def init_mongo(state: \"State\") -> motor_asyncio.AsyncIOMotorCollection:\n    if not getattr(state, \"mongo\", None):\n        mongo = motor_asyncio.AsyncIOMotorClient(\n            SETTINGS.mongo.host, SETTINGS.mongo.port\n        )\n        await mongo.server_info(None)\n        state.mongo = cast(\n            motor_asyncio.AsyncIOMotorCollection, mongo[SETTINGS.mongo.collection]",
+        "detail": "backend.canary.app.main",
+        "documentation": {}
+    },
+    {
+        "label": "cache_store",
+        "kind": 5,
+        "importPath": "backend.canary.app.main",
+        "description": "backend.canary.app.main",
+        "peekOfCode": "cache_store = RedisStore(redis=redis)\nasync def init_mongo(state: \"State\") -> motor_asyncio.AsyncIOMotorCollection:\n    if not getattr(state, \"mongo\", None):\n        mongo = motor_asyncio.AsyncIOMotorClient(\n            SETTINGS.mongo.host, SETTINGS.mongo.port\n        )\n        await mongo.server_info(None)\n        state.mongo = cast(\n            motor_asyncio.AsyncIOMotorCollection, mongo[SETTINGS.mongo.collection]\n        )",
+        "detail": "backend.canary.app.main",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "backend.canary.app.main",
+        "description": "backend.canary.app.main",
+        "peekOfCode": "app = Litestar(\n    route_handlers=[routes],\n    on_startup=[init_mongo, init_redis, init_aiohttp],\n    on_shutdown=[close_aiohttp],\n    csrf_config=CSRFConfig(\n        secret=SETTINGS.csrf_secret, cookie_httponly=False, cookie_samesite=\"strict\"\n    ),\n    middleware=[\n        RateLimitConfig(rate_limit=(\"minute\", 60), exclude=[\"/schema\"]).middleware\n    ],",
+        "detail": "backend.canary.app.main",
+        "documentation": {}
+    },
+    {
+        "label": "State",
+        "kind": 6,
+        "importPath": "backend.canary.app.types",
+        "description": "backend.canary.app.types",
+        "peekOfCode": "class State(BaseState):\n    mongo: motor_asyncio.AsyncIOMotorCollection\n    redis: RedisStore\n    aiohttp: ClientSession",
+        "detail": "backend.canary.app.types",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "backend.canary.run",
+        "description": "backend.canary.run",
+        "peekOfCode": "def main():\n    uvicorn.run(app)",
+        "detail": "backend.canary.run",
+        "documentation": {}
+    }
+]

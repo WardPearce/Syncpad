@@ -4,36 +4,12 @@ from typing import TYPE_CHECKING, List
 import aiodns
 import yarl
 from app.env import SETTINGS
-from app.errors import (
-    CanaryNotFoundException,
-    DomainValidationError,
-    LocalDomainInvalid,
-)
+from app.errors import CanaryNotFoundException, DomainValidationError
 from app.models.canary import CanaryModel
 from bson import ObjectId
 
 if TYPE_CHECKING:
     from app.types import State
-
-
-def __is_local_ip(not_trusted_ip: str):
-    ip = ip_address(not_trusted_ip)
-    return ip.is_loopback or ip.is_private
-
-
-async def get_localhost_aliases() -> List[str]:
-    aliases = []
-    resolver = aiodns.DNSResolver()
-
-    for ip in ("127.0.0.1", "::1"):
-        try:
-            hostname = await resolver.gethostbyaddr(ip)
-            aliases.append(hostname.name)
-            aliases.extend(hostname.aliases)
-        except aiodns.error.DNSError:
-            raise
-
-    return aliases
 
 
 class CanaryUser:
@@ -66,10 +42,10 @@ class CanaryUser:
         if not self.__upper._domain:
             raise DomainValidationError()
 
+        resolver = aiodns.DNSResolver(timeout=SETTINGS.canary.domain_verify.timeout)
+
         try:
-            txt_records = await self.__upper._resolver.query(
-                self.__upper._domain, "TXT"
-            )
+            txt_records = await resolver.query(self.__upper._domain, "TXT")
         except aiodns.error.DNSError:
             raise DomainValidationError()
 
@@ -100,46 +76,13 @@ class CanaryUser:
 
 class Canary:
     def __init__(self, state: "State", domain: str) -> None:
-        self._domain = yarl.URL(domain).host
-        self._resolver = aiodns.DNSResolver(
-            timeout=SETTINGS.canary.domain_verify.timeout
-        )
+        _domain = yarl.URL(domain).host
+        if not _domain:
+            self._domain = domain
+        else:
+            self._domain = _domain
+
         self._state = state
 
     def user(self, user_id: ObjectId) -> CanaryUser:
         return CanaryUser(self, user_id)
-
-    async def is_local(self) -> None:
-        """Used to validate webhooks if it's a local ip or not.
-
-        Raises:
-            LocalDomainInvalid
-        """
-
-        if not self._domain:
-            raise LocalDomainInvalid()
-
-        localhost_aliases = await get_localhost_aliases()
-
-        if self._domain in localhost_aliases:
-            raise LocalDomainInvalid()
-
-        try:
-            given_ip = ip_address(self._domain)
-            if given_ip.is_private or given_ip.is_loopback:
-                raise LocalDomainInvalid()
-        except ValueError:
-            pass
-
-        try:
-            ipv4_address = await self._resolver.query(self._domain, "A")
-            for ipv4 in ipv4_address:
-                if ipv4 in localhost_aliases or __is_local_ip(ipv4):
-                    raise LocalDomainInvalid()
-
-            ipv6_address = await self._resolver.query(self._domain, "AAAA")
-            for ipv6 in ipv6_address:
-                if ipv6 in localhost_aliases or __is_local_ip(ipv6):
-                    raise LocalDomainInvalid()
-        except (aiodns.error.DNSError, ValueError):
-            raise LocalDomainInvalid()  # Look up fails, assume is private.

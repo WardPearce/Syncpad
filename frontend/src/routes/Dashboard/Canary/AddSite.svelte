@@ -50,7 +50,7 @@
     try {
       await apiClient.canary.controllersCanaryDomainLogoUpdateUpdateLogo(
         siteDomain,
-        logoFiles[0]
+        [logoFiles[0]]
       );
     } catch (error) {}
     isLoading = false;

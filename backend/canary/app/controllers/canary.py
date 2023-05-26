@@ -1,8 +1,7 @@
 import pathlib
 import secrets
 from datetime import datetime
-from os import path
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any, List
 
 from app.env import SETTINGS
 from app.errors import CanaryTaken, FileTooBig, UnsupportedFileType
@@ -62,15 +61,17 @@ class CanaryController(Controller):
         domain: str,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
+        data: Annotated[
+            List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
     ) -> None:
-        logo_ext = pathlib.Path(data.filename).suffix
+        logo_ext = pathlib.Path(data[0].filename).suffix
         if logo_ext not in SETTINGS.canary.logo.allowed_extensions:
             raise UnsupportedFileType()
 
         canary = await Canary(state, domain).user(request.user).get()
 
-        logo = await data.read(SETTINGS.canary.logo.max_size + 24)
+        logo = await data[0].read(SETTINGS.canary.logo.max_size + 24)
         if len(logo) > SETTINGS.canary.logo.max_size:
             raise FileTooBig()
 
