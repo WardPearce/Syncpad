@@ -35,7 +35,9 @@
                                 if (
                                     canary instanceof Object &&
                                     "id" in canary &&
-                                    "publicKey" in canary
+                                    "publicKey" in canary &&
+                                    typeof canary.publicKey === "string" &&
+                                    typeof canary.id === "string"
                                 ) {
                                     await updateSavedCanaries(
                                         domain,
