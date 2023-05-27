@@ -19,6 +19,8 @@ export type { CreateCanaryModel } from './models/CreateCanaryModel';
 export type { CreateUserModel } from './models/CreateUserModel';
 export type { DomainVerification } from './models/DomainVerification';
 export type { OtpModel } from './models/OtpModel';
+export type { PublicCanaryModel } from './models/PublicCanaryModel';
+export type { PublicKeyModel } from './models/PublicKeyModel';
 export type { PublicUserModel } from './models/PublicUserModel';
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';

@@ -4,7 +4,7 @@ import aiodns
 import yarl
 from app.env import SETTINGS
 from app.errors import CanaryNotFoundException, DomainValidationError
-from app.models.canary import CanaryModel
+from app.models.canary import CanaryModel, PublicCanaryModel
 from bson import ObjectId
 
 if TYPE_CHECKING:
@@ -64,12 +64,15 @@ class CanaryUser:
         if not canary_code:
             raise DomainValidationError()
 
-        canary_search = {"user_id": self.__user_id, "verify.code": canary_code}
+        canary_search = {
+            "user_id": self.__user_id,
+            "domain_verification.code": canary_code,
+        }
         if await self.__upper._state.mongo.canary.count_documents(canary_search) == 0:
             raise DomainValidationError()
 
         await self.__upper._state.mongo.canary.update_one(
-            canary_search, {"$set": {"verify.completed": True}}
+            canary_search, {"$set": {"domain_verification.completed": True}}
         )
 
 
@@ -82,6 +85,15 @@ class Canary:
             self._domain = _domain
 
         self._state = state
+
+    async def get(self) -> PublicCanaryModel:
+        result = await self._state.mongo.canary.find_one(
+            {"domain": self._domain, "domain_verification.completed": True}
+        )
+        if not result:
+            raise CanaryNotFoundException()
+
+        return PublicCanaryModel(**result)
 
     def user(self, user_id: ObjectId) -> CanaryUser:
         return CanaryUser(self, user_id)

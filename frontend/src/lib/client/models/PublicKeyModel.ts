@@ -2,9 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type CanaryEd25519Model = {
+export type PublicKeyModel = {
     public_key: string;
-    iv: string;
-    cipher_text: string;
 };
 

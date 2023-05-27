@@ -11,6 +11,7 @@ from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi import OpenAPIConfig
+from litestar.openapi.spec import Server
 from litestar.stores.redis import RedisStore
 from motor import motor_asyncio
 from pydantic import BaseModel
@@ -82,7 +83,9 @@ app = Litestar(
         allow_credentials=True,
     ),
     openapi_config=OpenAPIConfig(
-        title=SETTINGS.open_api.title, version=SETTINGS.open_api.version
+        title=SETTINGS.open_api.title,
+        version=SETTINGS.open_api.version,
+        servers=[Server(url=SETTINGS.proxy_urls.backend, description="Production API")],
     ),
     response_cache_config=ResponseCacheConfig(store=cache_store),
     before_shutdown=[wipe_cache_on_shutdown],

@@ -172,7 +172,7 @@
       {/if}
 
       {#if errorMsg}
-        <div class="primary">
+        <div class="error">
           <p>{errorMsg}</p>
         </div>
       {/if}

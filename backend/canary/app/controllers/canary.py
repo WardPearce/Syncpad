@@ -12,7 +12,7 @@ from app.errors import (
 )
 from app.lib.canary import Canary
 from app.lib.s3 import format_path, s3_create_client
-from app.models.canary import CanaryModel, CreateCanaryModel
+from app.models.canary import CanaryModel, CreateCanaryModel, PublicCanaryModel
 from bson import ObjectId
 from litestar import Controller, Request, Response, Router, get, post
 from litestar.contrib.jwt import Token
@@ -70,6 +70,15 @@ class CanaryController(Controller):
             raise
 
         return Response(content=None, status_code=200)
+
+    @get(
+        "/public",
+        description="Get public details about canary",
+        tags=["canary"],
+        exclude_from_auth=True,
+    )
+    async def public_canary(self, domain: str, state: "State") -> PublicCanaryModel:
+        return await Canary(state, domain).get()
 
     @get("/", description="Get private details about a canary", tags=["canary"])
     async def get_canary(

@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { CanaryModel } from '../models/CanaryModel';
 import type { CreateCanaryModel } from '../models/CreateCanaryModel';
+import type { PublicCanaryModel } from '../models/PublicCanaryModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -45,6 +46,28 @@ export class CanaryService {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/canary/{domain}',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicCanary
+     * Get public details about canary
+     * @param domain
+     * @returns PublicCanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainPublicPublicCanary(
+        domain: string,
+    ): CancelablePromise<PublicCanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}/public',
             path: {
                 'domain': domain,
             },

@@ -65,7 +65,7 @@ class Jwt(BaseModel):
 
 class DomainVerify(BaseModel):
     prefix: str = "purplix.io__verify="
-    timeout: int = 20
+    timeout: int = 60
 
 
 class Proxycheck(BaseModel):

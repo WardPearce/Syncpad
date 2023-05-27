@@ -1,9 +1,11 @@
 <script lang="ts">
+  import sodium from "libsodium-wrappers-sumo";
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
   import PageLoading from "../../../components/PageLoading.svelte";
   import apiClient from "../../../lib/apiClient";
   import type { CanaryModel } from "../../../lib/client";
+  import { base64Encode } from "../../../lib/crypto/codecUtils";
 
   export let domainName: string;
 
@@ -19,6 +21,14 @@
     try {
       await apiClient.canary.controllersCanaryDomainVerifyVerify(domainName);
       domainVerifyFailed = false;
+      const hash = base64Encode(
+        sodium.crypto_generichash(
+          sodium.crypto_generichash_BYTES,
+          canary.keypair.public_key
+        ),
+        true
+      );
+      navigate(`/c/${domainName}/${hash}`, { replace: true });
     } catch (error) {
       domainVerifyFailed = true;
     }
@@ -34,6 +44,17 @@
       verifyCode = canary.domain_verification.code_prefixed as string;
     } catch (error) {
       navigate("/dashboard", { replace: true });
+    }
+
+    if (canary.domain_verification.completed) {
+      const hash = base64Encode(
+        sodium.crypto_generichash(
+          sodium.crypto_generichash_BYTES,
+          canary.keypair.public_key
+        ),
+        true
+      );
+      navigate(`/c/${domainName}/${hash}`, { replace: true });
     }
 
     isLoading = false;

@@ -7,10 +7,13 @@ from models.customs import CustomJsonEncoder, IvField
 from pydantic import BaseModel, Field
 
 
-class CanaryEd25519Model(IvField):
+class PublicKeyModel(BaseModel):
     public_key: str = Field(
         ..., max_length=44, description="ed25519 public key, base64 encoded"
     )
+
+
+class CanaryEd25519Model(IvField, PublicKeyModel):
     cipher_text: str = Field(
         ...,
         max_length=240,
@@ -18,13 +21,12 @@ class CanaryEd25519Model(IvField):
     )
 
 
-class CreateCanaryModel(CustomJsonEncoder):
+class __CanarySharedModel(CustomJsonEncoder):
     domain: str = Field(
         ...,
         regex=r"(?i)^((?!(?:www|www\d+)\.)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:[a-zA-Z]{2,})$",
     )
     about: str = Field(..., max_length=500)
-    keypair: CanaryEd25519Model
     signature: str = Field(..., max_length=128)
     algorithms: str = Field(
         "XCHACHA20_POLY1305+ED25519+BLAKE2b",
@@ -33,11 +35,16 @@ class CreateCanaryModel(CustomJsonEncoder):
     )
 
 
-class PublicCanaryModel(CreateCanaryModel):
+class CreateCanaryModel(__CanarySharedModel):
+    keypair: CanaryEd25519Model
+
+
+class PublicCanaryModel(__CanarySharedModel):
     id: ObjectId = Field(..., alias="_id")
     logo: Optional[str] = None
     user_id: ObjectId
     created: datetime
+    keypair: PublicKeyModel
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
