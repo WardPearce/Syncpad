@@ -26,12 +26,11 @@ async def untrusted_http_request(
     except LocalDomainInvalid:
         raise
 
-    if not SETTINGS.untrusted_request_proxy:
-        # Don't allow redirects if no proxy
-        kwargs["allow_redirects"] = False
-    else:
+    if SETTINGS.untrusted_request_proxy:
         kwargs["connector"] = ProxyConnector.from_url(SETTINGS.untrusted_request_proxy)
 
+    # Don't allow redirects
+    kwargs["allow_redirects"] = False
     kwargs["timeout"] = ClientTimeout(total=30.0)
     return await wait_for(
         state.aiohttp.request(method=method, url=url, **kwargs),
@@ -81,8 +80,7 @@ async def is_local(url: str, attempt_dns_resolve: bool = True) -> None:
 
     # Check if given domain is an IP
     try:
-        given_ip = ip_address(domain)
-        if given_ip.is_private or given_ip.is_loopback:
+        if __is_local_ip(domain):
             raise LocalDomainInvalid()
     except ValueError:
         pass
