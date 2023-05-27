@@ -1,12 +1,10 @@
 <script lang="ts">
-  import sodium from "libsodium-wrappers-sumo";
   import { onMount } from "svelte";
-  import { link, navigate } from "svelte-navigator";
+  import { link } from "svelte-navigator";
 
   import apiClient from "../../lib/apiClient";
+  import { goToCanary } from "../../lib/canary";
   import type { CanaryModel } from "../../lib/client";
-  import { hashBase64Encode } from "../../lib/crypto/hash";
-  import secretKey, { SecretkeyLocation } from "../../lib/crypto/secretKey";
   import { concat } from "../../lib/misc";
 
   let canaries: CanaryModel[] = [];
@@ -14,22 +12,6 @@
   onMount(async () => {
     canaries = await apiClient.canary.controllersCanaryListListCanaries();
   });
-
-  function goToCanary(canary: CanaryModel) {
-    // Allows us to validate the canaries public by 1st decrypting the private key.
-    const canaryPrivateKey = secretKey.decrypt(
-      SecretkeyLocation.localKeychain,
-      canary.keypair.iv,
-      canary.keypair.cipher_text
-    );
-
-    const canaryPublicKey = sodium.crypto_sign_ed25519_sk_to_pk(
-      canaryPrivateKey as Uint8Array
-    );
-
-    const hash = hashBase64Encode(canaryPublicKey, true);
-    navigate(`/c/${canary.domain}/${hash}`, { replace: true });
-  }
 </script>
 
 <h3>Surveys</h3>

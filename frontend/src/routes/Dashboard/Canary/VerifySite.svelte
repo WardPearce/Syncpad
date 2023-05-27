@@ -1,13 +1,11 @@
 <script lang="ts">
-  import sodium from "libsodium-wrappers-sumo";
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
 
   import PageLoading from "../../../components/PageLoading.svelte";
   import apiClient from "../../../lib/apiClient";
+  import { goToCanary } from "../../../lib/canary";
   import type { CanaryModel } from "../../../lib/client";
-  import { hashBase64Encode } from "../../../lib/crypto/hash";
-  import secretKey, { SecretkeyLocation } from "../../../lib/crypto/secretKey";
 
   export let domainName: string;
 
@@ -24,18 +22,7 @@
       await apiClient.canary.controllersCanaryDomainVerifyVerify(domainName);
       domainVerifyFailed = false;
 
-      const canaryPrivateKey = secretKey.decrypt(
-        SecretkeyLocation.localKeychain,
-        canary.keypair.iv,
-        canary.keypair.cipher_text
-      );
-
-      const canaryPublicKey = sodium.crypto_sign_ed25519_sk_to_pk(
-        canaryPrivateKey as Uint8Array
-      );
-
-      const hash = hashBase64Encode(canaryPublicKey, true);
-      navigate(`/c/${domainName}/${hash}`, { replace: true });
+      goToCanary(canary);
     } catch (error) {
       domainVerifyFailed = true;
     }
@@ -54,18 +41,7 @@
     }
 
     if (canary.domain_verification.completed) {
-      const canaryPrivateKey = secretKey.decrypt(
-        SecretkeyLocation.localKeychain,
-        canary.keypair.iv,
-        canary.keypair.cipher_text
-      );
-
-      const canaryPublicKey = sodium.crypto_sign_ed25519_sk_to_pk(
-        canaryPrivateKey as Uint8Array
-      );
-
-      const hash = hashBase64Encode(canaryPublicKey, true);
-      navigate(`/c/${domainName}/${hash}`, { replace: true });
+      goToCanary(canary);
     }
 
     isLoading = false;
