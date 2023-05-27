@@ -20,7 +20,7 @@ export interface LocalSecretsModel {
 
 export const emailVerificationRequired = writable(false);
 
-async function getLocalSecrets(): Promise<LocalSecretsModel | undefined> {
+async function indexDbLocalSecrets(): Promise<LocalSecretsModel | undefined> {
     try {
         return await get("localSecrets");
     } catch {
@@ -40,7 +40,7 @@ export async function setLocalSecrets(secrets: LocalSecretsModel, indexDb: boole
 
 
 export const localSecrets: Writable<LocalSecretsModel | undefined> = writable(
-    await getLocalSecrets()
+    await indexDbLocalSecrets()
 );
 
 
@@ -53,7 +53,7 @@ export interface savedCanariesModel {
     [key: string]: savedCanaryModel;
 }
 
-export async function getSavedCanaries(): Promise<savedCanariesModel | undefined> {
+async function indexDbCanaries(): Promise<savedCanariesModel | undefined> {
     try {
         return await get("savedCanaries");
     } catch (error) {
@@ -89,5 +89,5 @@ export async function updateSavedCanaries(domain: string, canary: savedCanaryMod
 
 
 export const savedCanaries: Writable<savedCanariesModel | undefined> = writable(
-    await getSavedCanaries()
+    await indexDbCanaries()
 );
