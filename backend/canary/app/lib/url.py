@@ -71,14 +71,13 @@ async def is_local(url: str, attempt_dns_resolve: bool = True) -> None:
     if not domain:
         raise LocalDomainInvalid()
 
+    resolver = aiodns.DNSResolver()
+
+    localhost_aliases = await get_localhost_aliases(resolver)
+    if domain in localhost_aliases:
+        raise LocalDomainInvalid()
+
     if attempt_dns_resolve:
-        resolver = aiodns.DNSResolver()
-
-        localhost_aliases = await get_localhost_aliases(resolver)
-
-        if domain in localhost_aliases:
-            raise LocalDomainInvalid()
-
         try:
             given_ip = ip_address(domain)
             if given_ip.is_private or given_ip.is_loopback:
