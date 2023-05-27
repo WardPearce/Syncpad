@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { link } from "svelte-navigator";
+  import { link, navigate } from "svelte-navigator";
 
   import apiClient from "../../lib/apiClient";
   import { goToCanary } from "../../lib/canary";
@@ -34,19 +34,32 @@
         <article>
           <div class="row">
             <img
-              class="small circle"
+              class="small"
               src={canary.logo}
               alt={`Logo for ${canary.domain}`}
             />
             <div class="max">
-              <button on:click={() => goToCanary(canary)} class="link-button">
+              {#if canary.domain_verification.completed}
+                <button on:click={() => goToCanary(canary)} class="link-button">
+                  <h6>{concat(canary.domain)}</h6>
+                </button>
+              {:else}
                 <h6>{concat(canary.domain)}</h6>
-              </button>
+              {/if}
             </div>
           </div>
           <nav>
-            <button>Update Canary</button>
-            <button class="border">Edit</button>
+            {#if canary.domain_verification.completed}
+              <button>Update Canary</button>
+              <button class="border">Edit</button>
+            {:else}
+              <button
+                on:click={() =>
+                  navigate(`/dashboard/canary/verify-site/${canary.domain}/`, {
+                    replace: true,
+                  })}>Verify domain</button
+              >
+            {/if}
           </nav>
         </article>
       </div>

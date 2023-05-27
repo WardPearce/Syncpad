@@ -58,7 +58,7 @@
       <summary class="none">
         <div class="row canary-name">
           <img
-            class="medium circle"
+            class="medium"
             src={canary.logo}
             alt={`Logo for ${canary.domain}`}
           />

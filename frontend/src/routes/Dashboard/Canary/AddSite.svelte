@@ -23,21 +23,25 @@
       keyPair.privateKey
     );
 
-    const canaryData: CreateCanaryModel = {
+    let canaryDataToSign = {
       domain: siteDomain,
       about: aboutSite,
+      signature: "",
+    };
+
+    canaryDataToSign.signature = signatures.signHash(
+      keyPair.privateKey,
+      JSON.stringify(canaryDataToSign)
+    );
+
+    const canaryData: CreateCanaryModel = {
+      ...canaryDataToSign,
       keypair: {
         cipher_text: safePrivateKey.cipherText,
         iv: safePrivateKey.iv,
         public_key: base64Encode(keyPair.publicKey),
       },
-      signature: "",
     };
-
-    canaryData.signature = signatures.signHash(
-      keyPair.privateKey,
-      JSON.stringify(canaryData)
-    );
 
     try {
       await apiClient.canary.controllersCanaryCreateCreateCanary(canaryData);
