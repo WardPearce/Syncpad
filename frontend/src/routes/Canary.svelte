@@ -1,35 +1,61 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import { get, set } from "idb-keyval";
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import type { PublicCanaryModel } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
+  import signatures from "../lib/crypto/signatures";
   import { advanceModeStore } from "../stores";
 
   export let domainName: string;
-  export let publicKeyHash: string | null = null;
+  export let publicKeyHash: string;
 
   let advanceMode: boolean;
   advanceModeStore.subscribe((value) => (advanceMode = value));
 
   let isLoading = true;
-  let publicKeyHashMatches = false;
-  let canary: PublicCanaryModel;
+  let canaryBioMatches = false;
+  let serverKeyHashMatches = false;
+  let serverPublicKeyHash: string;
+  let canaryBio: PublicCanaryModel;
   onMount(async () => {
-    canary = await apiClient.canary.controllersCanaryDomainPublicPublicCanary(
-      domainName
-    );
-
-    if (publicKeyHash) {
-      const hash = hashBase64Encode(
-        base64Decode(canary.keypair.public_key),
-        true
+    canaryBio =
+      await apiClient.canary.controllersCanaryDomainPublicPublicCanary(
+        domainName
       );
-      console.log(hash);
-      publicKeyHashMatches = hash === publicKeyHash;
+
+    const publicKey = base64Decode(canaryBio.keypair.public_key);
+
+    try {
+      serverPublicKeyHash = hashBase64Encode(publicKey, true);
+      canaryBioMatches = true;
+    } catch (error) {
+      canaryBioMatches = false;
     }
+
+    serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
+
+    if (serverKeyHashMatches) {
+      const storedPublicKey = await get(canaryBio._id);
+      if (storedPublicKey) {
+        serverKeyHashMatches = publicKeyHash === storedPublicKey;
+      } else {
+        await set(canaryBio._id, publicKeyHash);
+      }
+    }
+
+    signatures.validateHash(
+      publicKey,
+      canaryBio.signature,
+      JSON.stringify({
+        domain: canaryBio.domain,
+        about: canaryBio.about,
+        signature: "",
+      })
+    );
 
     isLoading = false;
   });
@@ -38,9 +64,9 @@
 {#if isLoading}
   <PageLoading />
 {:else}
-  {#if !publicKeyHashMatches}
+  {#if !serverKeyHashMatches}
     <article class="error">
-      <h6>Public key has been tampered with!</h6>
+      <h5>Public key has been tampered with!</h5>
       <p>
         Provided public key from the server, does not match the Public key hash
         in the URL.
@@ -50,7 +76,20 @@
         either you have been given an invalid URL or the host is trying to issue
         fake canaries.
       </p>
-      <p>No canaries issued should be considered trustworthy.</p>
+      <p>
+        How to fix? Make sure you are visiting the Canary from a trustworthy
+        site.
+      </p>
+      <h6>
+        No canaries issued should be considered trustworthy till this message
+        disappears.
+      </h6>
+    </article>
+  {/if}
+  {#if !canaryBioMatches}
+    <article class="error">
+      <h6>The about section failed to be validated!</h6>
+      <p>Don't trust the about section or domain name.</p>
     </article>
   {/if}
   <article>
@@ -59,38 +98,38 @@
         <div class="row canary-name">
           <img
             class="medium"
-            src={canary.logo}
-            alt={`Logo for ${canary.domain}`}
+            src={canaryBio.logo}
+            alt={`Logo for ${canaryBio.domain}`}
           />
           <div class="max">
-            <h4>{canary.domain}</h4>
+            <h4>{canaryBio.domain}</h4>
           </div>
           <i>arrow_drop_down</i>
         </div>
       </summary>
       <p>
-        {canary.about}
+        {canaryBio.about}
       </p>
 
       <h6>Domain ownership</h6>
       <p>
         Verified owner of <a
-          href={`https://${canary.domain}`}
+          href={`https://${canaryBio.domain}`}
           target="_blank"
           class="link"
-          rel="noopener noreferrer">{canary.domain}</a
+          rel="noopener noreferrer">{canaryBio.domain}</a
         >.
       </p>
 
       {#if advanceMode}
         <h6>Public key</h6>
         <div class="field border">
-          <input disabled value={canary.keypair.public_key} />
+          <input disabled value={canaryBio.keypair.public_key} />
         </div>
 
         <h6>Hash</h6>
         <div class="field border">
-          <input disabled value={publicKeyHash} />
+          <input disabled value={serverPublicKeyHash} />
         </div>
       {/if}
     </details>
@@ -99,58 +138,71 @@
   <article>
     <nav>
       <h3>Latest Canary</h3>
-      <div class="small chip circle">
-        <i>done_all</i>
-        <div class="tooltip right">
-          Cryptographically signed by privacyguides.org
+      {#if serverKeyHashMatches}
+        <div class="small chip circle">
+          <i>done_all</i>
+          <div class="tooltip right">
+            Cryptographically signed by {canaryBio.domain}
+          </div>
+        </div>
+      {:else}
+        <div class="small chip circle error">
+          <i>error_outline</i>
+          <div class="tooltip right">Unable to validate this Canary.</div>
+        </div>
+      {/if}
+    </nav>
+    {#if !serverKeyHashMatches}
+      <article class="error">
+        <p>This canary failed validation, do NOT trust it.</p>
+      </article>
+    {:else}
+      <div class="grid">
+        <div class="s12 m6 l3">
+          <article class="border">
+            <div class="row">
+              <div class="max">
+                <h5>Concern</h5>
+                <h6 class="deep-purple-text">None</h6>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="s12 m6 l3">
+          <article class="border">
+            <div class="row">
+              <div class="max">
+                <h5>Subpoenas</h5>
+                <h6>0</h6>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="s12 m6 l3">
+          <article class="border">
+            <div class="row">
+              <div class="max">
+                <h5>Issued</h5>
+                <h6>28th April 2023</h6>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="s12 m6 l3">
+          <article class="border">
+            <div class="row">
+              <div class="max">
+                <h5>Next Canary</h5>
+                <h6>In 3 days</h6>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
-    </nav>
-    <div class="grid">
-      <div class="s12 m6 l3">
-        <article class="border">
-          <div class="row">
-            <div class="max">
-              <h5>Concern</h5>
-              <h6 class="deep-purple-text">None</h6>
-            </div>
-          </div>
-        </article>
-      </div>
-      <div class="s12 m6 l3">
-        <article class="border">
-          <div class="row">
-            <div class="max">
-              <h5>Subpoenas</h5>
-              <h6>0</h6>
-            </div>
-          </div>
-        </article>
-      </div>
-      <div class="s12 m6 l3">
-        <article class="border">
-          <div class="row">
-            <div class="max">
-              <h5>Issued</h5>
-              <h6>28th April 2023</h6>
-            </div>
-          </div>
-        </article>
-      </div>
-      <div class="s12 m6 l3">
-        <article class="border">
-          <div class="row">
-            <div class="max">
-              <h5>Next Canary</h5>
-              <h6>In 3 days</h6>
-            </div>
-          </div>
-        </article>
-      </div>
-    </div>
+    {/if}
 
     <h5>Statement</h5>
-    <p>
+    <p class:strikeout={!serverKeyHashMatches}>
       I hereby declare that as of 28th April 2023, I am still in complete
       control of <a
         href="http://privacyguides.org"
@@ -164,8 +216,10 @@
       will be reviewed and updated as necessary on or before 28th April 2024.
     </p>
 
-    <h5>Documents</h5>
-    <p>None</p>
+    {#if serverKeyHashMatches}
+      <h5>Documents</h5>
+      <p>None</p>
+    {/if}
 
     {#if advanceMode}
       <h5>Canary ID</h5>
@@ -210,5 +264,9 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
     .canary-name i {
       display: none;
     }
+  }
+
+  .strikeout {
+    text-decoration: line-through;
   }
 </style>
