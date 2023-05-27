@@ -34,6 +34,19 @@ export class CanaryService {
     }
 
     /**
+     * ListCanaries
+     * List canaries for user
+     * @returns CanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryListListCanaries(): CancelablePromise<Array<CanaryModel>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/list',
+        });
+    }
+
+    /**
      * GetCanary
      * Get private details about a canary
      * @param domain

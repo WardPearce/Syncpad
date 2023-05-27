@@ -57,6 +57,17 @@ async def create_canary(
     return CanaryModel(**to_insert)
 
 
+@get("/list", description="List canaries for user", tags=["canary"])
+async def list_canaries(
+    request: Request[ObjectId, Token, Any], state: "State"
+) -> List[CanaryModel]:
+    canaries: List[CanaryModel] = []
+    async for canary in state.mongo.canary.find({"user_id": request.user}):
+        canaries.append(CanaryModel(**canary))
+
+    return canaries
+
+
 class CanaryController(Controller):
     path = "/{domain:str}"
 
@@ -120,4 +131,6 @@ class CanaryController(Controller):
         )
 
 
-router = Router(path="/canary", route_handlers=[create_canary, CanaryController])
+router = Router(
+    path="/canary", route_handlers=[create_canary, list_canaries, CanaryController]
+)

@@ -75,6 +75,11 @@ class CanaryUser:
             canary_search, {"$set": {"domain_verification.completed": True}}
         )
 
+        # Delete any canaries of the same domain awaiting approval.
+        await self.__upper._state.mongo.canary.delete_many(
+            {"domain": self.__upper._domain, "domain_verification.completed": False}
+        )
+
 
 class Canary:
     def __init__(self, state: "State", domain: str) -> None:

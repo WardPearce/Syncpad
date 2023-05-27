@@ -1,11 +1,11 @@
 <script lang="ts">
-  import sodium from "libsodium-wrappers-sumo";
   import { onMount } from "svelte";
 
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import type { PublicCanaryModel } from "../lib/client";
-  import { base64Encode } from "../lib/crypto/codecUtils";
+  import { base64Decode } from "../lib/crypto/codecUtils";
+  import { hashBase64Encode } from "../lib/crypto/hash";
   import { advanceModeStore } from "../stores";
 
   export let domainName: string;
@@ -23,13 +23,11 @@
     );
 
     if (publicKeyHash) {
-      const hash = base64Encode(
-        sodium.crypto_generichash(
-          sodium.crypto_generichash_BYTES,
-          canary.keypair.public_key
-        ),
+      const hash = hashBase64Encode(
+        base64Decode(canary.keypair.public_key),
         true
       );
+      console.log(hash);
       publicKeyHashMatches = hash === publicKeyHash;
     }
 
@@ -58,9 +56,9 @@
   <article>
     <details>
       <summary class="none">
-        <div class="row">
+        <div class="row canary-name">
           <img
-            class="small"
+            class="medium circle"
             src={canary.logo}
             alt={`Logo for ${canary.domain}`}
           />
@@ -201,3 +199,16 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
 
   <button class="medium-divider large">View previous cancary</button>
 {/if}
+
+<style>
+  @media only screen and (max-width: 600px) {
+    .canary-name {
+      flex-direction: column;
+    }
+  }
+  @media only screen and (max-width: 600px) {
+    .canary-name i {
+      display: none;
+    }
+  }
+</style>

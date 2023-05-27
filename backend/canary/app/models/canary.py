@@ -66,3 +66,4 @@ class DomainVerification(BaseModel):
 
 class CanaryModel(PublicCanaryModel):
     domain_verification: DomainVerification
+    keypair: CanaryEd25519Model

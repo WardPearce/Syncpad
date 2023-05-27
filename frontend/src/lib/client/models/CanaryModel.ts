@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CanaryEd25519Model } from './CanaryEd25519Model';
 import type { DomainVerification } from './DomainVerification';
-import type { PublicKeyModel } from './PublicKeyModel';
 
 export type CanaryModel = {
     domain: string;
@@ -14,7 +14,7 @@ export type CanaryModel = {
     logo?: (null | string);
     user_id: any;
     created: string;
-    keypair: PublicKeyModel;
+    keypair: CanaryEd25519Model;
     domain_verification: DomainVerification;
 };
 

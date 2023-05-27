@@ -2,10 +2,12 @@
   import sodium from "libsodium-wrappers-sumo";
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
+
   import PageLoading from "../../../components/PageLoading.svelte";
   import apiClient from "../../../lib/apiClient";
   import type { CanaryModel } from "../../../lib/client";
-  import { base64Encode } from "../../../lib/crypto/codecUtils";
+  import { hashBase64Encode } from "../../../lib/crypto/hash";
+  import secretKey, { SecretkeyLocation } from "../../../lib/crypto/secretKey";
 
   export let domainName: string;
 
@@ -21,13 +23,18 @@
     try {
       await apiClient.canary.controllersCanaryDomainVerifyVerify(domainName);
       domainVerifyFailed = false;
-      const hash = base64Encode(
-        sodium.crypto_generichash(
-          sodium.crypto_generichash_BYTES,
-          canary.keypair.public_key
-        ),
-        true
+
+      const canaryPrivateKey = secretKey.decrypt(
+        SecretkeyLocation.localKeychain,
+        canary.keypair.iv,
+        canary.keypair.cipher_text
       );
+
+      const canaryPublicKey = sodium.crypto_sign_ed25519_sk_to_pk(
+        canaryPrivateKey as Uint8Array
+      );
+
+      const hash = hashBase64Encode(canaryPublicKey, true);
       navigate(`/c/${domainName}/${hash}`, { replace: true });
     } catch (error) {
       domainVerifyFailed = true;
@@ -47,13 +54,17 @@
     }
 
     if (canary.domain_verification.completed) {
-      const hash = base64Encode(
-        sodium.crypto_generichash(
-          sodium.crypto_generichash_BYTES,
-          canary.keypair.public_key
-        ),
-        true
+      const canaryPrivateKey = secretKey.decrypt(
+        SecretkeyLocation.localKeychain,
+        canary.keypair.iv,
+        canary.keypair.cipher_text
       );
+
+      const canaryPublicKey = sodium.crypto_sign_ed25519_sk_to_pk(
+        canaryPrivateKey as Uint8Array
+      );
+
+      const hash = hashBase64Encode(canaryPublicKey, true);
       navigate(`/c/${domainName}/${hash}`, { replace: true });
     }
 

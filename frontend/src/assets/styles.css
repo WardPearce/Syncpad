@@ -11,6 +11,12 @@
     width: 35px;
 }
 
+.link-button {
+    color: var(--primary) !important;
+    background-color: transparent;
+    padding: 0;
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;
