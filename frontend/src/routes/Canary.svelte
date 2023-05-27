@@ -27,24 +27,33 @@
         domainName
       );
 
-    const publicKey = base64Decode(canaryBio.keypair.public_key);
+    const publicServerKey = base64Decode(canaryBio.keypair.public_key);
 
-    serverPublicKeyHash = hashBase64Encode(publicKey, true);
+    serverPublicKeyHash = hashBase64Encode(publicServerKey, true);
 
     serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
 
     if (serverKeyHashMatches) {
-      const storedPublicKey = await get(canaryBio._id);
-      if (storedPublicKey) {
-        serverKeyHashMatches = publicKeyHash === storedPublicKey;
+      const storedCanaries = await get("storedCanaries");
+      if (storedCanaries && canaryBio.domain in storedCanaries) {
+        serverKeyHashMatches =
+          publicKeyHash === storedCanaries[canaryBio.domain].publicKey;
       } else {
-        await set(canaryBio._id, publicKeyHash);
+        let toSaveCanaries = {};
+        if (storedCanaries) {
+          toSaveCanaries = storedCanaries;
+        }
+        toSaveCanaries[canaryBio.domain] = {
+          id: canaryBio._id,
+          publicKey: publicKeyHash,
+        };
+        await set("storedCanaries", toSaveCanaries);
       }
     }
 
     try {
       signatures.validateHash(
-        publicKey,
+        publicServerKey,
         canaryBio.signature,
         JSON.stringify({
           domain: canaryBio.domain,
@@ -122,7 +131,6 @@
       </p>
 
       {#if advanceMode}
-        <h6>Public key</h6>
         <div class="field border">
           <input disabled value={canaryBio.keypair.public_key} />
         </div>

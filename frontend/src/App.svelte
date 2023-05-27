@@ -169,6 +169,12 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
+      path="/canaries"
+      component={() => import("./routes/SavedCanaries.svelte")}
+    >
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
       path="/c/:domainName/:publicKeyHash"
       component={() => import("./routes/Canary.svelte")}
     >

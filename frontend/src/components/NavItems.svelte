@@ -1,16 +1,18 @@
 <script lang="ts">
+  import { get as idbGet } from "idb-keyval";
   import { onMount } from "svelte";
   import { link, useLocation } from "svelte-navigator";
+  import { get } from "svelte/store";
+
+  import { logout } from "../lib/account";
+  import { getDynamicTheme } from "../lib/theme";
   import {
     advanceModeStore,
-    themeStore,
-    localSecrets,
-    type LocalSecretsModel,
     isDarkMode,
+    localSecrets,
+    themeStore,
+    type LocalSecretsModel,
   } from "../stores";
-  import { get } from "svelte/store";
-  import { getDynamicTheme } from "../lib/theme";
-  import { logout } from "../lib/account";
 
   export let isMobile: boolean = false;
 
@@ -29,6 +31,8 @@
 
   let currentPage: string;
   useLocation().subscribe((page) => (currentPage = page.pathname));
+
+  let savedCanaries = false;
 
   function onAdvanceModeToggle() {
     const advanceModeToggled = !get(advanceModeStore);
@@ -70,6 +74,8 @@
     isDarkMode.set(mode === ThemeMode.dark);
 
     themeStore.set(await getDynamicTheme());
+
+    savedCanaries = (await idbGet("storedCanaries")) !== undefined;
   });
 </script>
 
@@ -122,6 +128,18 @@
     <span>Account</span>
   </a>
 {/if}
+{#if savedCanaries}
+  <a
+    use:link
+    href="/canaries"
+    class:active={currentPage === "/canaries"}
+    class={isMobile ? "row round" : ""}
+  >
+    <i>bookmarks</i>
+    <span>Saved Canaries</span>
+  </a>
+{/if}
+
 <a
   use:link
   href="/"
