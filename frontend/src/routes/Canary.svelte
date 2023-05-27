@@ -1,14 +1,18 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import { get, set } from "idb-keyval";
+  import { get } from "svelte/store";
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import type { PublicCanaryModel } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
   import signatures from "../lib/crypto/signatures";
-  import { advanceModeStore } from "../stores";
+  import {
+    advanceModeStore,
+    savedCanaries,
+    updateSavedCanaries,
+  } from "../stores";
 
   export let domainName: string;
   export let publicKeyHash: string;
@@ -34,20 +38,15 @@
     serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
 
     if (serverKeyHashMatches) {
-      const storedCanaries = await get("storedCanaries");
+      const storedCanaries = get(savedCanaries);
       if (storedCanaries && canaryBio.domain in storedCanaries) {
         serverKeyHashMatches =
           publicKeyHash === storedCanaries[canaryBio.domain].publicKey;
       } else {
-        let toSaveCanaries = {};
-        if (storedCanaries) {
-          toSaveCanaries = storedCanaries;
-        }
-        toSaveCanaries[canaryBio.domain] = {
+        await updateSavedCanaries(canaryBio.domain, {
           id: canaryBio._id,
           publicKey: publicKeyHash,
-        };
-        await set("storedCanaries", toSaveCanaries);
+        });
       }
     }
 
