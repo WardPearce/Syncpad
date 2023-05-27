@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import { navigate } from "svelte-navigator";
   import { get } from "svelte/store";
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
@@ -23,6 +24,7 @@
   let isLoading = true;
   let canaryBioMatches = false;
   let serverKeyHashMatches = false;
+  let firstCanaryVisit = true;
   let serverPublicKeyHash: string;
   let canaryBio: PublicCanaryModel;
   onMount(async () => {
@@ -37,17 +39,35 @@
 
     serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
 
+    const storedCanaries = get(savedCanaries);
+    if (storedCanaries) {
+      firstCanaryVisit = false;
+    }
+
     if (serverKeyHashMatches) {
-      const storedCanaries = get(savedCanaries);
+      // Validate stored canary.
       if (storedCanaries && canaryBio.domain in storedCanaries) {
         serverKeyHashMatches =
           publicKeyHash === storedCanaries[canaryBio.domain].publicKey;
       } else {
+        // Store canary
         await updateSavedCanaries(canaryBio.domain, {
           id: canaryBio._id,
           publicKey: publicKeyHash,
         });
       }
+    } else if (
+      storedCanaries &&
+      canaryBio.domain &&
+      storedCanaries[canaryBio.domain].publicKey === serverPublicKeyHash
+    ) {
+      // If stored publicKey hash matches serverPublicKeyHash, then incorrect link was given.
+      serverKeyHashMatches = true;
+      publicKeyHash = serverPublicKeyHash;
+
+      navigate(`/c/${canaryBio.domain}/${serverPublicKeyHash}`, {
+        replace: true,
+      });
     }
 
     try {
@@ -81,18 +101,19 @@
       </p>
       <p>
         This is a <span style="font-weight: bold;">significant concern</span>,
-        either you have been given an invalid URL or the host is trying to issue
-        fake canaries.
+        the host may be trying to issue fake canaries.
       </p>
-      <p>
-        How to fix? Make sure you are visiting the Canary from a trustworthy
-        site.
-      </p>
-      <h6>
-        No canaries issued should be considered trustworthy till this message
-        disappears.
-      </h6>
     </article>
+    {#if firstCanaryVisit}
+      <article class="error">
+        <h6>Please note</h6>
+        <p>
+          If you were given an invalid link, this alert would be triggered
+          during your first visit to this canary. Please ensure you got this
+          link off a trustworthy source.
+        </p>
+      </article>
+    {/if}
   {/if}
   {#if !canaryBioMatches}
     <article class="error">
