@@ -27,6 +27,7 @@ aiodns = "^3.0.0"
 yarl = "^1.9.2"
 aiosmtplib = "^2.0.1"
 aiobotocore = "^2.5.0"
+aiohttp-proxy = "^0.1.2"
 
 
 [tool.poetry.group.dev.dependencies]

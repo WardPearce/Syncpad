@@ -1,9 +1,36 @@
+from asyncio import wait_for
 from ipaddress import ip_address
 from typing import TYPE_CHECKING, List
 
 import aiodns
 import yarl
+from aiohttp import ClientResponse, ClientTimeout
+from aiohttp_proxy import ProxyConnector
 from app.errors import LocalDomainInvalid
+from env import SETTINGS
+
+if TYPE_CHECKING:
+    from app.types import State
+
+
+async def untrusted_http_request(
+    state: "State", url: str, method: str, **kwargs
+) -> ClientResponse:
+    # If no http proxy provided, do our best
+    # to ensure not local, still open to DNS rebinding possibly.
+    if not SETTINGS.untrusted_request_proxy:
+        try:
+            await is_local(url)
+        except LocalDomainInvalid:
+            raise
+
+        # Don't allow redirects if no proxy
+        kwargs["allow_redirects"] = False
+    else:
+        kwargs["connector"] = ProxyConnector.from_url(SETTINGS.untrusted_request_proxy)
+
+    kwargs["timeout"] = ClientTimeout(total=30.0)
+    return await wait_for(state.aiohttp.request(method=method, url=url, **kwargs), 60.0)
 
 
 def __is_local_ip(not_trusted_ip: str):
@@ -31,7 +58,12 @@ async def is_local(url: str) -> None:
         LocalDomainInvalid
     """
 
-    domain = yarl.URL(url).host
+    url_ = yarl.URL(url)
+
+    if url_.scheme != "https":
+        raise LocalDomainInvalid()
+
+    domain = url_.host
 
     if not domain:
         raise LocalDomainInvalid()

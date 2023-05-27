@@ -147,6 +147,22 @@ yarl = ">=1.0,<2.0"
 speedups = ["Brotli", "aiodns", "cchardet"]
 
 [[package]]
+name = "aiohttp-proxy"
+version = "0.1.2"
+description = "Full-featured proxy connector for aiohttp"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "aiohttp_proxy-0.1.2-py3-none-any.whl", hash = "sha256:b955ab883d30fd5452f6b226f0b416fc3905cc5e2b3f023b481e95664ef40667"},
+    {file = "aiohttp_proxy-0.1.2.tar.gz", hash = "sha256:4da16face2df486329f7eef36719da5c2ac7136e756574de06b428c5793b8090"},
+]
+
+[package.dependencies]
+aiohttp = ">=2.3.2"
+yarl = "*"
+
+[[package]]
 name = "aioitertools"
 version = "0.11.0"
 description = "itertools and builtins for AsyncIO and mixed iterables"
@@ -3117,4 +3133,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f21f0129301fc9c0351c8c176239b0a9676009d796db04b156ffc9032925faad"
+content-hash = "06bc196111968e1585f5efeb464cf0d4de24e3dd31beb240cfcf1f1fe76cee08"

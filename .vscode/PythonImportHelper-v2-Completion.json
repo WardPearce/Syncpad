@@ -770,6 +770,14 @@
         "documentation": {}
     },
     {
+        "label": "SETTINGS",
+        "importPath": "env",
+        "description": "env",
+        "isExtraImport": true,
+        "detail": "env",
+        "documentation": {}
+    },
+    {
         "label": "Request",
         "importPath": "litestar",
         "description": "litestar",
@@ -1406,6 +1414,55 @@
         "documentation": {}
     },
     {
+        "label": "wait_for",
+        "importPath": "asyncio",
+        "description": "asyncio",
+        "isExtraImport": true,
+        "detail": "asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "aiohttp",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "ClientResponse",
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "isExtraImport": true,
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "ClientTimeout",
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "isExtraImport": true,
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "ClientSession",
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "isExtraImport": true,
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "ProxyConnector",
+        "importPath": "aiohttp_proxy",
+        "description": "aiohttp_proxy",
+        "isExtraImport": true,
+        "detail": "aiohttp_proxy",
+        "documentation": {}
+    },
+    {
         "label": "CustomJsonEncoder",
         "importPath": "models.customs",
         "description": "models.customs",
@@ -1475,23 +1532,6 @@
         "description": "enum",
         "isExtraImport": true,
         "detail": "enum",
-        "documentation": {}
-    },
-    {
-        "label": "aiohttp",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "aiohttp",
-        "description": "aiohttp",
-        "detail": "aiohttp",
-        "documentation": {}
-    },
-    {
-        "label": "ClientSession",
-        "importPath": "aiohttp",
-        "description": "aiohttp",
-        "isExtraImport": true,
-        "detail": "aiohttp",
         "documentation": {}
     },
     {

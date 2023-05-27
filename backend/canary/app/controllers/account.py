@@ -181,6 +181,10 @@ class LoginController(Controller):
         except ValueError:
             pass
         else:
+
+            def __base64_public_encrypt(data: str) -> str:
+                return Base64Encoder.encode(sealed_box.encrypt(data.encode())).decode()
+
             if (
                 user.ip_lookup_consent
                 and SETTINGS.proxy_check
@@ -197,31 +201,17 @@ class LoginController(Controller):
                     resp_json = await resp.json()
                     if resp_json["status"] == "ok":
                         location = SessionLocationModel(
-                            region=Base64Encoder.encode(
-                                sealed_box.encrypt(
-                                    cast(
-                                        str,
-                                        resp_json[client_ip].get("region", "Unknown"),
-                                    ).encode()
-                                )
-                            ).decode(),
-                            country=Base64Encoder.encode(
-                                sealed_box.encrypt(
-                                    cast(
-                                        str,
-                                        resp_json[client_ip].get("country", "Unknown"),
-                                    ).encode()
-                                )
-                            ).decode(),
-                            ip=Base64Encoder.encode(
-                                sealed_box.encrypt(client_ip.encode())
-                            ).decode(),
+                            region=__base64_public_encrypt(
+                                resp_json[client_ip].get("region", "Unknown")
+                            ),
+                            country=__base64_public_encrypt(
+                                resp_json[client_ip].get("country", "Unknown")
+                            ),
+                            ip=__base64_public_encrypt(client_ip),
                         )
 
             if "User-Agent" in request.headers:
-                device = Base64Encoder.encode(
-                    sealed_box.encrypt(request.headers["User-Agent"].encode())
-                ).decode()
+                device = __base64_public_encrypt(request.headers["User-Agent"])
 
         session = await state.mongo.session.insert_one(
             CreateSessionModel(
