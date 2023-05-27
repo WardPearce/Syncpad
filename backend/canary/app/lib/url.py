@@ -33,7 +33,13 @@ async def untrusted_http_request(
         kwargs["connector"] = ProxyConnector.from_url(SETTINGS.untrusted_request_proxy)
 
     kwargs["timeout"] = ClientTimeout(total=30.0)
-    return await wait_for(state.aiohttp.request(method=method, url=url, **kwargs), 60.0)
+    return await wait_for(
+        state.aiohttp.request(method=method, url=url, **kwargs),
+        # Use wait for timeout to ensure request doesn't
+        # last longer then 60 seconds, no matter how aiohttp
+        # internals handles their timeout.
+        60.0,
+    )
 
 
 def __is_local_ip(not_trusted_ip: str):
@@ -73,18 +79,20 @@ async def is_local(url: str, attempt_dns_resolve: bool = True) -> None:
 
     resolver = aiodns.DNSResolver()
 
+    # Check if given domain is an IP
+    try:
+        given_ip = ip_address(domain)
+        if given_ip.is_private or given_ip.is_loopback:
+            raise LocalDomainInvalid()
+    except ValueError:
+        pass
+
+    # Check localhost aliases despite attempt_dns_resolve
     localhost_aliases = await get_localhost_aliases(resolver)
     if domain in localhost_aliases:
         raise LocalDomainInvalid()
 
     if attempt_dns_resolve:
-        try:
-            given_ip = ip_address(domain)
-            if given_ip.is_private or given_ip.is_loopback:
-                raise LocalDomainInvalid()
-        except ValueError:
-            pass
-
         try:
             ipv4_address = await resolver.query(domain, "A")
             for ipv4 in ipv4_address:
