@@ -29,12 +29,7 @@
 
     const publicKey = base64Decode(canaryBio.keypair.public_key);
 
-    try {
-      serverPublicKeyHash = hashBase64Encode(publicKey, true);
-      canaryBioMatches = true;
-    } catch (error) {
-      canaryBioMatches = false;
-    }
+    serverPublicKeyHash = hashBase64Encode(publicKey, true);
 
     serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
 
@@ -47,15 +42,20 @@
       }
     }
 
-    signatures.validateHash(
-      publicKey,
-      canaryBio.signature,
-      JSON.stringify({
-        domain: canaryBio.domain,
-        about: canaryBio.about,
-        signature: "",
-      })
-    );
+    try {
+      signatures.validateHash(
+        publicKey,
+        canaryBio.signature,
+        JSON.stringify({
+          domain: canaryBio.domain,
+          about: canaryBio.about,
+          signature: "",
+        })
+      );
+      canaryBioMatches = true;
+    } catch (error) {
+      canaryBioMatches = false;
+    }
 
     isLoading = false;
   });
