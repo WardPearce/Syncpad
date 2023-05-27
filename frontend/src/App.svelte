@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { Router, Route, link } from "svelte-navigator";
   import { onMount } from "svelte";
+  import { link, Route, Router } from "svelte-navigator";
 
   import sodium from "libsodium-wrappers-sumo";
 
   import LazyRoute from "./components/LazyRoute.svelte";
-  import PageLoading from "./components/PageLoading.svelte";
   import NavItems from "./components/NavItems.svelte";
+  import PageLoading from "./components/PageLoading.svelte";
 
-  import apiClient from "./lib/apiClient";
   import account from "./lib/account";
+  import apiClient from "./lib/apiClient";
 
   import {
     emailVerificationRequired,

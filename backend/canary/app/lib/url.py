@@ -1,6 +1,6 @@
 from asyncio import wait_for
 from ipaddress import ip_address
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Literal, Union
 
 import aiodns
 import yarl
@@ -14,7 +14,10 @@ if TYPE_CHECKING:
 
 
 async def untrusted_http_request(
-    state: "State", url: str, method: str, **kwargs
+    state: "State",
+    url: str,
+    method: Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PUT"]],
+    **kwargs
 ) -> ClientResponse:
     try:
         await is_local(
@@ -41,7 +44,7 @@ async def untrusted_http_request(
     )
 
 
-def __is_local_ip(not_trusted_ip: str):
+def __is_local_ip(not_trusted_ip: str) -> bool:
     ip = ip_address(not_trusted_ip)
     return ip.is_loopback or ip.is_private
 
@@ -76,14 +79,14 @@ async def is_local(url: str, attempt_dns_resolve: bool = True) -> None:
     if not domain:
         raise LocalDomainInvalid()
 
-    resolver = aiodns.DNSResolver()
-
     # Check if given domain is an IP
     try:
         if __is_local_ip(domain):
             raise LocalDomainInvalid()
     except ValueError:
         pass
+
+    resolver = aiodns.DNSResolver()
 
     # Check localhost aliases despite attempt_dns_resolve
     localhost_aliases = await get_localhost_aliases(resolver)

@@ -4,7 +4,7 @@
 
   export let component: any;
   export let delayMs: number | null = null;
-  export let componentProps = null;
+  export let componentProps: Record<string, any> | null = null;
   export let requiresAuth = false;
 
   let props: Record<any, any>;

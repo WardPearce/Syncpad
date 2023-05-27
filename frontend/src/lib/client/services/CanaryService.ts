@@ -33,6 +33,28 @@ export class CanaryService {
     }
 
     /**
+     * GetCanary
+     * Get private details about a canary
+     * @param domain
+     * @returns CanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainGetCanary(
+        domain: string,
+    ): CancelablePromise<CanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * UpdateLogo
      * Update logo for given domain
      * @param domain
@@ -52,6 +74,28 @@ export class CanaryService {
             },
             formData: formData,
             mediaType: 'multipart/form-data',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * Verify
+     * Verify domain ownership via DNS
+     * @param domain
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainVerifyVerify(
+        domain: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/{domain}/verify',
+            path: {
+                'domain': domain,
+            },
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

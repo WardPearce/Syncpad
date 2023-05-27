@@ -43,7 +43,7 @@ class PublicCanaryModel(CreateCanaryModel):
         super().__init__(*args, **kwargs)
 
         if self.logo:
-            self.logo = f"{SETTINGS.s3.download_url}/{self.logo}"
+            self.logo = f"{SETTINGS.s3.download_url}/canary/logos/{self.logo}"
 
 
 class DomainVerification(BaseModel):

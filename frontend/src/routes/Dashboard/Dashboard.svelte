@@ -25,7 +25,7 @@
           src="https://www.privacyguides.org/en/assets/brand/SVG/Logo/privacy-guides-logo-notext-darkbg.svg#only-dark"
         />
         <div class="max">
-          <a href="/c/privacyguides.org" use:link class="link">
+          <a href="/c/privacyguides.org/" use:link class="link">
             <h6>{concat("privacyguides.org")}</h6>
           </a>
         </div>

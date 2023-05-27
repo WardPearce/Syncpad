@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { tooltip } from "@svelte-plugins/tooltips";
   import { link, navigate, useLocation } from "svelte-navigator";
   import QrCode from "svelte-qrcode";
   import { get } from "svelte/store";
@@ -173,7 +172,7 @@
       {/if}
 
       {#if errorMsg}
-        <div class="red5">
+        <div class="primary">
           <p>{errorMsg}</p>
         </div>
       {/if}
@@ -190,22 +189,22 @@
         {/if}
         <form on:submit|preventDefault={onAuth} id="login">
           <div class="field label border medium-divider fill">
-            <input type="text" bind:value={email} />
+            <input type="text" bind:value={email} required />
             <label for="email">Email</label>
           </div>
           <div class="field label border medium-divider fill">
-            <input type="password" bind:value={password} />
+            <input type="password" bind:value={password} required />
             <label for="password">Password</label>
           </div>
 
           {#if isRegister}
-            <label
-              class="checkbox"
-              use:tooltip={{
-                content:
-                  "Your IP will be processed with Proxycheck.io for session logs on login. Stored encrypted with your public key.",
-              }}
-            >
+            <label class="checkbox">
+              <div class="tooltip max">
+                <p>
+                  Your IP will be processed with Proxycheck.io for session logs
+                  on login. Stored encrypted with your public key.
+                </p>
+              </div>
               <input type="checkbox" bind:checked={ipConsent} />
               <span>Device session logs</span>
             </label>

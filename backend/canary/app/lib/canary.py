@@ -1,5 +1,4 @@
-from ipaddress import ip_address
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 import aiodns
 import yarl

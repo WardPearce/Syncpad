@@ -54,14 +54,14 @@
       );
     } catch (error) {}
     isLoading = false;
-    navigate(`/dashboard/canary/verify-site/${siteDomain}`, { replace: true });
+    navigate(`/dashboard/canary/verify-site/${siteDomain}/`, { replace: true });
   }
 </script>
 
 <h3>Add site</h3>
 <form on:submit|preventDefault={createCanary}>
   <div class="field label border" class:invalid={siteDomain.length > 50}>
-    <input type="text" bind:value={siteDomain} disabled={isLoading} />
+    <input type="text" bind:value={siteDomain} disabled={isLoading} required />
     <label for="domain">Domain name</label>
     <span class="helper">{siteDomain.length}/50</span>
   </div>
@@ -70,7 +70,7 @@
     class="field textarea label border extra"
     class:invalid={aboutSite.length > 500}
   >
-    <textarea bind:value={aboutSite} disabled={isLoading} />
+    <textarea bind:value={aboutSite} disabled={isLoading} required />
     <label for="about">About your site</label>
     <span class="helper">{aboutSite.length}/500</span>
   </div>
@@ -79,6 +79,7 @@
     <div class="field label suffix border">
       <input type="text" />
       <input
+        required
         type="file"
         bind:files={logoFiles}
         multiple={false}
