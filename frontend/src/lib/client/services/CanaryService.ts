@@ -3,7 +3,9 @@
 /* eslint-disable */
 import type { CanaryModel } from '../models/CanaryModel';
 import type { CreateCanaryModel } from '../models/CreateCanaryModel';
+import type { CreateTrustedCanaryModel } from '../models/CreateTrustedCanaryModel';
 import type { PublicCanaryModel } from '../models/PublicCanaryModel';
+import type { TrustedCanaryModel } from '../models/TrustedCanaryModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -47,6 +49,19 @@ export class CanaryService {
     }
 
     /**
+     * ListTrustedCanaries
+     * List trusted canaries
+     * @returns TrustedCanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryTrustedListListTrustedCanaries(): CancelablePromise<Array<TrustedCanaryModel>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/trusted/list',
+        });
+    }
+
+    /**
      * GetCanary
      * Get private details about a canary
      * @param domain
@@ -84,6 +99,32 @@ export class CanaryService {
             path: {
                 'domain': domain,
             },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * TrustCanary
+     * Saves a canary as a trusted canary
+     * @param domain
+     * @param requestBody
+     * @returns TrustedCanaryModel Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainTrustedAddTrustCanary(
+        domain: string,
+        requestBody: CreateTrustedCanaryModel,
+    ): CancelablePromise<TrustedCanaryModel> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/{domain}/trusted/add',
+            path: {
+                'domain': domain,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

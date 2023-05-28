@@ -37,9 +37,20 @@ class PublicUserModel(BaseModel):
     otp_completed: bool = False
 
 
-class AccountEd25199Modal(BaseModel):
+class AccountAuthModal(BaseModel):
     public_key: str = Field(
         ..., max_length=44, description="ed25519 public key, base64 encoded"
+    )
+
+
+class AccountEd25199Modal(IvField):
+    public_key: str = Field(
+        ..., max_length=44, description="ed25519 public key, base64 encoded"
+    )
+    cipher_text: str = Field(
+        ...,
+        max_length=240,
+        description="ed25519 private key, encrypted with keychain, base64 encoded",
     )
 
 
@@ -63,8 +74,9 @@ class AccountKeychainModal(IvField):
 
 
 class __CreateUserShared(EmailModel):
-    auth: AccountEd25199Modal
+    auth: AccountAuthModal
     keypair: AccountX25519Model
+    sign_keypair: AccountEd25199Modal
     keychain: AccountKeychainModal
     kdf: Argon2Modal
 

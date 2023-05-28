@@ -1,10 +1,13 @@
 import pathlib
 import secrets
+from ast import Dict
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Any, List
+from typing import TYPE_CHECKING, Annotated, Any, List, Literal
 
 from app.env import SETTINGS
 from app.errors import (
+    CanaryAlreadyTrusted,
+    CanaryNotFoundException,
     CanaryTaken,
     DomainValidationError,
     FileTooBig,
@@ -12,7 +15,13 @@ from app.errors import (
 )
 from app.lib.canary import Canary
 from app.lib.s3 import format_path, s3_create_client
-from app.models.canary import CanaryModel, CreateCanaryModel, PublicCanaryModel
+from app.models.canary import (
+    CanaryModel,
+    CreateCanaryModel,
+    CreateTrustedCanaryModel,
+    PublicCanaryModel,
+    TrustedCanaryModel,
+)
 from bson import ObjectId
 from litestar import Controller, Request, Response, Router, get, post
 from litestar.contrib.jwt import Token
@@ -68,8 +77,50 @@ async def list_canaries(
     return canaries
 
 
+@get("/trusted/list", description="List trusted canaries", tags=["canary"])
+async def list_trusted_canaries(
+    request: Request[ObjectId, Token, Any], state: "State"
+) -> List[TrustedCanaryModel]:
+    trusted_canaries: List[TrustedCanaryModel] = []
+
+    async for trusted in state.mongo.trusted_canary.find({"user_id": request.user}):
+        trusted_canaries.append(TrustedCanaryModel(**trusted))
+
+    return trusted_canaries
+
+
 class CanaryController(Controller):
     path = "/{domain:str}"
+
+    @post(
+        "/trusted/add",
+        description="Saves a canary as a trusted canary",
+        tags=["canary"],
+    )
+    async def trust_canary(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        data: CreateTrustedCanaryModel,
+        domain: str,
+    ) -> TrustedCanaryModel:
+        try:
+            await Canary(state, domain).exists()
+        except CanaryNotFoundException:
+            raise
+
+        if (
+            await state.mongo.trusted_canary.count_documents(
+                {"user_id": request.user, "domain": domain}
+            )
+            > 0
+        ):
+            raise CanaryAlreadyTrusted()
+
+        trusted_search = {"user_id": request.user, **data.dict()}
+        await state.mongo.trusted_canary.insert_one(trusted_search)
+
+        return TrustedCanaryModel(**trusted_search)
 
     @post("/verify", description="Verify domain ownership via DNS", tags=["canary"])
     async def verify(
@@ -132,5 +183,11 @@ class CanaryController(Controller):
 
 
 router = Router(
-    path="/canary", route_handlers=[create_canary, list_canaries, CanaryController]
+    path="/canary",
+    route_handlers=[
+        create_canary,
+        list_canaries,
+        list_trusted_canaries,
+        CanaryController,
+    ],
 )

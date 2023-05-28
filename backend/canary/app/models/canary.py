@@ -7,6 +7,13 @@ from models.customs import CustomJsonEncoder, IvField
 from pydantic import BaseModel, Field
 
 
+class DomainModel(BaseModel):
+    domain: str = Field(
+        ...,
+        regex=r"(?i)^((?!(?:www|www\d+)\.)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:[a-zA-Z]{2,})$",
+    )
+
+
 class PublicKeyModel(BaseModel):
     public_key: str = Field(
         ..., max_length=44, description="ed25519 public key, base64 encoded"
@@ -21,11 +28,7 @@ class CanaryEd25519Model(IvField, PublicKeyModel):
     )
 
 
-class __CanarySharedModel(CustomJsonEncoder):
-    domain: str = Field(
-        ...,
-        regex=r"(?i)^((?!(?:www|www\d+)\.)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:[a-zA-Z]{2,})$",
-    )
+class __CanarySharedModel(CustomJsonEncoder, DomainModel):
     about: str = Field(..., max_length=500)
     signature: str = Field(..., max_length=128)
     algorithms: str = Field(
@@ -67,3 +70,13 @@ class DomainVerification(BaseModel):
 class CanaryModel(PublicCanaryModel):
     domain_verification: DomainVerification
     keypair: CanaryEd25519Model
+
+
+class CreateTrustedCanaryModel(BaseModel):
+    public_key_hash: str = Field(
+        ..., max_length=240, description="signed hash of canary public, base64 encoded"
+    )
+
+
+class TrustedCanaryModel(CreateTrustedCanaryModel, DomainModel):
+    pass

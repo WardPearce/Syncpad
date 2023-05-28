@@ -1,5 +1,5 @@
-import { get, set } from "idb-keyval";
-import { get as storeGet, writable, type Writable } from "svelte/store";
+import * as idbKeyval from "idb-keyval";
+import { get, writable, type Writable } from "svelte/store";
 
 export const advanceModeStore = writable(localStorage.getItem("advanceMode") === "true");
 export const themeStore = writable({});
@@ -8,12 +8,16 @@ export const isDarkMode = writable(true);
 
 
 export interface LocalSecretsModel {
-    email: string,
-    userId: string,
-    jti: string,
-    rawKeychain: string,
+    email: string;
+    userId: string;
+    jti: string;
+    rawKeychain: string;
     rawKeypair: {
-        publicKey: string,
+        publicKey: string;
+        privateKey: string;
+    };
+    rawSignKeypair: {
+        publicKey: string;
         privateKey: string;
     };
 }
@@ -22,7 +26,7 @@ export const emailVerificationRequired = writable(false);
 
 async function indexDbLocalSecrets(): Promise<LocalSecretsModel | undefined> {
     try {
-        return await get("localSecrets");
+        return await idbKeyval.get("localSecrets");
     } catch {
         return undefined;
     }
@@ -32,7 +36,7 @@ export async function setLocalSecrets(secrets: LocalSecretsModel, indexDb: boole
     if (indexDb) {
         try {
             // Catch if private tab.
-            await set("localSecrets", secrets);
+            await idbKeyval.set("localSecrets", secrets);
         } catch { }
     }
     localSecrets.set(secrets);
@@ -55,7 +59,7 @@ export interface savedCanariesModel {
 
 async function indexDbCanaries(): Promise<savedCanariesModel | undefined> {
     try {
-        return await get("savedCanaries");
+        return await idbKeyval.get("savedCanaries");
     } catch (error) {
         return undefined;
     }
@@ -65,18 +69,18 @@ export async function updateSavedCanaries(domain: string, canary: savedCanaryMod
     let oldCanaries;
     let toSave = {};
     try {
-        oldCanaries = await get("savedCanaries");
+        oldCanaries = await idbKeyval.get("savedCanaries");
 
         if (oldCanaries) {
             toSave = oldCanaries;
         }
 
         toSave[domain] = canary;
-        await set("savedCanaries", toSave);
+        await idbKeyval.set("savedCanaries", toSave);
     } catch (error) { }
 
     if (oldCanaries === undefined) {
-        oldCanaries = storeGet(savedCanaries);
+        oldCanaries = get(savedCanaries);
         if (oldCanaries) {
             toSave = oldCanaries;
         }

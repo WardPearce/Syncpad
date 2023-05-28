@@ -21,6 +21,7 @@ class ErrorCodes(Enum):
     upload_too_big = 2009
     canary_not_found = 2010
     unsupported_file_type = 2011
+    already_trusted_canary = 2012
 
 
 class UserNotFoundException(NotFoundException):
@@ -100,6 +101,16 @@ class CanaryTaken(ValidationException):
         super().__init__(
             detail="Domain has already been registered",
             extra={ERROR_CODE_KEY: ErrorCodes.canary_taken.value},
+        )
+
+
+class CanaryAlreadyTrusted(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="That canary has already been saved as a trusted canary.",
+            extra={ERROR_CODE_KEY: ErrorCodes.already_trusted_canary.value},
         )
 
 

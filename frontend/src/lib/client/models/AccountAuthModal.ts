@@ -2,9 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type AccountEd25199Modal = {
-    iv: string;
+export type AccountAuthModal = {
     public_key: string;
-    cipher_text: string;
 };
 

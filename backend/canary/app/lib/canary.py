@@ -91,10 +91,16 @@ class Canary:
 
         self._state = state
 
+    @property
+    def __canary_where(self) -> dict:
+        return {"domain": self._domain, "domain_verification.completed": True}
+
+    async def exists(self) -> None:
+        if self._state.mongo.canary.count_documents(self.__canary_where) == 0:
+            raise CanaryNotFoundException()
+
     async def get(self) -> PublicCanaryModel:
-        result = await self._state.mongo.canary.find_one(
-            {"domain": self._domain, "domain_verification.completed": True}
-        )
+        result = await self._state.mongo.canary.find_one(self.__canary_where)
         if not result:
             raise CanaryNotFoundException()
 

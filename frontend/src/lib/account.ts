@@ -1,4 +1,4 @@
-import { del } from "idb-keyval";
+import * as idbKeyval from 'idb-keyval';
 import { navigate } from "svelte-navigator";
 
 import { zxcvbn } from "@zxcvbn-ts/core";
@@ -35,7 +35,7 @@ export class OtpRequiredError extends Error {
 export async function logout() {
   // Catch if private tab.
   try {
-    await del("localSecrets");
+    await idbKeyval.del("localSecrets");
   } catch { }
 
   // Wipe localSecrets store.
@@ -153,8 +153,13 @@ export async function* login(
       iv: loggedInUser.user.keypair.iv,
       public_key: loggedInUser.user.keypair.public_key,
     },
+    sign_keypair: {
+      cipher_text: loggedInUser.user.sign_keypair.cipher_text,
+      iv: loggedInUser.user.sign_keypair.iv,
+      public_key: loggedInUser.user.sign_keypair.public_key
+    },
     signature: "",
-  } as CreateUserModel);
+  });
 
   yield "Validating signature";
 
@@ -180,6 +185,14 @@ export async function* login(
     loggedInUser.user.keypair.cipher_text
   );
 
+  yield "Decrypting sign private key";
+
+  const rawSignKeypairPrivateKey = secretKey.decrypt(
+    rawKeychain as Uint8Array,
+    loggedInUser.user.sign_keypair.iv,
+    loggedInUser.user.sign_keypair.cipher_text
+  );
+
   emailVerificationRequired.set(!loggedInUser.user.email_verified);
 
   // Never store anything what can establish account auth.
@@ -191,6 +204,10 @@ export async function* login(
     rawKeypair: {
       privateKey: base64Encode(rawKeypairPrivateKey),
       publicKey: loggedInUser.user.keypair.public_key,
+    },
+    rawSignKeypair: {
+      privateKey: base64Encode(rawSignKeypairPrivateKey),
+      publicKey: loggedInUser.user.sign_keypair.public_key
     },
     jti: loggedInUser.jti,
   }, rememberMe);
@@ -257,10 +274,15 @@ export async function* register(email: string, password: string, captchaToken?: 
   yield "Generating keypair";
 
   const rawKeypair = sodium.crypto_box_keypair();
-
   const safePrivateKey = secretKey.encrypt(
     rawKeychain,
     rawKeypair.privateKey
+  );
+
+  const rawSignKeypair = signatures.generateKeypair();
+  const safeSignPrivateKey = secretKey.encrypt(
+    rawKeychain,
+    rawSignKeypair.privateKey
   );
 
   const createUser: CreateUserModel = {
@@ -281,6 +303,11 @@ export async function* register(email: string, password: string, captchaToken?: 
       cipher_text: safePrivateKey.cipherText,
       iv: safePrivateKey.iv,
       public_key: base64Encode(rawKeypair.publicKey),
+    },
+    sign_keypair: {
+      cipher_text: safeSignPrivateKey.cipherText,
+      iv: safeSignPrivateKey.iv,
+      public_key: base64Encode(rawSignKeypair.publicKey)
     },
     signature: "",
   };

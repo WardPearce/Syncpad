@@ -130,7 +130,7 @@
   class={isMobile ? "row round" : ""}
 >
   <i>bookmarks</i>
-  <span>Saved Canaries</span>
+  <span>Trusted Canaries</span>
 </a>
 <a
   use:link
