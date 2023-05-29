@@ -111,5 +111,7 @@ export async function saveCanaryAsTrusted(domain: string, publicKeyHash: string)
 
 export default {
   goToCanary,
-  getTrustedCanary
+  getTrustedCanary,
+  saveCanaryAsTrusted,
+  listTrustedCanaries
 };

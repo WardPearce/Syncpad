@@ -102,6 +102,11 @@
         </p>
       </article>
     {/if}
+  {:else if firstCanaryVisit}
+    <article class="primary">
+      Welcome to {canaryBio.domain}'s canary! This is your first visit on this
+      browser/account, and we've saved it as a trusted canary.
+    </article>
   {/if}
   {#if !canaryBioMatches}
     <article class="error">
