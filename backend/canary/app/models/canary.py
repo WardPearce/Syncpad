@@ -73,8 +73,10 @@ class CanaryModel(PublicCanaryModel):
 
 
 class CreateTrustedCanaryModel(BaseModel):
-    public_key_hash: str = Field(
-        ..., max_length=240, description="signed hash of canary public, base64 encoded"
+    signature: str = Field(
+        ...,
+        max_length=240,
+        description="Domain & public key hash signature, base64 encoded",
     )
 
 

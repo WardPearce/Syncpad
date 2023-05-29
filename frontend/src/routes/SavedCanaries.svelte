@@ -1,10 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { navigate } from "svelte-navigator";
-    import { saveCanaryAsTrusted } from "../lib/canary";
-    import { savedCanaries, type savedCanariesModel } from "../stores";
-
-    let canaries: savedCanariesModel;
-    savedCanaries.subscribe((value) => (canaries = value));
+    import { listTrustedCanaries, saveCanaryAsTrusted } from "../lib/canary";
 
     function importCanaries() {
         const input: HTMLInputElement = document.createElement("input");
@@ -29,7 +26,10 @@
                                 domain,
                                 publicKeyHash,
                             ] of Object.entries(jsonData)) {
-                                if (typeof publicKeyHash === "string") {
+                                if (
+                                    typeof publicKeyHash === "string" &&
+                                    !(domain in canaries)
+                                ) {
                                     await saveCanaryAsTrusted(
                                         domain,
                                         publicKeyHash
@@ -59,6 +59,11 @@
         anchor.click();
         window.URL.revokeObjectURL(url);
     }
+
+    let canaries: Record<string, string> = {};
+    onMount(async () => {
+        canaries = await listTrustedCanaries();
+    });
 </script>
 
 <h3>Saved canaries</h3>
@@ -67,7 +72,7 @@
 >
 <button class="small" on:click={importCanaries}>Import canaries</button>
 
-{#if canaries}
+{#if Object.keys(canaries).length > 0}
     {#each Object.entries(canaries) as [domain, publicKeyHash]}
         <article>
             <nav>

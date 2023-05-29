@@ -29,19 +29,57 @@ export function goToCanary(canary: CanaryModel): void {
 }
 
 export async function getTrustedCanary(domain: string): Promise<string | void> {
-  let canaries = get(savedCanaries);
+  const canaries = get(savedCanaries);
   if (domain in canaries) {
     return canaries[domain];
   } else if (get(localSecrets) !== undefined) {
     try {
-      const untrustedPublicKey = await apiClient.canary.controllersCanaryDomainTrustedGetTrusted(domain);
-      return signatures.open(
-        SignatureKeyLocation.localPublicSignKeypair,
-        untrustedPublicKey.public_key_hash,
-        true
-      ) as string;
+      const untrusted = await apiClient.canary.controllersCanaryDomainTrustedGetTrusted(domain);
+
+      const trustedData = JSON.parse(
+        signatures.open(
+          SignatureKeyLocation.localPublicSignKeypair,
+          untrusted.signature,
+          true
+        ) as string
+      );
+
+      if (domain !== trustedData.domain) {
+        return;
+      } else {
+        return trustedData.public_key_hash;
+      }
     } catch { }
   }
+}
+
+export async function listTrustedCanaries(): Promise<Record<string, string>> {
+  const canaries = get(savedCanaries);
+  if (Object.keys(canaries).length > 0) {
+    return canaries;
+  } else if (get(localSecrets) !== undefined) {
+    try {
+      const untrustedCanaries = await apiClient.canary.controllersCanaryTrustedListListTrustedCanaries();
+
+      const trustedCanaries = {};
+      untrustedCanaries.forEach(untrustedCanary => {
+        try {
+          const trustedData = JSON.parse(
+            signatures.open(
+              SignatureKeyLocation.localPublicSignKeypair,
+              untrustedCanary.signature,
+              true
+            ) as string
+          );
+          trustedCanaries[trustedData.domain] = trustedData.public_key_hash;
+        } catch { }
+      });
+
+      return trustedCanaries;
+    } catch { }
+  }
+
+  return {};
 }
 
 export async function saveCanaryAsTrusted(domain: string, publicKeyHash: string) {
@@ -53,13 +91,22 @@ export async function saveCanaryAsTrusted(domain: string, publicKeyHash: string)
   if (get(localSecrets) !== undefined) {
     // Update signed hash in the background
     apiClient.canary.controllersCanaryDomainTrustedAddTrustCanary(
-      domain, { public_key_hash: signatures.sign(SignatureKeyLocation.localPrivateSignKeypair, publicKeyHash) }
+      domain,
+      {
+        signature: signatures.sign(
+          SignatureKeyLocation.localPrivateSignKeypair,
+          JSON.stringify({
+            "domain": domain,
+            "public_key_hash": publicKeyHash
+          })
+        )
+      }
     );
-  } else {
-    try {
-      idbKeyval.set("savedCanaries", oldCanaries);
-    } catch { }
   }
+
+  try {
+    await idbKeyval.set("savedCanaries", oldCanaries);
+  } catch { }
 }
 
 export default {

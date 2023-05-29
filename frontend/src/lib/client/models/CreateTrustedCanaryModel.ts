@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type CreateTrustedCanaryModel = {
-    public_key_hash: string;
+    signature: string;
 };
 
