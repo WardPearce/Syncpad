@@ -41,6 +41,21 @@
     }
 
     if (serverKeyHashMatches) {
+      try {
+        signatures.validateHash(
+          publicServerKey,
+          canaryBio.signature,
+          JSON.stringify({
+            domain: domainName,
+            about: canaryBio.about,
+            signature: "",
+          })
+        );
+        canaryBioMatches = true;
+      } catch (error) {
+        canaryBioMatches = false;
+      }
+
       // Validate stored canary.
       if (trustedStoredPublicKeyHash) {
         serverKeyHashMatches = publicKeyHash === trustedStoredPublicKeyHash;
@@ -51,25 +66,12 @@
     } else if (trustedStoredPublicKeyHash === serverPublicKeyHash) {
       // If stored publicKey hash matches serverPublicKeyHash, then incorrect link was given.
       serverKeyHashMatches = true;
-      publicKeyHash = serverPublicKeyHash;
+      publicKeyHash = trustedStoredPublicKeyHash;
 
       navigate(`/c/${domainName}/${trustedStoredPublicKeyHash}`, {
         replace: true,
       });
-    }
-
-    try {
-      signatures.validateHash(
-        publicServerKey,
-        canaryBio.signature,
-        JSON.stringify({
-          domain: domainName,
-          about: canaryBio.about,
-          signature: "",
-        })
-      );
-      canaryBioMatches = true;
-    } catch (error) {
+    } else {
       canaryBioMatches = false;
     }
 
@@ -110,8 +112,11 @@
   {/if}
   {#if !canaryBioMatches}
     <article class="error">
-      <h6>The about section failed to be validated!</h6>
-      <p>Don't trust the about section or domain name.</p>
+      <h6>Canary information failed validation!</h6>
+      <p>
+        This is <span style="font-weight: bold;">concerning</span> & may mean the
+        host is trying to trick you.
+      </p>
     </article>
   {/if}
   <article>
@@ -124,17 +129,17 @@
             alt={`Logo for ${canaryBio.domain}`}
           />
           <div class="max">
-            <h4>{canaryBio.domain}</h4>
+            <h4 class:strikeout={!canaryBioMatches}>{canaryBio.domain}</h4>
           </div>
           <i>arrow_drop_down</i>
         </div>
       </summary>
-      <p>
+      <p class:strikeout={!canaryBioMatches}>
         {canaryBio.about}
       </p>
 
       <h6>Domain ownership</h6>
-      <p>
+      <p class:strikeout={!canaryBioMatches}>
         Verified owner of <a
           href={`https://${canaryBio.domain}`}
           target="_blank"
@@ -173,7 +178,7 @@
         </div>
       {/if}
     </nav>
-    {#if !serverKeyHashMatches}
+    {#if !serverKeyHashMatches || !canaryBioMatches}
       <article class="error">
         <p>This canary failed validation, do NOT trust it.</p>
       </article>
@@ -223,7 +228,7 @@
     {/if}
 
     <h5>Statement</h5>
-    <p class:strikeout={!serverKeyHashMatches}>
+    <p class:strikeout={!serverKeyHashMatches || !canaryBioMatches}>
       I hereby declare that as of 28th April 2023, I am still in complete
       control of <a
         href="http://privacyguides.org"
@@ -237,7 +242,7 @@
       will be reviewed and updated as necessary on or before 28th April 2024.
     </p>
 
-    {#if serverKeyHashMatches}
+    {#if serverKeyHashMatches && canaryBioMatches}
       <h5>Documents</h5>
       <p>None</p>
     {/if}
