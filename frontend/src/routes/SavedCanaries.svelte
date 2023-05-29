@@ -1,13 +1,9 @@
 <script lang="ts">
     import { navigate } from "svelte-navigator";
-    import {
-        savedCanaries,
-        updateSavedCanaries,
-        type savedCanariesModel,
-        type savedCanaryModel,
-    } from "../stores";
+    import { saveCanaryAsTrusted } from "../lib/canary";
+    import { savedCanaries, type savedCanariesModel } from "../stores";
 
-    let canaries: savedCanariesModel | undefined;
+    let canaries: savedCanariesModel;
     savedCanaries.subscribe((value) => (canaries = value));
 
     function importCanaries() {
@@ -29,19 +25,14 @@
                     if (typeof fileContent === "string") {
                         try {
                             const jsonData: any = JSON.parse(fileContent);
-                            for (const [domain, canary] of Object.entries(
-                                jsonData
-                            )) {
-                                if (
-                                    canary instanceof Object &&
-                                    "id" in canary &&
-                                    "publicKey" in canary &&
-                                    typeof canary.publicKey === "string" &&
-                                    typeof canary.id === "string"
-                                ) {
-                                    await updateSavedCanaries(
+                            for (const [
+                                domain,
+                                publicKeyHash,
+                            ] of Object.entries(jsonData)) {
+                                if (typeof publicKeyHash === "string") {
+                                    await saveCanaryAsTrusted(
                                         domain,
-                                        canary as savedCanaryModel
+                                        publicKeyHash
                                     );
                                 }
                             }
@@ -77,13 +68,12 @@
 <button class="small" on:click={importCanaries}>Import canaries</button>
 
 {#if canaries}
-    {#each Object.entries(canaries) as [domain, canary]}
+    {#each Object.entries(canaries) as [domain, publicKeyHash]}
         <article>
             <nav>
                 <h5>{domain}</h5>
                 <button
-                    on:click={() =>
-                        navigate(`/c/${domain}/${canary.publicKey}`)}
+                    on:click={() => navigate(`/c/${domain}/${publicKeyHash}`)}
                     >Visit canary</button
                 >
             </nav>

@@ -92,6 +92,22 @@ async def list_trusted_canaries(
 class CanaryController(Controller):
     path = "/{domain:str}"
 
+    @get(
+        "/trusted",
+        description="Get signed public key hash for a trusted canary",
+        tags=["canary"],
+    )
+    async def get_trusted(
+        self, request: Request[ObjectId, Token, Any], state: "State", domain: str
+    ) -> TrustedCanaryModel:
+        trusted = await state.mongo.trusted_canary.find_one(
+            {"user_id": request.user, "domain": domain}
+        )
+        if not trusted:
+            raise CanaryNotFoundException()
+
+        return TrustedCanaryModel(**trusted)
+
     @post(
         "/trusted/add",
         description="Saves a canary as a trusted canary",
@@ -117,10 +133,10 @@ class CanaryController(Controller):
         ):
             raise CanaryAlreadyTrusted()
 
-        trusted_search = {"user_id": request.user, **data.dict()}
-        await state.mongo.trusted_canary.insert_one(trusted_search)
+        trusted = {"user_id": request.user, "domain": domain, **data.dict()}
+        await state.mongo.trusted_canary.insert_one(trusted)
 
-        return TrustedCanaryModel(**trusted_search)
+        return TrustedCanaryModel(**trusted)
 
     @post("/verify", description="Verify domain ownership via DNS", tags=["canary"])
     async def verify(

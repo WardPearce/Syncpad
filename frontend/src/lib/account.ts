@@ -145,7 +145,6 @@ export async function* login(
       cipher_text: loggedInUser.user.keychain.cipher_text,
     },
     auth: {
-      // Should never be loaded from the server.
       public_key: base64Encode(rawAuthKeys.publicKey),
     },
     keypair: {

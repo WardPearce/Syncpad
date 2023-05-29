@@ -1,4 +1,6 @@
 import sodium from "libsodium-wrappers-sumo";
+import { get } from "svelte/store";
+import { localSecrets } from "../../stores";
 import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 
 
@@ -10,8 +12,21 @@ export class InvalidSignature extends Error {
     }
 }
 
-export type PublicKey = Uint8Array | string;
-export type PrivateKey = Uint8Array;
+export class SignKeypairUndefinedError extends Error {
+    constructor() {
+        super();
+        this.message = "Sign Keypair can not be undefined";
+        this.name = "SignKeypairUndefinedError";
+    }
+}
+
+export enum SignatureKeyLocation {
+    localPrivateSignKeypair = "localPrivateSignKeypair",
+    localPublicSignKeypair = "localPublicSignKeypair"
+}
+
+export type PublicKey = Uint8Array | SignatureKeyLocation | string;
+export type PrivateKey = Uint8Array | SignatureKeyLocation;
 
 export interface KeyPair {
     publicKey: PublicKey;
@@ -29,6 +44,13 @@ export function seedKeypair(seed: Uint8Array): sodium.KeyPair {
 export function determineKeyLocation(key: PublicKey | PrivateKey): Uint8Array {
     if (key instanceof Uint8Array) {
         return key;
+    } else if (key === SignatureKeyLocation.localPrivateSignKeypair || key === SignatureKeyLocation.localPublicSignKeypair) {
+        const storedSecrets = get(localSecrets);
+        const keypairKey = key === SignatureKeyLocation.localPrivateSignKeypair ? "privateKey" : "publicKey";
+        if (typeof storedSecrets === "undefined" || !("rawSignKeypair" in storedSecrets) || !(keypairKey in storedSecrets["rawSignKeypair"])) {
+            throw new SignKeypairUndefinedError();
+        }
+        return base64Decode(storedSecrets.rawSignKeypair[keypairKey]);
     } else {
         return base64Decode(key);
     }

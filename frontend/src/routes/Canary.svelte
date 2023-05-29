@@ -2,18 +2,14 @@
   import { onMount } from "svelte";
 
   import { navigate } from "svelte-navigator";
-  import { get } from "svelte/store";
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
+  import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type { PublicCanaryModel } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
   import signatures from "../lib/crypto/signatures";
-  import {
-    advanceModeStore,
-    savedCanaries,
-    updateSavedCanaries,
-  } from "../stores";
+  import { advanceModeStore } from "../stores";
 
   export let domainName: string;
   export let publicKeyHash: string;
@@ -39,33 +35,25 @@
 
     serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
 
-    const storedCanaries = get(savedCanaries);
-    if (storedCanaries) {
+    const trustedStoredPublicKeyHash = await getTrustedCanary(domainName);
+    if (trustedStoredPublicKeyHash) {
       firstCanaryVisit = false;
     }
 
     if (serverKeyHashMatches) {
       // Validate stored canary.
-      if (storedCanaries && canaryBio.domain in storedCanaries) {
-        serverKeyHashMatches =
-          publicKeyHash === storedCanaries[canaryBio.domain].publicKey;
+      if (trustedStoredPublicKeyHash) {
+        serverKeyHashMatches = publicKeyHash === trustedStoredPublicKeyHash;
       } else {
         // Store canary
-        await updateSavedCanaries(canaryBio.domain, {
-          id: canaryBio._id,
-          publicKey: publicKeyHash,
-        });
+        await saveCanaryAsTrusted(domainName, publicKeyHash);
       }
-    } else if (
-      storedCanaries &&
-      canaryBio.domain &&
-      storedCanaries[canaryBio.domain].publicKey === serverPublicKeyHash
-    ) {
+    } else if (trustedStoredPublicKeyHash === serverPublicKeyHash) {
       // If stored publicKey hash matches serverPublicKeyHash, then incorrect link was given.
       serverKeyHashMatches = true;
       publicKeyHash = serverPublicKeyHash;
 
-      navigate(`/c/${canaryBio.domain}/${serverPublicKeyHash}`, {
+      navigate(`/c/${domainName}/${trustedStoredPublicKeyHash}`, {
         replace: true,
       });
     }
@@ -75,7 +63,7 @@
         publicServerKey,
         canaryBio.signature,
         JSON.stringify({
-          domain: canaryBio.domain,
+          domain: domainName,
           about: canaryBio.about,
           signature: "",
         })
