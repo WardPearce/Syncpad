@@ -81,19 +81,55 @@ export async function listTrustedCanaries(): Promise<Record<string, string>> {
 }
 
 export async function syncTrustedCanaries() {
-  if (localSecrets !== undefined) {
+  if (get(localSecrets) === undefined) {
     return;
   }
 
   const accountSavedCanaries = await apiClient.canary.controllersCanaryTrustedListListTrustedCanaries();
   const localSavedCanaries = get(savedCanaries);
 
+  for (const [domain, publicKeyHash] of Object.entries(localSavedCanaries)) {
+    if (!(domain in accountSavedCanaries)) {
+      apiClient.canary.controllersCanaryDomainTrustedAddTrustCanary(
+        domain,
+        {
+          public_key_hash: publicKeyHash,
+          signature: signatures.signHash(
+            SignatureKeyLocation.localPrivateSignKeypair,
+            JSON.stringify({
+              "domain": domain,
+              "public_key_hash": publicKeyHash
+            })
+          )
+        }
+      );
+    }
+  }
+
+  for (const [domain, canary] of Object.entries(accountSavedCanaries)) {
+    if (!(domain in localSavedCanaries)) {
+      try {
+        signatures.validateHash(
+          SignatureKeyLocation.localPublicSignKeypair,
+          canary.signature,
+          JSON.stringify({
+            "domain": domain,
+            "public_key_hash": canary.public_key_hash
+          })
+        );
+
+        localSavedCanaries[domain] = canary.public_key_hash;
+      } catch { }
+    }
+  }
 
   savedCanaries.set(localSavedCanaries);
+
   try {
     await idbKeyval.set("savedCanaries", localSavedCanaries);
   } catch { }
 }
+
 
 export async function saveCanaryAsTrusted(domain: string, publicKeyHash: string) {
   let oldCanaries = get(savedCanaries);

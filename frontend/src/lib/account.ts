@@ -6,6 +6,7 @@ import sodium from "libsodium-wrappers-sumo";
 
 import { emailVerificationRequired, localSecrets, setLocalSecrets } from "../stores";
 import apiClient from "./apiClient";
+import { syncTrustedCanaries } from './canary';
 import type { CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
 import { base64Decode, base64Encode } from "./crypto/codecUtils";
 import secretKey from "./crypto/secretKey";
@@ -210,6 +211,9 @@ export async function* login(
     },
     jti: loggedInUser.jti,
   }, rememberMe);
+
+  // Sync canaries from API to storage & storage to API in background.
+  syncTrustedCanaries();
 
   yield loggedInUser.user;
 }
