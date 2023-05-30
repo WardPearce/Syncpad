@@ -107,8 +107,8 @@ class Settings(BaseSettings):
     smtp: Optional[Smtp] = None
     canary: Canary = Canary()
     s3: S3
-    untrusted_request_proxy: Optional[str] = Field(
-        None,
+    untrusted_request_proxy: str = Field(
+        ...,
         description="It's recommended to simply use a proxy for untrusted requests, if not provided we'll do our best to ensure the request is safe",
     )
 
