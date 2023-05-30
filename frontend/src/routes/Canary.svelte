@@ -41,21 +41,6 @@
     }
 
     if (serverKeyHashMatches) {
-      try {
-        signatures.validateHash(
-          publicServerKey,
-          canaryBio.signature,
-          JSON.stringify({
-            domain: domainName,
-            about: canaryBio.about,
-            signature: "",
-          })
-        );
-        canaryBioMatches = true;
-      } catch (error) {
-        canaryBioMatches = false;
-      }
-
       // Validate stored canary.
       if (trustedStoredPublicKeyHash) {
         serverKeyHashMatches = publicKeyHash === trustedStoredPublicKeyHash;
@@ -73,6 +58,24 @@
       });
     } else {
       canaryBioMatches = false;
+    }
+
+    // This may change from the above logic.
+    if (serverKeyHashMatches) {
+      try {
+        signatures.validateHash(
+          publicServerKey,
+          canaryBio.signature,
+          JSON.stringify({
+            domain: domainName,
+            about: canaryBio.about,
+            signature: "",
+          })
+        );
+        canaryBioMatches = true;
+      } catch (error) {
+        canaryBioMatches = false;
+      }
     }
 
     isLoading = false;
@@ -149,6 +152,7 @@
       </p>
 
       {#if advanceMode}
+        <h6>Public key</h6>
         <div class="field border">
           <input disabled value={canaryBio.keypair.public_key} />
         </div>

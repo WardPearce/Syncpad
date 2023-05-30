@@ -1,8 +1,7 @@
 import pathlib
 import secrets
-from ast import Dict
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Any, List, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Dict, List
 
 from app.env import SETTINGS
 from app.errors import (
@@ -18,7 +17,6 @@ from app.lib.s3 import format_path, s3_create_client
 from app.models.canary import (
     CanaryModel,
     CreateCanaryModel,
-    CreateTrustedCanaryModel,
     PublicCanaryModel,
     TrustedCanaryModel,
 )
@@ -80,11 +78,11 @@ async def list_canaries(
 @get("/trusted/list", description="List trusted canaries", tags=["canary"])
 async def list_trusted_canaries(
     request: Request[ObjectId, Token, Any], state: "State"
-) -> List[TrustedCanaryModel]:
-    trusted_canaries: List[TrustedCanaryModel] = []
+) -> Dict[str, TrustedCanaryModel]:
+    trusted_canaries: Dict[str, TrustedCanaryModel] = {}
 
     async for trusted in state.mongo.trusted_canary.find({"user_id": request.user}):
-        trusted_canaries.append(TrustedCanaryModel(**trusted))
+        trusted_canaries[trusted["domain"]] = TrustedCanaryModel(**trusted)
 
     return trusted_canaries
 
@@ -117,9 +115,9 @@ class CanaryController(Controller):
         self,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        data: CreateTrustedCanaryModel,
+        data: TrustedCanaryModel,
         domain: str,
-    ) -> TrustedCanaryModel:
+    ) -> None:
         try:
             await Canary(state, domain).exists()
         except CanaryNotFoundException:
@@ -135,8 +133,6 @@ class CanaryController(Controller):
 
         trusted = {"user_id": request.user, "domain": domain, **data.dict()}
         await state.mongo.trusted_canary.insert_one(trusted)
-
-        return TrustedCanaryModel(**trusted)
 
     @post("/verify", description="Verify domain ownership via DNS", tags=["canary"])
     async def verify(

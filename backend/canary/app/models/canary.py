@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
 from app.env import SETTINGS
 from bson import ObjectId
@@ -72,13 +72,10 @@ class CanaryModel(PublicCanaryModel):
     keypair: CanaryEd25519Model
 
 
-class CreateTrustedCanaryModel(BaseModel):
+class TrustedCanaryModel(BaseModel):
+    public_key_hash: str
     signature: str = Field(
         ...,
         max_length=240,
         description="Domain & public key hash signature, base64 encoded",
     )
-
-
-class TrustedCanaryModel(CreateTrustedCanaryModel, DomainModel):
-    pass

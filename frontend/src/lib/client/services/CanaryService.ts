@@ -3,7 +3,6 @@
 /* eslint-disable */
 import type { CanaryModel } from '../models/CanaryModel';
 import type { CreateCanaryModel } from '../models/CreateCanaryModel';
-import type { CreateTrustedCanaryModel } from '../models/CreateTrustedCanaryModel';
 import type { PublicCanaryModel } from '../models/PublicCanaryModel';
 import type { TrustedCanaryModel } from '../models/TrustedCanaryModel';
 
@@ -51,10 +50,10 @@ export class CanaryService {
     /**
      * ListTrustedCanaries
      * List trusted canaries
-     * @returns TrustedCanaryModel Request fulfilled, document follows
+     * @returns any Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersCanaryTrustedListListTrustedCanaries(): CancelablePromise<Array<TrustedCanaryModel>> {
+    public controllersCanaryTrustedListListTrustedCanaries(): CancelablePromise<Record<string, any>> {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/canary/trusted/list',
@@ -132,13 +131,13 @@ export class CanaryService {
      * Saves a canary as a trusted canary
      * @param domain
      * @param requestBody
-     * @returns TrustedCanaryModel Document created, URL follows
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
     public controllersCanaryDomainTrustedAddTrustCanary(
         domain: string,
-        requestBody: CreateTrustedCanaryModel,
-    ): CancelablePromise<TrustedCanaryModel> {
+        requestBody: TrustedCanaryModel,
+    ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/canary/{domain}/trusted/add',

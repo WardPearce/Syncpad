@@ -17,7 +17,6 @@ export type { Argon2Modal } from './models/Argon2Modal';
 export type { CanaryEd25519Model } from './models/CanaryEd25519Model';
 export type { CanaryModel } from './models/CanaryModel';
 export type { CreateCanaryModel } from './models/CreateCanaryModel';
-export type { CreateTrustedCanaryModel } from './models/CreateTrustedCanaryModel';
 export type { CreateUserModel } from './models/CreateUserModel';
 export type { DomainVerification } from './models/DomainVerification';
 export type { OtpModel } from './models/OtpModel';
