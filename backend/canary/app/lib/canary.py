@@ -1,11 +1,12 @@
+import json
 from typing import TYPE_CHECKING
 
-import aiodns
 import yarl
 from app.env import SETTINGS
 from app.errors import CanaryNotFoundException, DomainValidationError
 from app.models.canary import CanaryModel, PublicCanaryModel
 from bson import ObjectId
+from httpx import head
 
 if TYPE_CHECKING:
     from app.types import State
@@ -41,20 +42,38 @@ class CanaryUser:
         if not self.__upper._domain:
             raise DomainValidationError()
 
-        resolver = aiodns.DNSResolver(timeout=SETTINGS.canary.domain_verify.timeout)
-
-        try:
-            txt_records = await resolver.query(self.__upper._domain, "TXT")
-        except aiodns.error.DNSError:
+        resp = await self.__upper._state.aiohttp.get(
+            f"https://cloudflare-dns.com/dns-query?name={self.__upper._domain}&type=TXT",
+            headers={"accept": "application/dns-json"},
+        )
+        if resp.status != 200:
             raise DomainValidationError()
+
+        # Aiolibs multi dict doesn't phase correctly, can't use resp.json().
+        resp_json = json.loads(await resp.text())
+
+        # Ensure no errors.
+        if resp_json["Status"] != 0:
+            raise DomainValidationError()
+
+        # Require DNSSEC validation.
+        if resp_json["CD"]:
+            raise DomainValidationError()
+
+        if "Answer" not in resp_json:
+            raise DomainValidationError()
+
+        txt_records = resp_json["Answer"]
 
         canary_code = ""
         for attempts, record in enumerate(txt_records):
             if attempts > 100:
                 break
 
-            if record.text.startswith(SETTINGS.canary.domain_verify.prefix):
-                canary_code = record.text.replace(
+            striped_data = record["data"].strip('"')
+
+            if striped_data.startswith(SETTINGS.canary.domain_verify.prefix):
+                canary_code = striped_data.replace(
                     SETTINGS.canary.domain_verify.prefix, "", 1
                 )
                 break

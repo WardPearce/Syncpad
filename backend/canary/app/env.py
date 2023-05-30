@@ -109,7 +109,7 @@ class Settings(BaseSettings):
     s3: S3
     untrusted_request_proxy: str = Field(
         ...,
-        description="It's recommended to simply use a proxy for untrusted requests, if not provided we'll do our best to ensure the request is safe",
+        description="It's recommended to simply use a proxy for untrusted requests.",
     )
 
     jwt: Jwt = Jwt()

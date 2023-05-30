@@ -2,11 +2,8 @@ from asyncio import wait_for
 from ipaddress import ip_address
 from typing import TYPE_CHECKING, List, Literal, Union
 
-import aiodns
-import yarl
 from aiohttp import ClientResponse, ClientTimeout
 from aiohttp_proxy import ProxyConnector
-from app.errors import LocalDomainInvalid
 from env import SETTINGS
 
 if TYPE_CHECKING:

@@ -84,16 +84,6 @@ class DomainValidationError(ValidationException):
         )
 
 
-class LocalDomainInvalid(ValidationException):
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__(
-            detail="Local domains can't be used",
-            extra={ERROR_CODE_KEY: ErrorCodes.local_domain.value},
-        )
-
-
 class CanaryTaken(ValidationException):
     def __init__(
         self,
