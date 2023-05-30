@@ -73,7 +73,7 @@
     </nav>
   </header>
 
-  <div
+  <dialog
     class="modal left"
     class:active={mobileNavShow}
     class:deep-purple1={!darkMode}
@@ -94,7 +94,7 @@
       </nav>
     </header>
     <NavItems isMobile={true} />
-  </div>
+  </dialog>
 
   <nav class="m l left" class:deep-purple1={!darkMode}>
     <NavItems isMobile={false} />
@@ -120,7 +120,6 @@
         </p>
       </article>
     {/if}
-
     <Route path="/">
       <PageLoading />
     </Route>

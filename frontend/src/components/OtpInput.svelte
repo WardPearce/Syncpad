@@ -22,7 +22,7 @@
         <input type="text" bind:value={otpCode} />
         <label for="otp">{otpLabel}</label>
       </div>
-      <button class="square extra">
+      <button class="square round extra">
         <i>arrow_forward_ios</i>
       </button>
     </nav>

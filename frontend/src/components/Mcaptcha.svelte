@@ -72,13 +72,13 @@
   <article class="main fill">
     <div class="captcha">
       {#if status == CaptchaStatus.waiting}
-        <button class="square small" on:click={startPow} type="button" />
+        <button class="square round" on:click={startPow} type="button" />
         <p>I'm not a robot</p>
       {:else if status == CaptchaStatus.loading}
-        <span class="loader small" style="margin: 0 1em" />
+        <span class="loader" style="margin: 0 1em" />
         <p>Processing</p>
       {:else}
-        <button class="square small" disabled type="button">
+        <button class="square round" disabled type="button">
           <i>check</i>
         </button>
         <p>Captcha completed!</p>

@@ -45,6 +45,8 @@
         });
 
         input.click();
+
+        showImportWarning = false;
     }
 
     function exportCanaries() {
@@ -60,17 +62,36 @@
         window.URL.revokeObjectURL(url);
     }
 
+    let showImportWarning = false;
     let canaries: Record<string, string> = {};
     onMount(async () => {
         canaries = await listTrustedCanaries();
     });
 </script>
 
-<h3>Saved canaries</h3>
+<h3>Trusted canaries</h3>
 <button disabled={!canaries} class="small" on:click={exportCanaries}
     >Export canaries</button
 >
-<button class="small" on:click={importCanaries}>Import canaries</button>
+<button class="small" on:click={() => (showImportWarning = true)}
+    >Import canaries</button
+>
+
+<dialog class="modal small" class:active={showImportWarning}>
+    <h5>Import trusted canaries</h5>
+    <p>
+        <span style="font-weight: bold;">Important Warning:</span> It is absolutely
+        crucial to import canaries exclusively from a trusted source. Ideally, rely
+        solely on your own backup. Under no circumstances should you import any canaries
+        from individuals who insist that you must do so.
+    </p>
+    <nav class="right-align">
+        <button class="border" on:click={() => (showImportWarning = false)}
+            >Cancel</button
+        >
+        <button on:click={importCanaries}>Continue</button>
+    </nav>
+</dialog>
 
 {#if Object.keys(canaries).length > 0}
     {#each Object.entries(canaries) as [domain, publicKeyHash]}
@@ -85,7 +106,7 @@
         </article>
     {/each}
 {:else}
-    <p>No saved canaries</p>
+    <h6>No trusted canaries</h6>
 {/if}
 
 <style>
