@@ -61,6 +61,28 @@ export class CanaryService {
     }
 
     /**
+     * DeleteCanary
+     * Delete a canary
+     * @param domain
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersCanaryDomainDeleteDeleteCanary(
+        domain: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/canary/{domain}/delete',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * GetCanary
      * Get private details about a canary
      * @param domain

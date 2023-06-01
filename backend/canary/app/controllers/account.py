@@ -22,6 +22,7 @@ from app.models.user import (
     OtpModel,
     PublicUserModel,
     UserLoginSignatureModel,
+    UserModel,
     UserToSignModel,
 )
 from bson import ObjectId
@@ -293,6 +294,11 @@ async def create_account(
     )
 
 
+@get(path="/me", description="Get user info", tags=["account"])
+async def get_me(state: "State", request: Request[ObjectId, Token, Any]) -> UserModel:
+    return await User(state, request.user).get()
+
+
 @get(
     path="/jwt",
     description="Get JWT sub for user",
@@ -382,5 +388,6 @@ router = Router(
         jwt_info,
         email_resend,
         logout,
+        get_me
     ],
 )

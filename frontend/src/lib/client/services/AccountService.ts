@@ -6,6 +6,7 @@ import type { OtpModel } from '../models/OtpModel';
 import type { PublicUserModel } from '../models/PublicUserModel';
 import type { UserJtiModel } from '../models/UserJtiModel';
 import type { UserLoginSignatureModel } from '../models/UserLoginSignatureModel';
+import type { UserModel } from '../models/UserModel';
 import type { UserToSignModel } from '../models/UserToSignModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -226,6 +227,19 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/logout',
+        });
+    }
+
+    /**
+     * GetMe
+     * Get user info
+     * @returns UserModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountMeGetMe(): CancelablePromise<UserModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/me',
         });
     }
 

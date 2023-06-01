@@ -76,7 +76,7 @@
 
     <nav>
       <div class="field border">
-        <input type="text" disabled value={verifyCode} />
+        <input type="text" readonly value={verifyCode} />
       </div>
       <button
         class="square round large"

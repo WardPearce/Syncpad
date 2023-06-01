@@ -154,12 +154,12 @@
       {#if advanceMode}
         <h6>Public key</h6>
         <div class="field border">
-          <input disabled value={canaryBio.keypair.public_key} />
+          <input readonly value={canaryBio.keypair.public_key} />
         </div>
 
         <h6>Hash</h6>
         <div class="field border">
-          <input disabled value={serverPublicKeyHash} />
+          <input readonly value={serverPublicKeyHash} />
         </div>
       {/if}
     </details>
@@ -189,17 +189,17 @@
     {:else}
       <div class="grid">
         <div class="s12 m6 l4">
-          <article class="border">
+          <article class="border surface-variant">
             <div class="row">
               <div class="max">
                 <h5>Concern</h5>
-                <h6 class="deep-purple-text">None</h6>
+                <h6>None</h6>
               </div>
             </div>
           </article>
         </div>
         <div class="s12 m6 l4">
-          <article class="border">
+          <article class="border surface-variant">
             <div class="row">
               <div class="max">
                 <h5>Issued</h5>
@@ -209,7 +209,7 @@
           </article>
         </div>
         <div class="s12 m6 l4">
-          <article class="border">
+          <article class="border surface-variant">
             <div class="row">
               <div class="max">
                 <h5>Next Canary</h5>
@@ -244,13 +244,13 @@
     {#if advanceMode}
       <h5>Canary ID</h5>
       <div class="field border">
-        <input type="text" disabled value="U5bPdJdCaoa3Mw" />
+        <input type="text" readonly value="U5bPdJdCaoa3Mw" />
       </div>
 
       <h5>Signature</h5>
       <div class="field textarea border">
         <textarea
-          disabled
+          readonly
           value="MIHcAgEBBEIB7dvzJtl2a4NPp482YPFrddA90ATkK438mWCbR54fyx69/oh78ClH
 68d9HaC6PvLiWCrOByGgeGjxHbAblavfbEygBwYFK4EEACOhgYkDgYYABAHFgVVQ
 dWEkCazcHsNkq2E8dKHtTX2ezA/jLGIimfBHM476LOUNpm9MrlSeZX9+mc4H898y
@@ -261,7 +261,7 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
 
       <h5>Raw message</h5>
       <div class="field textarea border">
-        <textarea disabled value="" />
+        <textarea readonly value="" />
       </div>
     {/if}
   </article>

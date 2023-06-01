@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 async def create_canary(
     data: CreateCanaryModel, state: "State", request: Request[ObjectId, Token, Any]
 ) -> CanaryModel:
-    domain = data.domain.lower()
+    domain = data.domain.lower().strip()
 
     if (
         await state.mongo.canary.count_documents(

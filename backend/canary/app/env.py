@@ -56,6 +56,7 @@ class Documents(BaseModel):
         ".gif",
         ".7z",
         ".pub",
+        ".txt",
     ]
 
 
