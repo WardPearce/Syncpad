@@ -38,19 +38,21 @@
               src={canary.logo}
               alt={`Logo for ${canary.domain}`}
             />
-            <div class="max">
-              {#if canary.domain_verification.completed}
-                <button on:click={() => goToCanary(canary)} class="link-button">
-                  <h6>{concat(canary.domain)}</h6>
-                </button>
-              {:else}
+            {#if canary.domain_verification.completed}
+              <button on:click={() => goToCanary(canary)} class="link-button">
                 <h6>{concat(canary.domain)}</h6>
-              {/if}
-            </div>
+              </button>
+            {:else}
+              <h6>{concat(canary.domain)}</h6>
+            {/if}
           </div>
           <nav>
             {#if canary.domain_verification.completed}
-              <button>Update Canary</button>
+              <a
+                href={`/dashboard/canary/publish/${canary.domain}/`}
+                class="button"
+                use:link>Publish Canary</a
+              >
               <button class="border">Edit</button>
             {:else}
               <button
@@ -69,7 +71,7 @@
     <article class="border center-align middle-align" style="height: 100%;">
       <a class="button" href="/dashboard/canary/add-site" use:link>
         <i>add</i>
-        <span>Add site</span>
+        <span>Add Canary</span>
       </a>
     </article>
   </div>

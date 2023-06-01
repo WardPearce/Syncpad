@@ -21,21 +21,23 @@
 
                     if (typeof fileContent === "string") {
                         try {
-                            const jsonData: any = JSON.parse(fileContent);
-                            for (const [
-                                domain,
-                                publicKeyHash,
-                            ] of Object.entries(jsonData)) {
-                                if (
-                                    typeof publicKeyHash === "string" &&
-                                    !(domain in canaries)
-                                ) {
-                                    await saveCanaryAsTrusted(
-                                        domain,
-                                        publicKeyHash
-                                    );
+                            try {
+                                const jsonData: any = JSON.parse(fileContent);
+                                for (const [
+                                    domain,
+                                    publicKeyHash,
+                                ] of Object.entries(jsonData)) {
+                                    if (
+                                        typeof publicKeyHash === "string" &&
+                                        !(domain in canaries)
+                                    ) {
+                                        await saveCanaryAsTrusted(
+                                            domain,
+                                            publicKeyHash
+                                        );
+                                    }
                                 }
-                            }
+                            } catch {}
                         } catch (error) {}
                     }
                 });

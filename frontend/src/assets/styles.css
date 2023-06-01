@@ -14,7 +14,12 @@
 .link-button {
     color: var(--primary) !important;
     background-color: transparent;
-    padding: 0;
+    padding: 0 .3em;
+}
+
+.link-button:hover {
+    background-color: transparent !important;
+    transition: none !important;
 }
 
 @media only screen and (max-width: 600px) {

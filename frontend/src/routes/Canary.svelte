@@ -188,7 +188,7 @@
       </article>
     {:else}
       <div class="grid">
-        <div class="s12 m6 l3">
+        <div class="s12 m6 l4">
           <article class="border">
             <div class="row">
               <div class="max">
@@ -198,17 +198,7 @@
             </div>
           </article>
         </div>
-        <div class="s12 m6 l3">
-          <article class="border">
-            <div class="row">
-              <div class="max">
-                <h5>Subpoenas</h5>
-                <h6>0</h6>
-              </div>
-            </div>
-          </article>
-        </div>
-        <div class="s12 m6 l3">
+        <div class="s12 m6 l4">
           <article class="border">
             <div class="row">
               <div class="max">
@@ -218,7 +208,7 @@
             </div>
           </article>
         </div>
-        <div class="s12 m6 l3">
+        <div class="s12 m6 l4">
           <article class="border">
             <div class="row">
               <div class="max">
@@ -255,11 +245,6 @@
       <h5>Canary ID</h5>
       <div class="field border">
         <input type="text" disabled value="U5bPdJdCaoa3Mw" />
-      </div>
-
-      <h5>Server issuer ID</h5>
-      <div class="field border">
-        <input type="text" disabled value="bDuRLaf2SG5k6aZ6S5U5bPdJdCaoa3Mw" />
       </div>
 
       <h5>Signature</h5>

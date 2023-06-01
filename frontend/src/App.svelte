@@ -148,6 +148,13 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
+      path="/dashboard/canary/publish/:domainName"
+      component={() => import("./routes/Dashboard/Canary/Publish.svelte")}
+      requiresAuth={true}
+    >
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
       path="/email-verified"
       component={() => import("./routes/EmailVerified.svelte")}
     >

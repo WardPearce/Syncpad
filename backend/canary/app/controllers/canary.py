@@ -1,3 +1,4 @@
+import hashlib
 import pathlib
 import secrets
 from datetime import datetime
@@ -21,7 +22,7 @@ from app.models.canary import (
     TrustedCanaryModel,
 )
 from bson import ObjectId
-from litestar import Controller, Request, Response, Router, get, post
+from litestar import Controller, Request, Response, Router, delete, get, post
 from litestar.contrib.jwt import Token
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
@@ -45,6 +46,14 @@ async def create_canary(
                     {"domain": domain, "user_id": request.user},
                 ]
             }
+        )
+        > 0
+    ):
+        raise CanaryTaken()
+
+    if (
+        await state.mongo.deleted_canaries.count_documents(
+            {"domain_hash": hashlib.sha256(domain.encode()).hexdigest()}
         )
         > 0
     ):
@@ -144,6 +153,12 @@ class CanaryController(Controller):
             raise
 
         return Response(content=None, status_code=200)
+
+    @delete("/delete", description="Delete a canary", tags=["canary"])
+    async def delete_canary(
+        self, domain: str, request: Request[ObjectId, Token, Any], state: "State"
+    ) -> None:
+        await Canary(state, domain).user(request.user).delete()
 
     @get(
         "/public",

@@ -55,6 +55,7 @@ class Documents(BaseModel):
         ".mp3",
         ".gif",
         ".7z",
+        ".pub",
     ]
 
 
