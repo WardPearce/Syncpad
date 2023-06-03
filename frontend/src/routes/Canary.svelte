@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-
   import { navigate } from "svelte-navigator";
+
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";

@@ -128,10 +128,7 @@
         </nav>
 
         <h6>Statement</h6>
-        <div
-            class="field textarea border extra"
-            style="margin-bottom: 0;margin-top: 0;"
-        >
+        <div class="field textarea border extra" style="margin-top: 0;">
             <textarea bind:value={statement} on:input={onStatementChange} />
             <span class="helper"
                 ><span style="font-weight: bold;">Formatting:</span>
@@ -139,34 +136,48 @@
                 = current date & {"{domain}"} = domain</span
             >
         </div>
-        <nav class="right-align" style="margin-bottom: 1em;">
-            <button type="button">
-                <span>Statement templates</span>
-                <i>arrow_drop_down</i>
-                <menu>
-                    {#each Object.entries(statementTemplates) as [title, template]}
-                        <a
-                            href="#{title}"
-                            on:click={() => (statement = template)}>{title}</a
-                        >
-                    {/each}
-                </menu>
-            </button>
-            {#if customTemplate}
-                <button
-                    type="button"
-                    class="fill"
-                    on:click={() => (saveModelActive = true)}
-                >
-                    <i>save</i>
-                    <span>Save custom template</span>
+
+        <nav class="publish-area">
+            <div>
+                <button type="button">
+                    <span>Statement templates</span>
+                    <i>arrow_drop_down</i>
+                    <menu>
+                        {#each Object.entries(statementTemplates) as [title, template]}
+                            <a
+                                href="#{title}"
+                                on:click={() => (statement = template)}
+                                >{title}</a
+                            >
+                        {/each}
+                    </menu>
                 </button>
-            {/if}
+                {#if customTemplate}
+                    <button
+                        type="button"
+                        class="fill"
+                        on:click={() => (saveModelActive = true)}
+                    >
+                        <i>save</i>
+                        <span>Save custom template</span>
+                    </button>
+                {/if}
+            </div>
+            <button>
+                <i>publish</i>
+                <span>Publish</span>
+            </button>
         </nav>
     </form>
 </article>
 
 <style>
+    .publish-area {
+        margin-bottom: 1em;
+        margin-top: 2em;
+        justify-content: space-between;
+    }
+
     @media only screen and (max-width: 600px) {
         nav {
             flex-direction: column;

@@ -9,6 +9,7 @@
   import apiClient from "../lib/apiClient";
   import type { SessionModel } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
+  import { relativeDate } from "../lib/date";
   import { localSecrets, type LocalSecretsModel } from "../stores";
 
   interface SessionDeviceModel extends SessionModel {
@@ -184,7 +185,7 @@
         <div class="s12 m6 l3">
           <h6>Expires</h6>
           <p>
-            {session.expires}
+            {relativeDate(session.expires)}
           </p>
         </div>
         <div class="s12 m6 l3">
