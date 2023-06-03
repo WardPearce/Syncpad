@@ -44,6 +44,8 @@
     });
 
     async function onPublish(otpCode: string) {
+        if (enteredDomain !== domainName) return;
+
         const formattedStatement = statement.replaceAll("{domain}", domainName);
     }
 
@@ -53,6 +55,8 @@
 
     let saveModelActive = false;
     let customTemplateLabel = "";
+
+    let enteredDomain = "";
 
     async function saveCustomTemplate() {
         if (customTemplateLabel) {
@@ -104,8 +108,11 @@
 <dialog class="surface-variant" class:active={publishModelActive}>
     <h5>Publish canary</h5>
     <p>Please type the domain "{domainName}" to confirm.</p>
-    <div class="field label fill border">
-        <input type="text" />
+    <div
+        class="field label fill border"
+        class:invalid={enteredDomain !== "" && enteredDomain !== domainName}
+    >
+        <input type="text" bind:value={enteredDomain} />
         <label for="domain-confirm">Enter domain</label>
     </div>
     <OtpInput onOtpEnter={onPublish} />
