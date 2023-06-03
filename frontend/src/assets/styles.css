@@ -32,6 +32,53 @@
     background-color: rgb(212, 186, 255) !important;
 }
 
+.bytemd-fullscreen.bytemd {
+    z-index: 9999;
+}
+
+.bytemd-toolbar-right [bytemd-tippy-path='5'] {
+    display: none;
+}
+
+.bytemd, .CodeMirror {
+    background-color: var(--surface) !important;
+    color: var(--secondary-text) !important;
+    border: none !important;
+    font-size: var(--size) !important;
+    font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans", Arial, sans-serif !important;
+}
+
+.bytemd-status {
+    display: none !important;
+}
+
+.bytemd-toolbar-icon:hover, .bytemd-toolbar-icon-active {
+    background-color: transparent !important;
+    color: var(--primary) !important;
+}
+
+.bytemd-toolbar-icon svg, .bytemd-help-icon svg {
+    fill: none !important;
+}
+
+.bytemd-toolbar-tab-active {
+    color: var(--primary) !important;
+}
+
+.bytemd-split .bytemd-preview {
+    border-left: 1px solid var(--surface-variant);
+}
+
+.bytemd-body * {
+    border-radius: 0 !important;
+}
+
+
+.bytemd-toolbar {
+    background-color: var(--surface-variant) !important;
+    border: none !important;
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;

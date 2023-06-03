@@ -23,6 +23,8 @@ from app.models.canary import (
     CreatedCanaryWarrantModel,
     NextCanaryEnum,
     PublicCanaryModel,
+    PublishCanaryWarrantModel,
+    PublishedCanaryWarrantModel,
     TrustedCanaryModel,
 )
 from bson import ObjectId
@@ -102,7 +104,24 @@ async def list_trusted_canaries(
 
 
 class PublishCanary(Controller):
-    path = "/{id_:str}"
+    path = "/warrant/{id_:str}"
+
+    @post("/publish", description="Publish a canary", tags=["canary"])
+    async def publish(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        id_: str,
+        data: PublishCanaryWarrantModel,
+    ) -> None:
+        await state.mongo.canary_warrant.update_one(
+            {
+                "_id": ObjectId(id_),
+                "user_id": request.user,
+                "publishing_expires": {"$exists": True},
+            },
+            {"$set": data.dict(), "$unset": {"publishing_expires": True}},
+        )
 
 
 class CanaryController(Controller):
@@ -139,6 +158,8 @@ class CanaryController(Controller):
                 next_canary = now + timedelta(days=14)
             case NextCanaryEnum.next_month:
                 next_canary = now + timedelta(days=30)
+            case NextCanaryEnum.next_quarter:
+                next_canary = now + timedelta(days=90)
             case _:
                 next_canary = now + timedelta(days=365)
 
@@ -147,7 +168,7 @@ class CanaryController(Controller):
             "canary_id": canary.id,
             "created": now,
             "next_canary": next_canary,
-            "publishing_expires": now + timedelta(hours=3),
+            "publishing_expires": now + timedelta(hours=4),
         }
 
         await state.mongo.canary_warrant.insert_one(created_warrant)

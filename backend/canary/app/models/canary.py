@@ -87,7 +87,8 @@ class NextCanaryEnum(Enum):
     next_week = 1
     next_fortnight = 2
     next_month = 3
-    next_year = 4
+    next_quarter = 4
+    next_year = 5
 
 
 class CanaryConcernEnum(Enum):
@@ -112,8 +113,10 @@ class PublishCanaryWarrantModel(CustomJsonEncoder):
         max_length=240,
         description="Hash signature, base64 encoded",
     )
-    statement: str = Field(..., max_length=5500)
-    file_hashes: Dict[str, str] = {}
+    statement: str = Field("", max_length=5500)
+    file_hashes: Dict[str, str] = Field(
+        ..., max_items=SETTINGS.canary.documents.max_amount
+    )
     concern: CanaryConcernEnum
 
 
