@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { Editor } from "bytemd";
-    import "bytemd/dist/index.css";
     import * as idbKeyval from "idb-keyval";
     import { onMount } from "svelte";
     import OtpInput from "../../../components/OtpInput.svelte";
@@ -49,19 +47,12 @@
         const formattedStatement = statement.replaceAll("{domain}", domainName);
     }
 
-    function onStatementChange(e) {
-        statement = e.detail.value;
-        if (!customTemplateSelected) {
-            customTemplate = true;
-        } else {
-            customTemplate = false;
-        }
-        customTemplateSelected = false;
+    function onStatementChange() {
+        customTemplate = true;
     }
 
     let saveModelActive = false;
     let customTemplateLabel = "";
-    let customTemplateSelected = false;
 
     async function saveCustomTemplate() {
         if (customTemplateLabel) {
@@ -137,6 +128,7 @@
             <span class="chip round primary disabled">In a fortnight</span>
             <span class="chip round primary">In a month</span>
             <span class="chip round primary">In a quarter</span>
+
             <span class="chip round primary">In a year</span>
         </nav>
 
@@ -160,12 +152,14 @@
         </nav>
 
         <h6>Statement</h6>
-        <Editor
-            mode="tab"
-            editorConfig={{ theme: "material-darker" }}
-            value={statement}
-            on:change={onStatementChange}
-        />
+        <div class="field textarea border extra" style="margin-top: 0;">
+            <textarea bind:value={statement} on:input={onStatementChange} />
+            <span class="helper"
+                ><span style="font-weight: bold;">Formatting:</span>
+                {"{nextCanary}"} = date of next canary, {"{currentDate}"}
+                = current date & {"{domain}"} = domain</span
+            >
+        </div>
 
         <nav class="publish-area">
             <div>
@@ -176,10 +170,8 @@
                         {#each Object.entries(statementTemplates) as [title, template]}
                             <a
                                 href="#{title}"
-                                on:click={() => (
-                                    (customTemplateSelected = true),
-                                    (statement = template)
-                                )}>{title}</a
+                                on:click={() => (statement = template)}
+                                >{title}</a
                             >
                         {/each}
                     </menu>
