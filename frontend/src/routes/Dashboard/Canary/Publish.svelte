@@ -1,6 +1,7 @@
 <script lang="ts">
     import * as idbKeyval from "idb-keyval";
     import { onMount } from "svelte";
+    import OtpInput from "../../../components/OtpInput.svelte";
 
     export let domainName: string;
 
@@ -30,6 +31,7 @@
 
     let statement = statementTemplates["Operation as normal"].toString();
     let customTemplate = false;
+    let publishModelActive = false;
 
     onMount(async () => {
         const customTemplates = await idbKeyval.get("customCanaryTemplates");
@@ -77,7 +79,7 @@
 <dialog class="surface-variant" class:active={saveModelActive}>
     <h5>Save custom template</h5>
     <form on:submit|preventDefault={saveCustomTemplate}>
-        <div class="field label border">
+        <div class="field label fill border">
             <input type="text" bind:value={customTemplateLabel} />
             <label for="title">Template label</label>
         </div>
@@ -95,10 +97,26 @@
     </form>
 </dialog>
 
-<article>
-    <h3>Publish Canary</h3>
+<dialog class="surface-variant" class:active={publishModelActive}>
+    <h5>Publish canary</h5>
+    <p>Please type the domain "{domainName}" to confirm.</p>
+    <div class="field label fill border">
+        <input type="text" />
+        <label for="domain-confirm">Enter domain</label>
+    </div>
+    <OtpInput onOtpEnter={() => {}} />
+    <button
+        type="button"
+        class="border"
+        style="margin-top: 2em;"
+        on:click={() => (publishModelActive = false)}>Cancel</button
+    >
+</dialog>
 
-    <form>
+<article>
+    <form on:submit|preventDefault={() => (publishModelActive = true)}>
+        <h3>Publish for {domainName}</h3>
+
         <h6>Next canary</h6>
         <nav class="wrap" style="margin-top: 0;">
             <span class="chip round primary">Tomorrow</span>
