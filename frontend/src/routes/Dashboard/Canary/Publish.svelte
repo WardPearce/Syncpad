@@ -135,7 +135,7 @@
             <span class="chip round primary">None</span>
             <span class="chip round primary">Mild</span>
             <span class="chip round primary">Moderate</span>
-            <span class="chip round primary">Serve</span>
+            <span class="chip round primary">Severe</span>
         </nav>
 
         <h6>Documents</h6>

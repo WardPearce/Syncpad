@@ -1,3 +1,4 @@
+import stat
 from typing import TYPE_CHECKING, cast
 
 import aiohttp
@@ -40,6 +41,11 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
         await state.mongo.email_verification.create_index(
             "expires", expireAfterSeconds=0
         )
+        await state.mongo.canary_warrant.create_index(
+            "publishing_expires",
+            expireAfterSeconds=0,
+            partialFilterExpression={"publishing_expires": {"$exists": True}},
+        )
 
     return state.mongo
 
@@ -71,7 +77,7 @@ async def wipe_cache_on_shutdown() -> None:
 app = Litestar(
     route_handlers=[routes],
     on_startup=[init_mongo, init_redis, init_aiohttp],
-    on_shutdown=[close_aiohttp],
+    on_shutdown=[close_aiohttp, wipe_cache_on_shutdown],
     csrf_config=CSRFConfig(
         secret=SETTINGS.csrf_secret, cookie_httponly=False, cookie_samesite="strict"
     ),
@@ -88,7 +94,6 @@ app = Litestar(
         servers=[Server(url=SETTINGS.proxy_urls.backend, description="Production API")],
     ),
     response_cache_config=ResponseCacheConfig(store=cache_store),
-    before_shutdown=[wipe_cache_on_shutdown],
     on_app_init=[jwt_cookie_auth.on_app_init],
     type_encoders={
         BaseModel: lambda m: m.dict(by_alias=True),

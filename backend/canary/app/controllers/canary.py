@@ -1,8 +1,8 @@
 import hashlib
 import pathlib
 import secrets
-from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Any, Dict, List
+from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Optional
 
 from app.env import SETTINGS
 from app.errors import (
@@ -15,13 +15,18 @@ from app.errors import (
 )
 from app.lib.canary import Canary
 from app.lib.s3 import format_path, s3_create_client
+from app.lib.user import User
 from app.models.canary import (
     CanaryModel,
     CreateCanaryModel,
+    CreateCanaryWarrantModel,
+    CreatedCanaryWarrantModel,
+    NextCanaryEnum,
     PublicCanaryModel,
     TrustedCanaryModel,
 )
 from bson import ObjectId
+from lib.otp import OneTimePassword
 from litestar import Controller, Request, Response, Router, delete, get, post
 from litestar.contrib.jwt import Token
 from litestar.datastructures import UploadFile
@@ -96,8 +101,58 @@ async def list_trusted_canaries(
     return trusted_canaries
 
 
+class PublishCanary(Controller):
+    path = "/{id_:str}"
+
+
 class CanaryController(Controller):
     path = "/{domain:str}"
+
+    @post(
+        "/create/warrant",
+        description="Create a warrant for a canary",
+        tags=["canary"],
+    )
+    async def create_warrant(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        domain: str,
+        data: CreateCanaryWarrantModel,
+        otp: str,
+    ) -> CreatedCanaryWarrantModel:
+        canary = await Canary(state, domain).user(request.user).get()
+        if not canary.domain_verification.completed:
+            raise DomainValidationError()
+
+        user = await User(state, request.user).get()
+        await OneTimePassword.validate_user(state, user, otp)
+
+        next_canary: Optional[datetime] = None
+        now: datetime = datetime.now()
+        match data.next_:
+            case NextCanaryEnum.tomorrow:
+                next_canary = now + timedelta(days=1)
+            case NextCanaryEnum.next_week:
+                next_canary = now + timedelta(days=7)
+            case NextCanaryEnum.next_fortnight:
+                next_canary = now + timedelta(days=14)
+            case NextCanaryEnum.next_month:
+                next_canary = now + timedelta(days=30)
+            case _:
+                next_canary = now + timedelta(days=365)
+
+        created_warrant = {
+            "user_id": request.user,
+            "canary_id": canary.id,
+            "created": now,
+            "next_canary": next_canary,
+            "publishing_expires": now + timedelta(hours=3),
+        }
+
+        await state.mongo.canary_warrant.insert_one(created_warrant)
+
+        return CreatedCanaryWarrantModel(**created_warrant)
 
     @get(
         "/trusted",
@@ -215,6 +270,7 @@ router = Router(
         create_canary,
         list_canaries,
         list_trusted_canaries,
+        PublishCanary,
         CanaryController,
     ],
 )

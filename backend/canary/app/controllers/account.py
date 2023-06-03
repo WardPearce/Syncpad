@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional
 
 import pyotp
 from app.errors import (
@@ -388,6 +388,6 @@ router = Router(
         jwt_info,
         email_resend,
         logout,
-        get_me
+        get_me,
     ],
 )

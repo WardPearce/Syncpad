@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Dict, Optional
 
 from app.env import SETTINGS
@@ -79,3 +80,44 @@ class TrustedCanaryModel(BaseModel):
         max_length=240,
         description="Domain & public key hash signature, base64 encoded",
     )
+
+
+class NextCanaryEnum(Enum):
+    tomorrow = 0
+    next_week = 1
+    next_fortnight = 2
+    next_month = 3
+    next_year = 4
+
+
+class CanaryConcernEnum(Enum):
+    none = 0
+    mild = 1
+    moderate = 2
+    severe = 3
+
+
+class CreateCanaryWarrantModel(BaseModel):
+    next_: NextCanaryEnum = Field(..., alias="next")
+
+
+class CreatedCanaryWarrantModel(CustomJsonEncoder):
+    id: ObjectId = Field(..., alias="_id")
+    next_canary: datetime
+
+
+class PublishCanaryWarrantModel(CustomJsonEncoder):
+    signature: str = Field(
+        ...,
+        max_length=240,
+        description="Hash signature, base64 encoded",
+    )
+    statement: str = Field(..., max_length=5500)
+    file_hashes: Dict[str, str] = {}
+    concern: CanaryConcernEnum
+
+
+class PublishedCanaryWarrantModel(PublishCanaryWarrantModel, CreatedCanaryWarrantModel):
+    canary_id: ObjectId
+    user_id: ObjectId
+    created: datetime
