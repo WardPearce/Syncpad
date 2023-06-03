@@ -71,7 +71,7 @@
     <article class="border center-align middle-align" style="height: 100%;">
       <a class="button" href="/dashboard/canary/add-site" use:link>
         <i>add</i>
-        <span>Add Canary</span>
+        <span>Add Site</span>
       </a>
     </article>
   </div>

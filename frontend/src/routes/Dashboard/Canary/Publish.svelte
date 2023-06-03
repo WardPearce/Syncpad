@@ -108,12 +108,36 @@
             <span class="chip round primary">In a year</span>
         </nav>
 
+        <h6>Concern level</h6>
+        <nav class="wrap" style="margin-top: 0;">
+            <span class="chip round primary">None</span>
+            <span class="chip round primary">Mild</span>
+            <span class="chip round primary">Moderate</span>
+            <span class="chip round primary">Serve</span>
+        </nav>
+
+        <h6>Documents</h6>
+        <nav style="margin-bottom: 2em;margin-top: 0;">
+            <div class="field label suffix border" style="margin-top: 0;">
+                <input type="text" />
+                <input type="file" multiple={true} />
+                <label for="files">Files</label>
+                <i>attach_file</i>
+                <span class="helper"> Max 15MB each - Max 3 files </span>
+            </div>
+        </nav>
+
         <h6>Statement</h6>
         <div
             class="field textarea border extra"
             style="margin-bottom: 0;margin-top: 0;"
         >
             <textarea bind:value={statement} on:input={onStatementChange} />
+            <span class="helper"
+                ><span style="font-weight: bold;">Formatting:</span>
+                {"{nextCanary}"} = date of next canary, {"{currentDate}"}
+                = current date & {"{domain}"} = domain</span
+            >
         </div>
         <nav class="right-align" style="margin-bottom: 1em;">
             <button type="button">
