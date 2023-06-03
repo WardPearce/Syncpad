@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { link, Route, Router } from "svelte-navigator";
+  import { link, Router } from "svelte-navigator";
 
   import sodium from "libsodium-wrappers-sumo";
 
@@ -120,9 +120,9 @@
         </p>
       </article>
     {/if}
-    <Route path="/">
+    <LazyRoute path="/" component={() => import("./routes/About.svelte")}>
       <PageLoading />
-    </Route>
+    </LazyRoute>
     <LazyRoute path="/login" component={() => import("./routes/Login.svelte")}>
       <PageLoading />
     </LazyRoute>

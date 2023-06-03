@@ -43,6 +43,10 @@
         }
     });
 
+    async function onPublish(otpCode: string) {
+        const formattedStatement = statement.replaceAll("{domain}", domainName);
+    }
+
     function onStatementChange() {
         customTemplate = true;
     }
@@ -104,7 +108,7 @@
         <input type="text" />
         <label for="domain-confirm">Enter domain</label>
     </div>
-    <OtpInput onOtpEnter={() => {}} />
+    <OtpInput onOtpEnter={onPublish} />
     <button
         type="button"
         class="border"

@@ -80,6 +80,11 @@
 
     isLoading = false;
   });
+
+  let subscribed = false;
+  async function toggleSubscribe() {
+    subscribed = !subscribed;
+  }
 </script>
 
 {#if isLoading}
@@ -122,6 +127,19 @@
       </p>
     </article>
   {/if}
+
+  <nav class="right-align">
+    <button on:click={toggleSubscribe}>
+      {#if !subscribed}
+        <i>notifications</i>
+        <span>Subscribe</span>
+      {:else}
+        <i>notifications_active</i>
+        <span>Unsubscribe</span>
+      {/if}
+    </button>
+  </nav>
+
   <article>
     <details>
       <summary class="none">
