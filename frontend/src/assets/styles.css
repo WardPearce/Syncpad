@@ -22,6 +22,16 @@
     transition: none !important;
 }
 
+.disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    background-color: rgb(212, 186, 255);
+}
+
+.disabled:hover {
+    background-color: rgb(212, 186, 255) !important;
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;

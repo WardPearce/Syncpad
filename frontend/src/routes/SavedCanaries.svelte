@@ -79,7 +79,7 @@
     >Import canaries</button
 >
 
-<dialog class="modal small" class:active={showImportWarning}>
+<dialog class="modal small surface-variant" class:active={showImportWarning}>
     <h5>Import trusted canaries</h5>
     <p>
         <span style="font-weight: bold;">Important Warning:</span> It is absolutely

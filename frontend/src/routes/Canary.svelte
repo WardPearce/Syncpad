@@ -153,12 +153,12 @@
 
       {#if advanceMode}
         <h6>Public key</h6>
-        <div class="field border">
+        <div class="field border" style="margin-top: 0;">
           <input readonly value={canaryBio.keypair.public_key} />
         </div>
 
         <h6>Hash</h6>
-        <div class="field border">
+        <div class="field border" style="margin-top: 0;">
           <input readonly value={serverPublicKeyHash} />
         </div>
       {/if}
@@ -243,12 +243,12 @@
 
     {#if advanceMode}
       <h5>Canary ID</h5>
-      <div class="field border">
+      <div class="field border" style="margin-top: 0;">
         <input type="text" readonly value="U5bPdJdCaoa3Mw" />
       </div>
 
       <h5>Signature</h5>
-      <div class="field textarea border">
+      <div class="field textarea border" style="margin-top: 0;">
         <textarea
           readonly
           value="MIHcAgEBBEIB7dvzJtl2a4NPp482YPFrddA90ATkK438mWCbR54fyx69/oh78ClH
@@ -260,7 +260,7 @@ jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
       </div>
 
       <h5>Raw message</h5>
-      <div class="field textarea border">
+      <div class="field textarea border" style="margin-top: 0;">
         <textarea readonly value="" />
       </div>
     {/if}
