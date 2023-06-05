@@ -1,10 +1,16 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
 
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
+
+export function utcDate(date: string | number | Date | dayjs.Dayjs): dayjs.Dayjs {
+  return dayjs.utc(date);
+}
 
 export function relativeDate(date: string | number | Date | dayjs.Dayjs): string {
-  const localDate = dayjs(date);
+  const localDate = utcDate(date);
   if (localDate.diff(dayjs(), "month") > 0) {
     return localDate.format("MMMM D, YYYY");
   }

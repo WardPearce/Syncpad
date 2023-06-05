@@ -13,7 +13,7 @@
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
   import signatures from "../lib/crypto/signatures";
-  import { relativeDate } from "../lib/date";
+  import { relativeDate, utcDate } from "../lib/date";
   import { advanceModeStore } from "../stores";
 
   export let domainName: string;
@@ -156,7 +156,7 @@
           canaryWarrantMatches =
             Math.abs(
               dayjs(currentPublishedWarrantBlockTime).valueOf() -
-                dayjs(untrustedWarrant.issued).valueOf()
+                utcDate(untrustedWarrant.issued).valueOf()
             ) <= 86400000;
         }
 

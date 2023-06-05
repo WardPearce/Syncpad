@@ -29,7 +29,6 @@ from app.models.canary import (
     TrustedCanaryModel,
 )
 from bson import ObjectId
-from lib.misc import round_datetime_to_microsecond
 from lib.otp import OneTimePassword
 from litestar import Controller, Request, Response, Router, delete, get, post
 from litestar.contrib.jwt import Token
@@ -189,8 +188,8 @@ class CanaryController(Controller):
             # Needs to be rounded to the nearest millisecond
             # due to being signed by the client.
             # mongo will round this on insert, causing a sign mismatch.
-            "next_canary": round_datetime_to_microsecond(next_canary),
-            "issued": round_datetime_to_microsecond(now),
+            "next_canary": next_canary,
+            "issued": now,
             "publishing_expires": now + timedelta(hours=3),
         }
 

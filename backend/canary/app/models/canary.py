@@ -107,6 +107,14 @@ class CreatedCanaryWarrantModel(CustomJsonEncoder):
     next_canary: datetime
     issued: datetime
 
+    @validator("next_canary")
+    def validate_next_canary(cls, value: datetime) -> str:
+        return value.strftime("%Y-%m-%dT%H:%M:%S")
+
+    @validator("issued")
+    def validate_issued(cls, value: datetime) -> str:
+        return value.strftime("%Y-%m-%dT%H:%M:%S")
+
 
 class PublishCanaryWarrantModel(CustomJsonEncoder):
     signature: str = Field(
