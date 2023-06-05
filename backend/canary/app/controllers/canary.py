@@ -188,6 +188,7 @@ class CanaryController(Controller):
             "canary_id": canary.id,
             # Needs to be rounded to the nearest millisecond
             # due to being signed by the client.
+            # mongo will round this on insert, causing a sign mismatch.
             "next_canary": round_datetime_to_microsecond(next_canary),
             "issued": round_datetime_to_microsecond(now),
             "publishing_expires": now + timedelta(hours=3),

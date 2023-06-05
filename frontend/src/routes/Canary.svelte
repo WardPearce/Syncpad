@@ -417,6 +417,8 @@
         <i>arrow_back</i>
         <span>Past statement</span>
       </button>
+    {:else}
+      <div />
     {/if}
     {#if currentPage !== 0}
       <button
