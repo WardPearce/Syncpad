@@ -5,6 +5,7 @@
     import apiClient from "../../../lib/apiClient";
     import { goToCanary } from "../../../lib/canary";
     import {
+        ApiError,
         CreateCanaryWarrantModel,
         PublishCanaryWarrantModel,
     } from "../../../lib/client";
@@ -48,6 +49,7 @@
     let saveModelActive = false;
     let customTemplateLabel = "";
     let enteredDomain = "";
+    let errorMsg = "";
 
     onMount(async () => {
         const customTemplates = await idbKeyval.get("customCanaryTemplates");
@@ -60,56 +62,65 @@
     });
 
     async function onPublish(otpCode: string) {
-        if (enteredDomain !== domainName) return;
+        if (enteredDomain !== domainName) {
+            errorMsg = "Domain name does not match";
+            return;
+        }
 
-        const canary = await apiClient.canary.controllersCanaryDomainGetCanary(
-            domainName
-        );
+        try {
+            const canary =
+                await apiClient.canary.controllersCanaryDomainGetCanary(
+                    domainName
+                );
 
-        const createdWarrant =
-            await apiClient.warrant.controllersCanaryDomainCreateWarrantCreateWarrant(
-                domainName,
-                otpCode,
-                { next: nextCanary }
+            const createdWarrant =
+                await apiClient.warrant.controllersCanaryDomainCreateWarrantCreateWarrant(
+                    domainName,
+                    otpCode,
+                    { next: nextCanary }
+                );
+
+            const latestBlock = await (
+                await fetch(
+                    `${import.meta.env.VITE_BLOCKSTREAM_API}/blocks/tip/hash`
+                )
+            ).text();
+
+            const formattedStatement = statement
+                .replaceAll("{domain}", domainName)
+                .replaceAll("{nextCanary}", createdWarrant.next_canary)
+                .replaceAll("{currentDate}", createdWarrant.issued);
+
+            await apiClient.warrant.controllersCanaryWarrantIdPublishPublish(
+                createdWarrant._id,
+                {
+                    statement: formattedStatement,
+                    concern: canaryConcern,
+                    btc_latest_block: latestBlock,
+                    signature: signatures.signHash(
+                        secretKey.decrypt(
+                            SecretkeyLocation.localKeychain,
+                            canary.keypair.iv,
+                            canary.keypair.cipher_text
+                        ) as Uint8Array,
+                        JSON.stringify({
+                            btc_latest_block: latestBlock,
+                            statement: formattedStatement,
+                            concern: canaryConcern,
+                            next_canary: createdWarrant.next_canary,
+                            issued: createdWarrant.issued,
+                            domain: domainName,
+                            id: createdWarrant._id,
+                        })
+                    ),
+                }
             );
 
-        const latestBlock = await (
-            await fetch(
-                `${import.meta.env.VITE_BLOCKSTREAM_API}/blocks/tip/hash`
-            )
-        ).text();
-
-        const formattedStatement = statement
-            .replaceAll("{domain}", domainName)
-            .replaceAll("{nextCanary}", createdWarrant.next_canary)
-            .replaceAll("{currentDate}", createdWarrant.issued);
-
-        await apiClient.warrant.controllersCanaryWarrantIdPublishPublish(
-            createdWarrant._id,
-            {
-                statement: formattedStatement,
-                concern: canaryConcern,
-                btc_latest_block: latestBlock,
-                signature: signatures.signHash(
-                    secretKey.decrypt(
-                        SecretkeyLocation.localKeychain,
-                        canary.keypair.iv,
-                        canary.keypair.cipher_text
-                    ) as Uint8Array,
-                    JSON.stringify({
-                        btc_latest_block: latestBlock,
-                        statement: formattedStatement,
-                        concern: canaryConcern,
-                        next_canary: createdWarrant.next_canary,
-                        issued: createdWarrant.issued,
-                        domain: domainName,
-                        id: createdWarrant._id,
-                    })
-                ),
-            }
-        );
-
-        goToCanary(canary);
+            goToCanary(canary);
+        } catch (error) {
+            if (error instanceof ApiError) errorMsg = error.body.detail;
+            else errorMsg = error.message;
+        }
     }
 
     function onStatementChange() {
@@ -165,6 +176,12 @@
 
 <dialog class="surface-variant" class:active={publishModelActive}>
     <h5>Publish canary</h5>
+    {#if errorMsg}
+        <div class="error" style="padding: 0.3em 1em;">
+            <p>{errorMsg}</p>
+        </div>
+    {/if}
+
     <p>Please type the domain "{domainName}" to confirm.</p>
     <div
         class="field label fill border"
