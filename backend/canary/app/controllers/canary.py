@@ -28,6 +28,7 @@ from app.models.canary import (
     TrustedCanaryModel,
 )
 from bson import ObjectId
+from lib.misc import round_datetime_to_microsecond
 from lib.otp import OneTimePassword
 from litestar import Controller, Request, Response, Router, delete, get, post
 from litestar.contrib.jwt import Token
@@ -55,7 +56,7 @@ async def create_canary(
             }
         )
         > 0
-        or await state.mongo.deleted_canaries.count_documents(
+        or await state.mongo.deleted_canary.count_documents(
             {"domain_hash": hashlib.sha256(domain.encode()).hexdigest()}
         )
         > 0
@@ -97,6 +98,26 @@ async def list_trusted_canaries(
         trusted_canaries[trusted["domain"]] = TrustedCanaryModel(**trusted)
 
     return trusted_canaries
+
+
+@get(
+    "/published/{canary_id:str}",
+    description="Get a canary warrant",
+    tags=["canary", "warrant"],
+    exclude_from_auth=True,
+)
+async def published_warrant(
+    state: "State",
+    canary_id: str,
+) -> PublishedCanaryWarrantModel:
+    warrant = await state.mongo.canary_warrant.find_one(
+        {"canary_id": ObjectId(canary_id), "publishing_expires": {"$exists": False}},
+        sort=[("_id", -1)],
+    )
+    if not warrant:
+        raise CanaryNotFoundException()
+
+    return PublishedCanaryWarrantModel(**warrant)
 
 
 class PublishCanary(Controller):
@@ -164,9 +185,11 @@ class CanaryController(Controller):
         created_warrant = {
             "user_id": request.user,
             "canary_id": canary.id,
-            "next_canary": next_canary,
+            # Needs to be rounded to the nearest millisecond
+            # due to being signed by the client.
+            "next_canary": round_datetime_to_microsecond(next_canary),
+            "issued": round_datetime_to_microsecond(now),
             "publishing_expires": now + timedelta(hours=3),
-            "issued": now,
         }
 
         await state.mongo.canary_warrant.insert_one(created_warrant)
@@ -289,6 +312,7 @@ router = Router(
         create_canary,
         list_canaries,
         list_trusted_canaries,
+        published_warrant,
         PublishCanary,
         CanaryController,
     ],

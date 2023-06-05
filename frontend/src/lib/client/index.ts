@@ -26,6 +26,7 @@ export type { PublicCanaryModel } from './models/PublicCanaryModel';
 export type { PublicKeyModel } from './models/PublicKeyModel';
 export type { PublicUserModel } from './models/PublicUserModel';
 export { PublishCanaryWarrantModel } from './models/PublishCanaryWarrantModel';
+export { PublishedCanaryWarrantModel } from './models/PublishedCanaryWarrantModel';
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';
 export type { TrustedCanaryModel } from './models/TrustedCanaryModel';

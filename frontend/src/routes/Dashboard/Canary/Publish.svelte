@@ -7,9 +7,10 @@
         CreateCanaryWarrantModel,
         PublishCanaryWarrantModel,
     } from "../../../lib/client";
-    import signatures, {
-        SignatureKeyLocation,
-    } from "../../../lib/crypto/signatures";
+    import secretKey, {
+        SecretkeyLocation,
+    } from "../../../lib/crypto/secretKey";
+    import signatures from "../../../lib/crypto/signatures";
 
     export let domainName: string;
 
@@ -60,6 +61,10 @@
     async function onPublish(otpCode: string) {
         if (enteredDomain !== domainName) return;
 
+        const canary = await apiClient.canary.controllersCanaryDomainGetCanary(
+            domainName
+        );
+
         const createdWarrant =
             await apiClient.warrant.controllersCanaryDomainCreateWarrantCreateWarrant(
                 domainName,
@@ -83,7 +88,11 @@
                 concern: canaryConcern,
                 btc_latest_block: latestBlock,
                 signature: signatures.signHash(
-                    SignatureKeyLocation.localPrivateSignKeypair,
+                    secretKey.decrypt(
+                        SecretkeyLocation.localKeychain,
+                        canary.keypair.iv,
+                        canary.keypair.cipher_text
+                    ) as Uint8Array,
                     JSON.stringify({
                         btc_latest_block: latestBlock,
                         statement: formattedStatement,

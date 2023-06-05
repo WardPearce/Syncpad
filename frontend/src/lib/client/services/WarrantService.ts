@@ -4,6 +4,7 @@
 import type { CreateCanaryWarrantModel } from '../models/CreateCanaryWarrantModel';
 import type { CreatedCanaryWarrantModel } from '../models/CreatedCanaryWarrantModel';
 import type { PublishCanaryWarrantModel } from '../models/PublishCanaryWarrantModel';
+import type { PublishedCanaryWarrantModel } from '../models/PublishedCanaryWarrantModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -11,6 +12,28 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class WarrantService {
 
     constructor(public readonly httpRequest: BaseHttpRequest) {}
+
+    /**
+     * PublishedWarrant
+     * Get a canary warrant
+     * @param canaryId
+     * @returns PublishedCanaryWarrantModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryPublishedCanaryIdPublishedWarrant(
+        canaryId: string,
+    ): CancelablePromise<PublishedCanaryWarrantModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/published/{canary_id}',
+            path: {
+                'canary_id': canaryId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
 
     /**
      * Publish

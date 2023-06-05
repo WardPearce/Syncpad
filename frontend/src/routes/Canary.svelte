@@ -5,10 +5,14 @@
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
-  import type { PublicCanaryModel } from "../lib/client";
+  import type {
+    PublicCanaryModel,
+    PublishedCanaryWarrantModel,
+  } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
   import signatures from "../lib/crypto/signatures";
+  import { relativeDate } from "../lib/date";
   import { advanceModeStore } from "../stores";
 
   export let domainName: string;
@@ -23,13 +27,15 @@
   let firstCanaryVisit = true;
   let serverPublicKeyHash: string;
   let canaryBio: PublicCanaryModel;
+  let publicServerKey: Uint8Array;
+  let currentPublishedWarrant: PublishedCanaryWarrantModel;
   onMount(async () => {
     canaryBio =
       await apiClient.canary.controllersCanaryDomainPublicPublicCanary(
         domainName
       );
 
-    const publicServerKey = base64Decode(canaryBio.keypair.public_key);
+    publicServerKey = base64Decode(canaryBio.keypair.public_key);
 
     serverPublicKeyHash = hashBase64Encode(publicServerKey, true);
 
@@ -78,12 +84,42 @@
       }
     }
 
+    await getPublishedCanary();
+
     isLoading = false;
   });
 
   let subscribed = false;
   async function toggleSubscribe() {
     subscribed = !subscribed;
+  }
+
+  async function getPublishedCanary() {
+    const untrustedWarrant =
+      await apiClient.warrant.controllersCanaryPublishedCanaryIdPublishedWarrant(
+        canaryBio._id
+      );
+
+    signatures.validateHash(
+      publicServerKey,
+      untrustedWarrant.signature,
+      JSON.stringify({
+        btc_latest_block: untrustedWarrant.btc_latest_block,
+        statement: untrustedWarrant.statement,
+        concern: untrustedWarrant.concern,
+        next_canary: untrustedWarrant.next_canary,
+        issued: untrustedWarrant.issued,
+        domain: domainName,
+        id: untrustedWarrant._id,
+      })
+    );
+
+    // Used to validate block hash timestamp.
+    //   await fetch(
+    //     "https://blockstream.info/api/block/000000000000000000051786fc2d05eaac1daa1b78cd71c0553ac8ab6bb2f383"
+    // );
+
+    currentPublishedWarrant = untrustedWarrant;
   }
 </script>
 
@@ -211,7 +247,9 @@
             <div class="row">
               <div class="max">
                 <h5>Concern</h5>
-                <h6>None</h6>
+                <h6 style="text-transform: capitalize;">
+                  {currentPublishedWarrant.concern}
+                </h6>
               </div>
             </div>
           </article>
@@ -221,7 +259,7 @@
             <div class="row">
               <div class="max">
                 <h5>Issued</h5>
-                <h6>28th April 2023</h6>
+                <h6>{relativeDate(currentPublishedWarrant.issued)}</h6>
               </div>
             </div>
           </article>
@@ -231,7 +269,7 @@
             <div class="row">
               <div class="max">
                 <h5>Next Canary</h5>
-                <h6>In 3 days</h6>
+                <h6>{relativeDate(currentPublishedWarrant.next_canary)}</h6>
               </div>
             </div>
           </article>
@@ -241,17 +279,7 @@
 
     <h5>Statement</h5>
     <p class:strikeout={!serverKeyHashMatches || !canaryBioMatches}>
-      I hereby declare that as of 28th April 2023, I am still in complete
-      control of <a
-        href="http://privacyguides.org"
-        target="_blank"
-        class="link"
-        rel="noopener noreferrer">privacyguides.org</a
-      > and all its associated data. As the owner and administrator of the website,
-      I have not received any subpoenas or warrants for data, nor have I received
-      any gag order limiting me from informing users as such, and I remain committed
-      to protecting the privacy and security of all users of my website. This statement
-      will be reviewed and updated as necessary on or before 28th April 2024.
+      {currentPublishedWarrant.statement}
     </p>
 
     {#if serverKeyHashMatches && canaryBioMatches}
@@ -260,26 +288,22 @@
     {/if}
 
     {#if advanceMode}
-      <h5>Canary ID</h5>
+      <h5>Canary warrant ID</h5>
       <div class="field border" style="margin-top: 0;">
-        <input type="text" readonly value="U5bPdJdCaoa3Mw" />
+        <input type="text" readonly value={currentPublishedWarrant._id} />
       </div>
 
       <h5>Signature</h5>
-      <div class="field textarea border" style="margin-top: 0;">
-        <textarea
-          readonly
-          value="MIHcAgEBBEIB7dvzJtl2a4NPp482YPFrddA90ATkK438mWCbR54fyx69/oh78ClH
-68d9HaC6PvLiWCrOByGgeGjxHbAblavfbEygBwYFK4EEACOhgYkDgYYABAHFgVVQ
-dWEkCazcHsNkq2E8dKHtTX2ezA/jLGIimfBHM476LOUNpm9MrlSeZX9+mc4H898y
-jLMXUnehpxSJDzRJggChHN8//lTuNBZjrF5At5rKOyIPhOqji5r8owsemRWRc2h3
-4xKXQhZ47UFtZs9KvElr1PNGFBivSfwp1mls347j3w=="
-        />
+      <div class="field border" style="margin-top: 0;">
+        <input type="text" readonly value={currentPublishedWarrant.signature} />
       </div>
 
       <h5>Raw message</h5>
       <div class="field textarea border" style="margin-top: 0;">
-        <textarea readonly value="" />
+        <textarea
+          readonly
+          value={JSON.stringify(currentPublishedWarrant, null, 2)}
+        />
       </div>
     {/if}
   </article>
