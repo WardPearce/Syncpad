@@ -22,9 +22,13 @@
   advanceModeStore.subscribe((value) => (advanceMode = value));
 
   let isLoading = true;
+
   let canaryBioMatches = false;
   let serverKeyHashMatches = false;
+  let canaryWarrantMatches = false;
+
   let firstCanaryVisit = true;
+
   let serverPublicKeyHash: string;
   let canaryBio: PublicCanaryModel;
   let publicServerKey: Uint8Array;
@@ -100,19 +104,24 @@
         canaryBio._id
       );
 
-    signatures.validateHash(
-      publicServerKey,
-      untrustedWarrant.signature,
-      JSON.stringify({
-        btc_latest_block: untrustedWarrant.btc_latest_block,
-        statement: untrustedWarrant.statement,
-        concern: untrustedWarrant.concern,
-        next_canary: untrustedWarrant.next_canary,
-        issued: untrustedWarrant.issued,
-        domain: domainName,
-        id: untrustedWarrant._id,
-      })
-    );
+    try {
+      signatures.validateHash(
+        publicServerKey,
+        untrustedWarrant.signature,
+        JSON.stringify({
+          btc_latest_block: untrustedWarrant.btc_latest_block,
+          statement: untrustedWarrant.statement,
+          concern: untrustedWarrant.concern,
+          next_canary: untrustedWarrant.next_canary,
+          issued: untrustedWarrant.issued,
+          domain: domainName,
+          id: untrustedWarrant._id,
+        })
+      );
+      canaryWarrantMatches = true;
+    } catch {
+      canaryWarrantMatches = false;
+    }
 
     // Used to validate block hash timestamp.
     //   await fetch(
@@ -222,7 +231,7 @@
   <article>
     <nav>
       <h3>Latest Canary</h3>
-      {#if serverKeyHashMatches}
+      {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
         <div class="small chip circle">
           <i>done_all</i>
           <div class="tooltip right">
@@ -232,57 +241,77 @@
       {:else}
         <div class="small chip circle error">
           <i>error_outline</i>
-          <div class="tooltip right">Unable to validate this Canary.</div>
+          <div class="tooltip right">This canary failed validation.</div>
         </div>
       {/if}
     </nav>
-    {#if !serverKeyHashMatches || !canaryBioMatches}
+    {#if !serverKeyHashMatches || !canaryBioMatches || !canaryWarrantMatches}
       <article class="error">
         <p>This canary failed validation, do NOT trust it.</p>
       </article>
-    {:else}
-      <div class="grid">
-        <div class="s12 m6 l4">
-          <article class="border surface-variant">
-            <div class="row">
-              <div class="max">
-                <h5>Concern</h5>
-                <h6 style="text-transform: capitalize;">
-                  {currentPublishedWarrant.concern}
-                </h6>
-              </div>
-            </div>
-          </article>
-        </div>
-        <div class="s12 m6 l4">
-          <article class="border surface-variant">
-            <div class="row">
-              <div class="max">
-                <h5>Issued</h5>
-                <h6>{relativeDate(currentPublishedWarrant.issued)}</h6>
-              </div>
-            </div>
-          </article>
-        </div>
-        <div class="s12 m6 l4">
-          <article class="border surface-variant">
-            <div class="row">
-              <div class="max">
-                <h5>Next Canary</h5>
-                <h6>{relativeDate(currentPublishedWarrant.next_canary)}</h6>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
     {/if}
+    <div class="grid">
+      <div class="s12 m6 l4">
+        <article class="border surface-variant">
+          <div class="row">
+            <div class="max">
+              <h5>Concern</h5>
+              <h6
+                style="text-transform: capitalize;"
+                class:strikeout={!serverKeyHashMatches ||
+                  !canaryBioMatches ||
+                  !canaryWarrantMatches}
+              >
+                {currentPublishedWarrant.concern}
+              </h6>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="s12 m6 l4">
+        <article class="border surface-variant">
+          <div class="row">
+            <div class="max">
+              <h5>Issued</h5>
+              <h6
+                class:strikeout={!serverKeyHashMatches ||
+                  !canaryBioMatches ||
+                  !canaryWarrantMatches}
+              >
+                {relativeDate(currentPublishedWarrant.issued)}
+              </h6>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="s12 m6 l4">
+        <article class="border surface-variant">
+          <div class="row">
+            <div class="max">
+              <h5>Next Canary</h5>
+              <h6
+                class:strikeout={!serverKeyHashMatches ||
+                  !canaryBioMatches ||
+                  !canaryWarrantMatches}
+              >
+                {relativeDate(currentPublishedWarrant.next_canary)}
+              </h6>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
 
     <h5>Statement</h5>
-    <p class:strikeout={!serverKeyHashMatches || !canaryBioMatches}>
+    <p
+      class:strikeout={!serverKeyHashMatches ||
+        !canaryBioMatches ||
+        !canaryWarrantMatches}
+    >
       {currentPublishedWarrant.statement}
     </p>
 
-    {#if serverKeyHashMatches && canaryBioMatches}
+    {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
       <h5>Documents</h5>
       <p>None</p>
     {/if}
