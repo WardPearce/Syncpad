@@ -22,11 +22,6 @@
     transition: none !important;
 }
 
-.disabled {
-    opacity: .5;
-    cursor: not-allowed;
-}
-
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;

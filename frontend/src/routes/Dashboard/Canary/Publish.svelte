@@ -2,6 +2,14 @@
     import * as idbKeyval from "idb-keyval";
     import { onMount } from "svelte";
     import OtpInput from "../../../components/OtpInput.svelte";
+    import apiClient from "../../../lib/apiClient";
+    import {
+        CreateCanaryWarrantModel,
+        PublishCanaryWarrantModel,
+    } from "../../../lib/client";
+    import signatures, {
+        SignatureKeyLocation,
+    } from "../../../lib/crypto/signatures";
 
     export let domainName: string;
 
@@ -30,8 +38,14 @@
     } as Record<string, string>;
 
     let statement = statementTemplates["Operation as normal"].toString();
+    let nextCanary = CreateCanaryWarrantModel.next.FORTNIGHT;
+    let canaryConcern = PublishCanaryWarrantModel.concern.NONE;
+
     let customTemplate = false;
     let publishModelActive = false;
+    let saveModelActive = false;
+    let customTemplateLabel = "";
+    let enteredDomain = "";
 
     onMount(async () => {
         const customTemplates = await idbKeyval.get("customCanaryTemplates");
@@ -46,17 +60,47 @@
     async function onPublish(otpCode: string) {
         if (enteredDomain !== domainName) return;
 
-        const formattedStatement = statement.replaceAll("{domain}", domainName);
+        const createdWarrant =
+            await apiClient.warrant.controllersCanaryDomainCreateWarrantCreateWarrant(
+                domainName,
+                otpCode,
+                { next: nextCanary }
+            );
+
+        const latestBlock = await (
+            await fetch("https://blockchain.info/q/latesthash")
+        ).text();
+
+        const formattedStatement = statement
+            .replaceAll("{domain}", domainName)
+            .replaceAll("{nextCanary}", createdWarrant.next_canary)
+            .replaceAll("{currentDate}", createdWarrant.issued);
+
+        await apiClient.warrant.controllersCanaryWarrantIdPublishPublish(
+            createdWarrant._id,
+            {
+                statement: formattedStatement,
+                concern: canaryConcern,
+                btc_latest_block: latestBlock,
+                signature: signatures.signHash(
+                    SignatureKeyLocation.localPrivateSignKeypair,
+                    JSON.stringify({
+                        btc_latest_block: latestBlock,
+                        statement: formattedStatement,
+                        concern: canaryConcern,
+                        next_canary: createdWarrant.next_canary,
+                        issued: createdWarrant.issued,
+                        domain: domainName,
+                        id: createdWarrant._id,
+                    })
+                ),
+            }
+        );
     }
 
     function onStatementChange() {
         customTemplate = true;
     }
-
-    let saveModelActive = false;
-    let customTemplateLabel = "";
-
-    let enteredDomain = "";
 
     async function saveCustomTemplate() {
         if (customTemplateLabel) {
@@ -120,7 +164,8 @@
         type="button"
         class="border"
         style="margin-top: 2em;"
-        on:click={() => (publishModelActive = false)}>Cancel</button
+        on:click={() => ((publishModelActive = false), (enteredDomain = ""))}
+        >Cancel</button
     >
 </dialog>
 
@@ -130,21 +175,35 @@
 
         <h6>Next canary</h6>
         <nav class="wrap" style="margin-top: 0;">
-            <span class="chip round primary">Tomorrow</span>
-            <span class="chip round primary">In a week</span>
-            <span class="chip round primary disabled">In a fortnight</span>
-            <span class="chip round primary">In a month</span>
-            <span class="chip round primary">In a quarter</span>
-
-            <span class="chip round primary">In a year</span>
+            {#each Object.values(CreateCanaryWarrantModel.next) as next}
+                <button
+                    class="chip round primary"
+                    type="button"
+                    disabled={nextCanary === next}
+                    on:click={() => (nextCanary = next)}
+                >
+                    {#if next !== CreateCanaryWarrantModel.next.TOMORROW}
+                        In a {next}
+                    {:else}
+                        Tomorrow
+                    {/if}
+                </button>
+            {/each}
         </nav>
 
         <h6>Concern level</h6>
         <nav class="wrap" style="margin-top: 0;">
-            <span class="chip round primary">None</span>
-            <span class="chip round primary">Mild</span>
-            <span class="chip round primary">Moderate</span>
-            <span class="chip round primary">Severe</span>
+            {#each Object.values(PublishCanaryWarrantModel.concern) as concernLvl}
+                <button
+                    class="chip round primary"
+                    type="button"
+                    style="text-transform: capitalize;"
+                    disabled={canaryConcern === concernLvl}
+                    on:click={() => (canaryConcern = concernLvl)}
+                >
+                    {concernLvl}
+                </button>
+            {/each}
         </nav>
 
         <h6>Documents</h6>

@@ -55,11 +55,7 @@ async def create_canary(
             }
         )
         > 0
-    ):
-        raise CanaryTaken()
-
-    if (
-        await state.mongo.deleted_canaries.count_documents(
+        or await state.mongo.deleted_canaries.count_documents(
             {"domain_hash": hashlib.sha256(domain.encode()).hexdigest()}
         )
         > 0
@@ -106,7 +102,7 @@ async def list_trusted_canaries(
 class PublishCanary(Controller):
     path = "/warrant/{id_:str}"
 
-    @post("/publish", description="Publish a canary", tags=["canary"])
+    @post("/publish", description="Publish a canary", tags=["canary", "warrant"])
     async def publish(
         self,
         request: Request[ObjectId, Token, Any],
@@ -120,7 +116,10 @@ class PublishCanary(Controller):
                 "user_id": request.user,
                 "publishing_expires": {"$exists": True},
             },
-            {"$set": data.dict(), "$unset": {"publishing_expires": True}},
+            {
+                "$set": {**data.dict(), "concern": data.concern.value},
+                "$unset": {"publishing_expires": True},
+            },
         )
 
 
@@ -130,7 +129,7 @@ class CanaryController(Controller):
     @post(
         "/create/warrant",
         description="Create a warrant for a canary",
-        tags=["canary"],
+        tags=["canary", "warrant"],
     )
     async def create_warrant(
         self,
@@ -147,18 +146,17 @@ class CanaryController(Controller):
         user = await User(state, request.user).get()
         await OneTimePassword.validate_user(state, user, otp)
 
-        next_canary: Optional[datetime] = None
         now: datetime = datetime.now()
         match data.next_:
             case NextCanaryEnum.tomorrow:
                 next_canary = now + timedelta(days=1)
-            case NextCanaryEnum.next_week:
+            case NextCanaryEnum.week:
                 next_canary = now + timedelta(days=7)
-            case NextCanaryEnum.next_fortnight:
+            case NextCanaryEnum.fortnight:
                 next_canary = now + timedelta(days=14)
-            case NextCanaryEnum.next_month:
+            case NextCanaryEnum.month:
                 next_canary = now + timedelta(days=30)
-            case NextCanaryEnum.next_quarter:
+            case NextCanaryEnum.quarter:
                 next_canary = now + timedelta(days=90)
             case _:
                 next_canary = now + timedelta(days=365)
@@ -166,9 +164,9 @@ class CanaryController(Controller):
         created_warrant = {
             "user_id": request.user,
             "canary_id": canary.id,
-            "created": now,
             "next_canary": next_canary,
-            "publishing_expires": now + timedelta(hours=4),
+            "publishing_expires": now + timedelta(hours=3),
+            "issued": now,
         }
 
         await state.mongo.canary_warrant.insert_one(created_warrant)

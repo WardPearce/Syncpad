@@ -5,7 +5,7 @@ from typing import Dict, Optional
 from app.env import SETTINGS
 from bson import ObjectId
 from models.customs import CustomJsonEncoder, IvField
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class DomainModel(BaseModel):
@@ -83,19 +83,19 @@ class TrustedCanaryModel(BaseModel):
 
 
 class NextCanaryEnum(Enum):
-    tomorrow = 0
-    next_week = 1
-    next_fortnight = 2
-    next_month = 3
-    next_quarter = 4
-    next_year = 5
+    tomorrow = "tomorrow"
+    week = "week"
+    fortnight = "fortnight"
+    month = "month"
+    quarter = "quarter"
+    year = "year"
 
 
 class CanaryConcernEnum(Enum):
-    none = 0
-    mild = 1
-    moderate = 2
-    severe = 3
+    none = "none"
+    mild = "mild"
+    moderate = "moderate"
+    severe = "severe"
 
 
 class CreateCanaryWarrantModel(BaseModel):
@@ -105,6 +105,7 @@ class CreateCanaryWarrantModel(BaseModel):
 class CreatedCanaryWarrantModel(CustomJsonEncoder):
     id: ObjectId = Field(..., alias="_id")
     next_canary: datetime
+    issued: datetime
 
 
 class PublishCanaryWarrantModel(CustomJsonEncoder):
@@ -113,14 +114,21 @@ class PublishCanaryWarrantModel(CustomJsonEncoder):
         max_length=240,
         description="Hash signature, base64 encoded",
     )
+    btc_latest_block: str = Field(..., max_length=64)
     statement: str = Field("", max_length=5500)
-    file_hashes: Dict[str, str] = Field(
-        ..., max_items=SETTINGS.canary.documents.max_amount
-    )
+    file_hashes: Dict[str, str] = {}
     concern: CanaryConcernEnum
+
+    @validator("file_hashes")
+    def validate_file_hashes(cls, value: dict) -> dict:
+        if len(value) > SETTINGS.canary.documents.max_amount:
+            raise ValueError(
+                f"Canary documents cannot exceed {SETTINGS.canary.documents.max_amount}"
+            )
+
+        return value
 
 
 class PublishedCanaryWarrantModel(PublishCanaryWarrantModel, CreatedCanaryWarrantModel):
     canary_id: ObjectId
     user_id: ObjectId
-    created: datetime

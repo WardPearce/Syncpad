@@ -6,12 +6,12 @@
   let isLoading = false;
 
   async function loadOtpFunc() {
-    isLoading = false;
+    isLoading = true;
     try {
       await onOtpEnter(otpCode);
     } catch (error) {}
     otpCode = "";
-    isLoading = true;
+    isLoading = false;
   }
 </script>
 
