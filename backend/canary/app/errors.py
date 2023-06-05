@@ -22,6 +22,7 @@ class ErrorCodes(Enum):
     canary_not_found = 2010
     unsupported_file_type = 2011
     already_trusted_canary = 2012
+    warrant_not_found = 2013
 
 
 class UserNotFoundException(NotFoundException):
@@ -131,4 +132,14 @@ class CanaryNotFoundException(NotFoundException):
         super().__init__(
             detail="Canary not found",
             extra={ERROR_CODE_KEY: ErrorCodes.canary_not_found.value},
+        )
+
+
+class PublishedWarrantNotFoundException(NotFoundException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Published warrant not found",
+            extra={ERROR_CODE_KEY: ErrorCodes.warrant_not_found.value},
         )

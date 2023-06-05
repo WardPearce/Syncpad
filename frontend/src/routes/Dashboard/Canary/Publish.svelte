@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import OtpInput from "../../../components/OtpInput.svelte";
     import apiClient from "../../../lib/apiClient";
+    import { goToCanary } from "../../../lib/canary";
     import {
         CreateCanaryWarrantModel,
         PublishCanaryWarrantModel,
@@ -73,7 +74,9 @@
             );
 
         const latestBlock = await (
-            await fetch("https://blockstream.info/api/blocks/tip/hash")
+            await fetch(
+                `${import.meta.env.VITE_BLOCKSTREAM_API}/blocks/tip/hash`
+            )
         ).text();
 
         const formattedStatement = statement
@@ -105,6 +108,8 @@
                 ),
             }
         );
+
+        goToCanary(canary);
     }
 
     function onStatementChange() {

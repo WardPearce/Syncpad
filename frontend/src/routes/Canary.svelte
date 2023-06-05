@@ -30,67 +30,74 @@
 
   let firstCanaryVisit = true;
 
+  let currentPage = 0;
+  let statementApiError = "";
+  let canaryApiError = "";
   let serverPublicKeyHash: string;
   let canaryBio: PublicCanaryModel;
   let publicServerKey: Uint8Array;
-  let currentPublishedWarrant: PublishedCanaryWarrantModel;
+  let currentPublishedWarrant: PublishedCanaryWarrantModel | undefined;
   let currentPublishedWarrantBlockTime: number;
   onMount(async () => {
-    canaryBio =
-      await apiClient.canary.controllersCanaryDomainPublicPublicCanary(
-        domainName
-      );
-
-    publicServerKey = base64Decode(canaryBio.keypair.public_key);
-
-    serverPublicKeyHash = hashBase64Encode(publicServerKey, true);
-
-    serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
-
-    const trustedStoredPublicKeyHash = await getTrustedCanary(domainName);
-    if (trustedStoredPublicKeyHash) {
-      firstCanaryVisit = false;
-    }
-
-    if (serverKeyHashMatches) {
-      // Validate stored canary.
-      if (trustedStoredPublicKeyHash) {
-        serverKeyHashMatches = publicKeyHash === trustedStoredPublicKeyHash;
-      } else {
-        // Store canary
-        await saveCanaryAsTrusted(domainName, publicKeyHash);
-      }
-    } else if (trustedStoredPublicKeyHash === serverPublicKeyHash) {
-      // If stored publicKey hash matches serverPublicKeyHash, then incorrect link was given.
-      serverKeyHashMatches = true;
-      publicKeyHash = trustedStoredPublicKeyHash;
-
-      navigate(`/c/${domainName}/${trustedStoredPublicKeyHash}`, {
-        replace: true,
-      });
-    } else {
-      canaryBioMatches = false;
-    }
-
-    // This may change from the above logic.
-    if (serverKeyHashMatches) {
-      try {
-        signatures.validateHash(
-          publicServerKey,
-          canaryBio.signature,
-          JSON.stringify({
-            domain: domainName,
-            about: canaryBio.about,
-            signature: "",
-          })
+    try {
+      canaryBio =
+        await apiClient.canary.controllersCanaryDomainPublicPublicCanary(
+          domainName
         );
-        canaryBioMatches = true;
-      } catch (error) {
+
+      publicServerKey = base64Decode(canaryBio.keypair.public_key);
+
+      serverPublicKeyHash = hashBase64Encode(publicServerKey, true);
+
+      serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
+
+      const trustedStoredPublicKeyHash = await getTrustedCanary(domainName);
+      if (trustedStoredPublicKeyHash) {
+        firstCanaryVisit = false;
+      }
+
+      if (serverKeyHashMatches) {
+        // Validate stored canary.
+        if (trustedStoredPublicKeyHash) {
+          serverKeyHashMatches = publicKeyHash === trustedStoredPublicKeyHash;
+        } else {
+          // Store canary
+          await saveCanaryAsTrusted(domainName, publicKeyHash);
+        }
+      } else if (trustedStoredPublicKeyHash === serverPublicKeyHash) {
+        // If stored publicKey hash matches serverPublicKeyHash, then incorrect link was given.
+        serverKeyHashMatches = true;
+        publicKeyHash = trustedStoredPublicKeyHash;
+
+        navigate(`/c/${domainName}/${trustedStoredPublicKeyHash}`, {
+          replace: true,
+        });
+      } else {
         canaryBioMatches = false;
       }
-    }
 
-    await getPublishedCanary();
+      // This may change from the above logic.
+      if (serverKeyHashMatches) {
+        try {
+          signatures.validateHash(
+            publicServerKey,
+            canaryBio.signature,
+            JSON.stringify({
+              domain: domainName,
+              about: canaryBio.about,
+              signature: "",
+            })
+          );
+          canaryBioMatches = true;
+        } catch (error) {
+          canaryBioMatches = false;
+        }
+      }
+
+      await getPublishedCanary();
+    } catch (error) {
+      canaryApiError = error.body.detail;
+    }
 
     isLoading = false;
   });
@@ -100,57 +107,79 @@
     subscribed = !subscribed;
   }
 
-  async function getPublishedCanary() {
-    const untrustedWarrant =
-      await apiClient.warrant.controllersCanaryPublishedCanaryIdPublishedWarrant(
-        canaryBio._id
-      );
+  async function getPublishedCanary(page: number = 0) {
+    isLoading = true;
+    currentPage = page;
 
     try {
-      signatures.validateHash(
-        publicServerKey,
-        untrustedWarrant.signature,
-        JSON.stringify({
-          btc_latest_block: untrustedWarrant.btc_latest_block,
-          statement: untrustedWarrant.statement,
-          concern: untrustedWarrant.concern,
-          next_canary: untrustedWarrant.next_canary,
-          issued: untrustedWarrant.issued,
-          domain: domainName,
-          id: untrustedWarrant._id,
-        })
-      );
-      canaryWarrantMatches = true;
-    } catch {
-      canaryWarrantMatches = false;
+      const untrustedWarrant =
+        await apiClient.warrant.controllersCanaryPublishedCanaryIdPagePublishedWarrant(
+          canaryBio._id,
+          page
+        );
+
+      try {
+        signatures.validateHash(
+          publicServerKey,
+          untrustedWarrant.signature,
+          JSON.stringify({
+            btc_latest_block: untrustedWarrant.btc_latest_block,
+            statement: untrustedWarrant.statement,
+            concern: untrustedWarrant.concern,
+            next_canary: untrustedWarrant.next_canary,
+            issued: untrustedWarrant.issued,
+            domain: domainName,
+            id: untrustedWarrant._id,
+          })
+        );
+        canaryWarrantMatches = true;
+      } catch {
+        canaryWarrantMatches = false;
+      }
+
+      // Used to validate block hash timestamp.
+      try {
+        const btcBlockTimestamp = (
+          await (
+            await fetch(
+              `${import.meta.env.VITE_BLOCKSTREAM_API}/block/${
+                untrustedWarrant.btc_latest_block
+              }`
+            )
+          ).json()
+        ).timestamp;
+
+        currentPublishedWarrantBlockTime = btcBlockTimestamp * 1000;
+
+        if (canaryWarrantMatches) {
+          // Check if issued date is within 24 hours of block timestamp.
+          canaryWarrantMatches =
+            Math.abs(
+              dayjs(currentPublishedWarrantBlockTime).valueOf() -
+                dayjs(untrustedWarrant.issued).valueOf()
+            ) <= 86400000;
+        }
+
+        currentPublishedWarrant = untrustedWarrant;
+      } catch {
+        statementApiError = `Failed to fetch from ${
+          import.meta.env.VITE_BLOCKSTREAM_API
+        }`;
+        currentPublishedWarrant = undefined;
+      }
+    } catch (error) {
+      statementApiError = error.body.detail;
+      currentPublishedWarrant = undefined;
     }
 
-    // Used to validate block hash timestamp.
-    const btcBlockTimestamp = (
-      await (
-        await fetch(
-          `https://blockstream.info/api/block/${untrustedWarrant.btc_latest_block}`
-        )
-      ).json()
-    ).timestamp;
-
-    currentPublishedWarrantBlockTime = btcBlockTimestamp * 1000;
-
-    if (canaryWarrantMatches) {
-      // Check if issued date is within 24 hours of block timestamp.
-      canaryWarrantMatches =
-        Math.abs(
-          dayjs(currentPublishedWarrantBlockTime).valueOf() -
-            dayjs(untrustedWarrant.issued).valueOf()
-        ) <= 86400000;
-    }
-
-    currentPublishedWarrant = untrustedWarrant;
+    isLoading = false;
   }
 </script>
 
 {#if isLoading}
   <PageLoading />
+{:else if canaryApiError}
+  <h3>{canaryApiError}</h3>
 {:else}
   {#if !serverKeyHashMatches}
     <article class="error">
@@ -245,131 +274,174 @@
     </details>
   </article>
 
-  <article>
-    <nav>
-      <h3>Latest Canary</h3>
-      {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
-        <div class="small chip circle">
-          <i>done_all</i>
-          <div class="tooltip right">
-            Cryptographically signed by {canaryBio.domain}
+  {#if currentPublishedWarrant}
+    <article>
+      <nav>
+        <h3>Latest Canary</h3>
+        {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
+          <div class="small chip circle">
+            <i>done_all</i>
+            <div class="tooltip right">
+              Cryptographically signed by {canaryBio.domain}
+            </div>
           </div>
-        </div>
-      {:else}
-        <div class="small chip circle error">
-          <i>error_outline</i>
-          <div class="tooltip right">This canary failed validation.</div>
-        </div>
+        {:else}
+          <div class="small chip circle error">
+            <i>error_outline</i>
+            <div class="tooltip right">This canary failed validation.</div>
+          </div>
+        {/if}
+      </nav>
+      {#if !serverKeyHashMatches || !canaryBioMatches || !canaryWarrantMatches}
+        <article class="error">
+          <p>This canary failed validation, do NOT trust it.</p>
+        </article>
       {/if}
-    </nav>
-    {#if !serverKeyHashMatches || !canaryBioMatches || !canaryWarrantMatches}
-      <article class="error">
-        <p>This canary failed validation, do NOT trust it.</p>
-      </article>
-    {/if}
-    <div class="grid">
-      <div class="s12 m6 l4">
-        <article class="border surface-variant">
-          <div class="row">
-            <div class="max">
-              <h5>Concern</h5>
-              <h6
-                style="text-transform: capitalize;"
-                class:strikeout={!serverKeyHashMatches ||
-                  !canaryBioMatches ||
-                  !canaryWarrantMatches}
-              >
-                {currentPublishedWarrant.concern}
-              </h6>
+      <div class="grid">
+        <div class="s12 m6 l4">
+          <article class="border surface-variant">
+            <div class="row">
+              <div class="max">
+                <h5>Concern</h5>
+                <h6
+                  style="text-transform: capitalize;"
+                  class:strikeout={!serverKeyHashMatches ||
+                    !canaryBioMatches ||
+                    !canaryWarrantMatches}
+                >
+                  {currentPublishedWarrant.concern}
+                </h6>
+              </div>
             </div>
-          </div>
-        </article>
-      </div>
-      <div class="s12 m6 l4">
-        <article class="border surface-variant">
-          <div class="row">
-            <div class="max">
-              <h5>Issued</h5>
-              <h6
-                class:strikeout={!serverKeyHashMatches ||
-                  !canaryBioMatches ||
-                  !canaryWarrantMatches}
-              >
-                {relativeDate(currentPublishedWarrant.issued)}
-              </h6>
+          </article>
+        </div>
+        <div class="s12 m6 l4">
+          <article class="border surface-variant">
+            <div class="row">
+              <div class="max">
+                <h5>Issued</h5>
+                <h6
+                  class:strikeout={!serverKeyHashMatches ||
+                    !canaryBioMatches ||
+                    !canaryWarrantMatches}
+                >
+                  {relativeDate(currentPublishedWarrant.issued)}
+                </h6>
+              </div>
             </div>
-          </div>
-        </article>
-      </div>
-      <div class="s12 m6 l4">
-        <article class="border surface-variant">
-          <div class="row">
-            <div class="max">
-              <h5>Next Canary</h5>
-              <h6
-                class:strikeout={!serverKeyHashMatches ||
-                  !canaryBioMatches ||
-                  !canaryWarrantMatches}
-              >
-                {relativeDate(currentPublishedWarrant.next_canary)}
-              </h6>
+          </article>
+        </div>
+        <div class="s12 m6 l4">
+          <article class="border surface-variant">
+            <div class="row">
+              <div class="max">
+                <h5>Next Canary</h5>
+                <h6
+                  class:strikeout={!serverKeyHashMatches ||
+                    !canaryBioMatches ||
+                    !canaryWarrantMatches}
+                >
+                  {relativeDate(currentPublishedWarrant.next_canary)}
+                </h6>
+              </div>
             </div>
-          </div>
-        </article>
-      </div>
-    </div>
-
-    <h5>Statement</h5>
-    <p
-      class:strikeout={!serverKeyHashMatches ||
-        !canaryBioMatches ||
-        !canaryWarrantMatches}
-    >
-      {currentPublishedWarrant.statement}
-    </p>
-
-    {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
-      <h5>Documents</h5>
-      <p>None</p>
-    {/if}
-
-    {#if advanceMode}
-      <h5>Canary warrant ID</h5>
-      <div class="field border" style="margin-top: 0;">
-        <input type="text" readonly value={currentPublishedWarrant._id} />
+          </article>
+        </div>
       </div>
 
-      <h5>BTC Block</h5>
-      <div class="field border" style="margin: 0;">
-        <input
-          type="text"
-          readonly
-          value={currentPublishedWarrant.btc_latest_block}
-        />
-      </div>
-      <p style="margin-bottom: 2rem;">
-        Created: {relativeDate(currentPublishedWarrantBlockTime)}
+      <h5>Statement</h5>
+      <p
+        class:strikeout={!serverKeyHashMatches ||
+          !canaryBioMatches ||
+          !canaryWarrantMatches}
+      >
+        {currentPublishedWarrant.statement}
       </p>
 
-      <h5>Signature</h5>
-      <div class="field border" style="margin-top: 0;">
-        <input type="text" readonly value={currentPublishedWarrant.signature} />
-      </div>
+      {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
+        <h5>Documents</h5>
+        <p>None</p>
+      {/if}
 
-      <h5>Raw message</h5>
-      <div class="field textarea border" style="margin-top: 0;">
-        <textarea
-          readonly
-          value={JSON.stringify(currentPublishedWarrant, null, 2)}
-        />
-      </div>
+      {#if advanceMode}
+        <h5>Canary warrant ID</h5>
+        <div class="field border" style="margin-top: 0;">
+          <input type="text" readonly value={currentPublishedWarrant._id} />
+        </div>
+
+        <h5>BTC Block</h5>
+        <div class="field border" style="margin: 0;">
+          <input
+            type="text"
+            readonly
+            value={currentPublishedWarrant.btc_latest_block}
+          />
+        </div>
+        <p style="margin-bottom: 2rem;">
+          Created: {relativeDate(currentPublishedWarrantBlockTime)}
+        </p>
+
+        <h5>Signature</h5>
+        <div class="field border" style="margin-top: 0;">
+          <input
+            type="text"
+            readonly
+            value={currentPublishedWarrant.signature}
+          />
+        </div>
+
+        <h5>Raw message</h5>
+        <div class="field textarea border" style="margin-top: 0;">
+          <textarea
+            readonly
+            value={JSON.stringify(currentPublishedWarrant, null, 2)}
+          />
+        </div>
+      {/if}
+    </article>
+  {:else}
+    <article
+      style="display: flex;justify-content: center; align-items: center;height: 35vh;"
+    >
+      <h5>{statementApiError}</h5>
+    </article>
+  {/if}
+
+  <div class="pagination">
+    {#if currentPublishedWarrant}
+      <button
+        on:click={async () => (
+          currentPage++, await getPublishedCanary(currentPage)
+        )}
+      >
+        <i>arrow_back</i>
+        <span>Past statement</span>
+      </button>
     {/if}
-  </article>
-
-  <button class="medium-divider large">View previous cancary</button>
+    {#if currentPage !== 0}
+      <button
+        on:click={async () => (
+          currentPage--, await getPublishedCanary(currentPage)
+        )}
+      >
+        <span>Next statement</span>
+        <i>arrow_forward</i>
+      </button>
+    {/if}
+  </div>
 {/if}
 
 <style>
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    margin: 1em 0;
+  }
+
+  .strikeout {
+    text-decoration: line-through;
+  }
+
   @media only screen and (max-width: 600px) {
     .canary-name {
       flex-direction: column;
@@ -379,9 +451,5 @@
     .canary-name i {
       display: none;
     }
-  }
-
-  .strikeout {
-    text-decoration: line-through;
   }
 </style>

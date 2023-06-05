@@ -68,17 +68,20 @@ export class CanaryService {
      * PublishedWarrant
      * Get a canary warrant
      * @param canaryId
+     * @param page
      * @returns PublishedCanaryWarrantModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersCanaryPublishedCanaryIdPublishedWarrant(
+    public controllersCanaryPublishedCanaryIdPagePublishedWarrant(
         canaryId: string,
+        page: number,
     ): CancelablePromise<PublishedCanaryWarrantModel> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/canary/published/{canary_id}',
+            url: '/controllers/canary/published/{canary_id}/{page}',
             path: {
                 'canary_id': canaryId,
+                'page': page,
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,

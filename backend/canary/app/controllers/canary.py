@@ -11,6 +11,7 @@ from app.errors import (
     CanaryTaken,
     DomainValidationError,
     FileTooBig,
+    PublishedWarrantNotFoundException,
     UnsupportedFileType,
 )
 from app.lib.canary import Canary
@@ -101,21 +102,21 @@ async def list_trusted_canaries(
 
 
 @get(
-    "/published/{canary_id:str}",
+    "/published/{canary_id:str}/{page:int}",
     description="Get a canary warrant",
     tags=["canary", "warrant"],
     exclude_from_auth=True,
 )
 async def published_warrant(
-    state: "State",
-    canary_id: str,
+    state: "State", canary_id: str, page: int = 0
 ) -> PublishedCanaryWarrantModel:
     warrant = await state.mongo.canary_warrant.find_one(
         {"canary_id": ObjectId(canary_id), "publishing_expires": {"$exists": False}},
         sort=[("_id", -1)],
+        skip=page,
     )
     if not warrant:
-        raise CanaryNotFoundException()
+        raise PublishedWarrantNotFoundException()
 
     return PublishedCanaryWarrantModel(**warrant)
 
