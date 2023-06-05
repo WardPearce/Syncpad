@@ -73,7 +73,7 @@
             );
 
         const latestBlock = await (
-            await fetch("https://blockchain.info/q/latesthash")
+            await fetch("https://blockstream.info/api/blocks/tip/hash")
         ).text();
 
         const formattedStatement = statement

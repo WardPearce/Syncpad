@@ -1,4 +1,5 @@
 <script lang="ts">
+  import dayjs from "dayjs";
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
 
@@ -33,6 +34,7 @@
   let canaryBio: PublicCanaryModel;
   let publicServerKey: Uint8Array;
   let currentPublishedWarrant: PublishedCanaryWarrantModel;
+  let currentPublishedWarrantBlockTime: number;
   onMount(async () => {
     canaryBio =
       await apiClient.canary.controllersCanaryDomainPublicPublicCanary(
@@ -124,9 +126,24 @@
     }
 
     // Used to validate block hash timestamp.
-    //   await fetch(
-    //     "https://blockstream.info/api/block/000000000000000000051786fc2d05eaac1daa1b78cd71c0553ac8ab6bb2f383"
-    // );
+    const btcBlockTimestamp = (
+      await (
+        await fetch(
+          `https://blockstream.info/api/block/${untrustedWarrant.btc_latest_block}`
+        )
+      ).json()
+    ).timestamp;
+
+    currentPublishedWarrantBlockTime = btcBlockTimestamp * 1000;
+
+    if (canaryWarrantMatches) {
+      // Check if issued date is within 24 hours of block timestamp.
+      canaryWarrantMatches =
+        Math.abs(
+          dayjs(currentPublishedWarrantBlockTime).valueOf() -
+            dayjs(untrustedWarrant.issued).valueOf()
+        ) <= 86400000;
+    }
 
     currentPublishedWarrant = untrustedWarrant;
   }
@@ -321,6 +338,18 @@
       <div class="field border" style="margin-top: 0;">
         <input type="text" readonly value={currentPublishedWarrant._id} />
       </div>
+
+      <h5>BTC Block</h5>
+      <div class="field border" style="margin: 0;">
+        <input
+          type="text"
+          readonly
+          value={currentPublishedWarrant.btc_latest_block}
+        />
+      </div>
+      <p style="margin-bottom: 2rem;">
+        Created: {relativeDate(currentPublishedWarrantBlockTime)}
+      </p>
 
       <h5>Signature</h5>
       <div class="field border" style="margin-top: 0;">
