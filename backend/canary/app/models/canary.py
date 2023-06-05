@@ -132,3 +132,4 @@ class PublishCanaryWarrantModel(CustomJsonEncoder):
 class PublishedCanaryWarrantModel(PublishCanaryWarrantModel, CreatedCanaryWarrantModel):
     canary_id: ObjectId
     user_id: ObjectId
+    active: bool

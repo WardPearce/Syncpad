@@ -1,6 +1,6 @@
 import hashlib
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 import yarl
@@ -41,7 +41,7 @@ class CanaryUser:
                     "domain_hash": hashlib.sha256(
                         self.__upper._domain.encode()
                     ).hexdigest(),
-                    "deleted": datetime.now(),
+                    "deleted": datetime.now(tz=timezone.utc),
                 }
             )
 

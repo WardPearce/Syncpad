@@ -278,7 +278,7 @@ async def create_account(
             **data.dict(),
             "email": email,
             "email_verified": False,
-            "created": datetime.now(),
+            "created": datetime.now(tz=timezone.utc),
             "otp": {"secret": pyotp.random_base32(), "completed": False},
         }
     )

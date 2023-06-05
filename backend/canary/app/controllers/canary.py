@@ -1,7 +1,7 @@
 import hashlib
 import pathlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Optional
 
 from app.env import SETTINGS
@@ -68,7 +68,7 @@ async def create_canary(
         **data.dict(),
         "domain": domain,
         "user_id": request.user,
-        "created": datetime.now(),
+        "created": datetime.now(tz=timezone.utc),
         "logo": None,
         "domain_verification": {"completed": False, "code": secrets.token_urlsafe(32)},
     }
@@ -118,7 +118,7 @@ async def published_warrant(
     if not warrant:
         raise PublishedWarrantNotFoundException()
 
-    return PublishedCanaryWarrantModel(**warrant)
+    return PublishedCanaryWarrantModel(**warrant, active=page == 0)
 
 
 class PublishCanary(Controller):
@@ -168,7 +168,7 @@ class CanaryController(Controller):
         user = await User(state, request.user).get()
         await OneTimePassword.validate_user(state, user, otp)
 
-        now: datetime = datetime.now()
+        now: datetime = datetime.now(tz=timezone.utc)
         match data.next_:
             case NextCanaryEnum.tomorrow:
                 next_canary = now + timedelta(days=1)

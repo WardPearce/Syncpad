@@ -277,7 +277,11 @@
   {#if currentPublishedWarrant}
     <article>
       <nav>
-        <h3>Latest Canary</h3>
+        {#if currentPage === 0}
+          <h3>Latest Canary</h3>
+        {:else}
+          <h3>From {relativeDate(currentPublishedWarrant.issued)}</h3>
+        {/if}
         {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
           <div class="small chip circle">
             <i>done_all</i>
@@ -292,6 +296,9 @@
           </div>
         {/if}
       </nav>
+      {#if !currentPublishedWarrant.active}
+        <p>This is not the latest issued canary.</p>
+      {/if}
       {#if !serverKeyHashMatches || !canaryBioMatches || !canaryWarrantMatches}
         <article class="error">
           <p>This canary failed validation, do NOT trust it.</p>
@@ -341,7 +348,11 @@
                     !canaryBioMatches ||
                     !canaryWarrantMatches}
                 >
-                  {relativeDate(currentPublishedWarrant.next_canary)}
+                  {#if currentPublishedWarrant.active}
+                    {relativeDate(currentPublishedWarrant.next_canary)}
+                  {:else}
+                    Outdated
+                  {/if}
                 </h6>
               </div>
             </div>

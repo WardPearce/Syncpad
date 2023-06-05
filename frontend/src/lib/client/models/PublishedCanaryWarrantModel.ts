@@ -13,6 +13,7 @@ export type PublishedCanaryWarrantModel = {
     concern: PublishedCanaryWarrantModel.concern;
     canary_id: any;
     user_id: any;
+    active: boolean;
 };
 
 export namespace PublishedCanaryWarrantModel {
