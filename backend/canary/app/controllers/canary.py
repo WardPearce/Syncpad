@@ -185,9 +185,6 @@ class CanaryController(Controller):
         created_warrant = {
             "user_id": request.user,
             "canary_id": canary.id,
-            # Needs to be rounded to the nearest millisecond
-            # due to being signed by the client.
-            # mongo will round this on insert, causing a sign mismatch.
             "next_canary": next_canary,
             "issued": now,
             "publishing_expires": now + timedelta(hours=3),

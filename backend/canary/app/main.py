@@ -1,4 +1,3 @@
-import stat
 from typing import TYPE_CHECKING, cast
 
 import aiohttp
@@ -6,6 +5,8 @@ from app.controllers import routes
 from app.env import SETTINGS
 from app.lib.jwt import jwt_cookie_auth
 from app.models.customs import CustomJsonEncoder
+from app.tasks import tasks
+from app.tasks._tasks import CronTasks
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
@@ -23,6 +24,18 @@ if TYPE_CHECKING:
 
 redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db)
 cache_store = RedisStore(redis=redis)
+
+
+async def init_tasks(state: "State") -> CronTasks:
+    if not getattr(state, "tasks", None):
+        state.tasks = CronTasks(state, tasks)
+        state.tasks.start()
+
+    return state.tasks
+
+
+async def close_tasks(state: "State") -> None:
+    state.tasks.stop()
 
 
 async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
@@ -76,8 +89,8 @@ async def wipe_cache_on_shutdown() -> None:
 
 app = Litestar(
     route_handlers=[routes],
-    on_startup=[init_mongo, init_redis, init_aiohttp],
-    on_shutdown=[close_aiohttp, wipe_cache_on_shutdown],
+    on_startup=[init_mongo, init_redis, init_aiohttp, init_tasks],
+    on_shutdown=[close_aiohttp, wipe_cache_on_shutdown, close_tasks],
     csrf_config=CSRFConfig(
         secret=SETTINGS.csrf_secret, cookie_httponly=False, cookie_samesite="strict"
     ),
