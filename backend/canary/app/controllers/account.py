@@ -384,7 +384,7 @@ class WebhookController(Controller):
     ) -> None:
         await state.mongo.user.update_one(
             {"_id": request.user},
-            {"$pull": {f"webhooks.{data.type}": data.url}},
+            {"$pull": {f"webhooks.{data.type.value}": data.url}},
         )
 
     @post("/add", description="Add a webhook", tags=["account", "webhook"])
@@ -395,12 +395,18 @@ class WebhookController(Controller):
         data: WebhookModel,
     ) -> None:
         await state.mongo.user.update_one(
-            {"_id": request.user},
+            {"_id": request.user, "webhooks": {"$exists": False}},
             {
-                "$push": {f"webhooks.{data.type}": data.url},
-                "$setOnInsert": {"webhooks": {data.type: []}},
+                "$set": {"webhooks": {data.type.value: []}},
             },
             upsert=True,
+        )
+
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {
+                "$push": {f"webhooks.{data.type.value}": data.url},
+            },
         )
 
 

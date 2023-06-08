@@ -8,6 +8,9 @@ from app.lib.smtp import send_email
 from app.lib.user import User
 from errors import UserNotFoundException
 from lib.tasks import CronTabs, Tab
+from lib.url import untrusted_http_request
+from models.canary import PublishedCanaryWarrantModel
+from models.user import WebhookTypesEnum
 
 if TYPE_CHECKING:
     from app.types import State
@@ -54,6 +57,17 @@ async def canary_owner_alerts(state: "State") -> None:
         due_in = humanize.naturaltime(
             canary_warrant["next_canary"], future=True, when=now
         )
+
+        if WebhookTypesEnum.canary_renewals in user.webhooks:
+            for webhook in user.webhooks[WebhookTypesEnum.canary_renewals]:
+                asyncio.create_task(
+                    untrusted_http_request(
+                        state=state,
+                        url=webhook,
+                        method="POST",
+                        json=PublishedCanaryWarrantModel(**canary_warrant).dict(),
+                    )
+                )
 
         asyncio.create_task(
             send_email(

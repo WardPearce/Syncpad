@@ -407,7 +407,7 @@
         </div>
 
         <h5>Raw message</h5>
-        <div class="field textarea border" style="margin-top: 0;">
+        <div class="field textarea extra border" style="margin-top: 0;">
           <textarea
             readonly
             value={JSON.stringify(currentPublishedWarrant, null, 2)}

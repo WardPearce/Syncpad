@@ -12,7 +12,7 @@ from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 class WebhookTypesEnum(Enum):
     canary_renewals = "canary_renewals"
-    canary_subscriptions = "canary_renewals"
+    canary_subscriptions = "canary_subscriptions"
     survey_submissions = "survey_submissions"
 
 

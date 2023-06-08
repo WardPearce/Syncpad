@@ -8,7 +8,11 @@
   import PageLoading from "../components/PageLoading.svelte";
   import account, { logout } from "../lib/account";
   import apiClient from "../lib/apiClient";
-  import type { SessionModel, UserModel } from "../lib/client";
+  import {
+    WebhookModel,
+    type SessionModel,
+    type UserModel,
+  } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { relativeDate } from "../lib/date";
   import { localSecrets, type LocalSecretsModel } from "../stores";
@@ -21,11 +25,15 @@
   let loggedInSecrets = get(localSecrets) as LocalSecretsModel;
   let user: UserModel;
 
+  let webhookUrl = "";
+  let currentNotifyTab: WebhookModel.type = WebhookModel.type.CANARY_RENEWALS;
+
   let privateKey: Uint8Array;
   let publicKey: Uint8Array;
 
   let otpError = "";
 
+  // Replace when crypto publicKey.ts is implemented
   function decryptSessionInfo(base64CipherText: string): string {
     try {
       return new TextDecoder().decode(
@@ -66,6 +74,37 @@
     } catch (error) {
       otpError = error.body.detail;
     }
+  }
+
+  async function removeUrl(url: string) {
+    user.webhooks[currentNotifyTab] = user.webhooks[currentNotifyTab].filter(
+      (webhook) => webhook !== url
+    );
+
+    await apiClient.webhook.controllersAccountWebhookRemoveRemoveWebhook({
+      url: url,
+      type: currentNotifyTab,
+    });
+  }
+
+  async function addWebhook() {
+    if (!webhookUrl) return;
+
+    if (!(currentNotifyTab in user.webhooks)) {
+      user.webhooks[currentNotifyTab] = [];
+    }
+
+    user.webhooks[currentNotifyTab] = [
+      ...user.webhooks[currentNotifyTab],
+      webhookUrl,
+    ];
+
+    apiClient.webhook.controllersAccountWebhookAddAddWebhook({
+      url: webhookUrl,
+      type: currentNotifyTab,
+    });
+
+    webhookUrl = "";
   }
 
   onMount(async () => {
@@ -164,31 +203,69 @@
       </summary>
       <div>
         <div class="tabs left-align">
-          <a class="active">My canary renewals</a>
-          <a>Canary subscriptions</a>
-          <a>Survey submissions</a>
+          {#each Object.values(WebhookModel.type) as webhookType}
+            <a
+              class:active={webhookType === currentNotifyTab}
+              on:click={() => (currentNotifyTab = webhookType)}
+              href={`#${webhookType}`}
+              style="text-transform: capitalize;"
+              >{webhookType.replaceAll("_", " ")}</a
+            >
+          {/each}
         </div>
         <div
           class="page padding active surface-variant"
           style="border-radius: 0 0 .75rem .75rem;"
         >
-          <h6>Webhooks (0/3)</h6>
+          <h6>Emails</h6>
+          <label class="switch" style="margin: 1em 0;">
+            <input type="checkbox" />
+            <span />
+          </label>
+
+          <h6>Push notifications</h6>
+          <button style="margin: 1em 0;">Grant browser notifications</button>
+
+          <h6>
+            Webhooks ({currentNotifyTab in user.webhooks
+              ? user.webhooks[currentNotifyTab].length
+              : 0}/3)
+          </h6>
           <ul class="webhooks">
+            {#if currentNotifyTab in user.webhooks}
+              {#each user.webhooks[currentNotifyTab] as webhook, iteration}
+                <li>
+                  <form
+                    on:submit|preventDefault={async () =>
+                      await removeUrl(webhook)}
+                  >
+                    <nav class="wrap">
+                      <div class="field label border">
+                        <input type="text" value={webhook} readonly />
+                        <label for="webhook">URL #{iteration + 1}</label>
+                      </div>
+                      <button class="square round secondary large">
+                        <i>close</i>
+                      </button>
+                    </nav>
+                  </form>
+                </li>
+              {/each}
+            {/if}
             <li>
-              <nav class="wrap">
-                <div class="field label border">
-                  <input type="text" />
-                  <label for="webhook">URL #1</label>
-                </div>
-                <button class="square round large">
-                  <i>add</i>
-                </button>
-              </nav>
+              <form on:submit|preventDefault={addWebhook}>
+                <nav class="wrap">
+                  <div class="field label border">
+                    <input type="text" bind:value={webhookUrl} />
+                    <label for="webhook">Add Webhook</label>
+                  </div>
+                  <button class="square round large">
+                    <i>add</i>
+                  </button>
+                </nav>
+              </form>
             </li>
           </ul>
-
-          <h6>Browser push notifications</h6>
-          <nav class="wrap"><button>Grant browser notifications</button></nav>
         </div>
       </div>
     </details>
@@ -316,6 +393,10 @@
 
   .webhooks {
     list-style: none;
+    margin: 0;
+  }
+
+  .webhooks li {
     margin: 1em 0;
   }
 </style>
