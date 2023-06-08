@@ -297,7 +297,14 @@
         {/if}
       </nav>
       {#if !currentPublishedWarrant.active}
-        <p>This is not the latest issued canary.</p>
+        <nav class="wrap">
+          <h6>This canary is no longer active.</h6>
+          <button
+            on:click={async () => {
+              getPublishedCanary(0), (currentPage = 0);
+            }}>Go to latest</button
+          >
+        </nav>
       {/if}
       {#if !serverKeyHashMatches || !canaryBioMatches || !canaryWarrantMatches}
         <article class="error">
@@ -346,13 +353,10 @@
                 <h6
                   class:strikeout={!serverKeyHashMatches ||
                     !canaryBioMatches ||
-                    !canaryWarrantMatches}
+                    !canaryWarrantMatches ||
+                    !currentPublishedWarrant.active}
                 >
-                  {#if currentPublishedWarrant.active}
-                    {relativeDate(currentPublishedWarrant.next_canary)}
-                  {:else}
-                    Outdated
-                  {/if}
+                  {relativeDate(currentPublishedWarrant.next_canary)}
                 </h6>
               </div>
             </div>

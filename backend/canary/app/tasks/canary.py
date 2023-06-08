@@ -66,4 +66,4 @@ async def canary_owner_alerts(state: "State") -> None:
         )
 
 
-tasks = [CronTask(spec="*/1 * * * *", func=canary_owner_alerts)]
+tasks = [CronTask(spec="*/15 * * * *", func=canary_owner_alerts)]
