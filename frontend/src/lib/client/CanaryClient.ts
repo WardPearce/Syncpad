@@ -7,6 +7,7 @@ import { FetchHttpRequest } from './core/FetchHttpRequest';
 
 import { AccountService } from './services/AccountService';
 import { CanaryService } from './services/CanaryService';
+import { NotificationsService } from './services/NotificationsService';
 import { SessionService } from './services/SessionService';
 import { WarrantService } from './services/WarrantService';
 import { WebhookService } from './services/WebhookService';
@@ -17,6 +18,7 @@ export class CanaryClient {
 
     public readonly account: AccountService;
     public readonly canary: CanaryService;
+    public readonly notifications: NotificationsService;
     public readonly session: SessionService;
     public readonly warrant: WarrantService;
     public readonly webhook: WebhookService;
@@ -38,6 +40,7 @@ export class CanaryClient {
 
         this.account = new AccountService(this.request);
         this.canary = new CanaryService(this.request);
+        this.notifications = new NotificationsService(this.request);
         this.session = new SessionService(this.request);
         this.warrant = new WarrantService(this.request);
         this.webhook = new WebhookService(this.request);

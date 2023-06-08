@@ -58,13 +58,17 @@ async def canary_owner_alerts(state: "State") -> None:
             canary_warrant["next_canary"], future=True, when=now
         )
 
-        futures: List = [
-            send_email(
-                user.email,
-                f"Canary renewal due in {due_in}",
-                f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/",
+        futures: List = []
+
+        if NotificationEnum.canary_renewals in user.notifications.email:
+            futures.append(
+                send_email(
+                    user.email,
+                    f"Canary renewal due in {due_in}",
+                    f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/",
+                )
             )
-        ]
+
         if NotificationEnum.canary_renewals in user.notifications.webhooks:
             for webhook in user.notifications.webhooks[
                 NotificationEnum.canary_renewals

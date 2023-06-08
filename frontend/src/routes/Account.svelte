@@ -76,7 +76,28 @@
     }
   }
 
-  async function removeUrl(url: string) {
+  async function toggleEmail() {
+    if (user.notifications.email.includes(currentNotifyTab)) {
+      user.notifications.email = user.notifications.email.filter(
+        (email) => email !== currentNotifyTab
+      );
+
+      await apiClient.notifications.controllersAccountNotificationsEmailRemoveRemoveEmail(
+        currentNotifyTab
+      );
+    } else {
+      user.notifications.email = [
+        ...user.notifications.email,
+        currentNotifyTab,
+      ];
+
+      await apiClient.notifications.controllersAccountNotificationsEmailAddAddEmail(
+        currentNotifyTab
+      );
+    }
+  }
+
+  async function removeWebhook(url: string) {
     user.notifications.webhooks[currentNotifyTab] = user.notifications.webhooks[
       currentNotifyTab
     ].filter((webhook) => webhook !== url);
@@ -221,7 +242,11 @@
         >
           <h6>Emails</h6>
           <label class="switch" style="margin: 1em 0;">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              on:change={toggleEmail}
+              checked={user.notifications.email.includes(currentNotifyTab)}
+            />
             <span />
           </label>
 
@@ -239,7 +264,7 @@
                 <li>
                   <form
                     on:submit|preventDefault={async () =>
-                      await removeUrl(webhook)}
+                      await removeWebhook(webhook)}
                   >
                     <nav class="wrap">
                       <div class="field label border">

@@ -6,7 +6,7 @@ import type { WebhookModel } from '../models/WebhookModel';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 
-export class WebhookService {
+export class NotificationsService {
 
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 

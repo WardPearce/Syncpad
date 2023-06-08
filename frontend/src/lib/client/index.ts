@@ -39,6 +39,7 @@ export { WebhookModel } from './models/WebhookModel';
 
 export { AccountService } from './services/AccountService';
 export { CanaryService } from './services/CanaryService';
+export { NotificationsService } from './services/NotificationsService';
 export { SessionService } from './services/SessionService';
 export { WarrantService } from './services/WarrantService';
 export { WebhookService } from './services/WebhookService';

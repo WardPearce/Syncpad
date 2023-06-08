@@ -375,11 +375,45 @@ class OtpController(Controller):
 class EmailNotificationController(Controller):
     path = "/notifications/email"
 
+    @post(
+        "/add",
+        description="Enable email notification",
+        tags=["account", "notifications", "webhook"],
+    )
+    async def add_email(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        data: NotificationEnum,
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user}, {"$push": {"notifications.email": data.value}}
+        )
+
+    @delete(
+        "/remove",
+        description="Disable email notification",
+        tags=["account", "notifications", "webhook"],
+    )
+    async def remove_email(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        data: NotificationEnum,
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user}, {"$pull": {"notifications.email": data.value}}
+        )
+
 
 class WebhookController(Controller):
     path = "/notifications/webhook"
 
-    @delete("/remove", description="Remove a webhook", tags=["account", "webhook"])
+    @delete(
+        "/remove",
+        description="Remove a webhook",
+        tags=["account", "notifications", "webhook"],
+    )
     async def remove_webhook(
         self,
         state: "State",
@@ -391,7 +425,11 @@ class WebhookController(Controller):
             {"$pull": {f"notifications.webhooks.{data.type.value}": data.url}},
         )
 
-    @post("/add", description="Add a webhook", tags=["account", "webhook"])
+    @post(
+        "/add",
+        description="Add a webhook",
+        tags=["account", "notifications", "webhook"],
+    )
     async def add_webhook(
         self,
         state: "State",
@@ -438,6 +476,7 @@ router = Router(
         LoginController,
         OtpController,
         WebhookController,
+        EmailNotificationController,
         create_account,
         jwt_info,
         email_resend,
