@@ -51,7 +51,9 @@ async def canary_owner_alerts(state: "State") -> None:
         if not canary:
             continue
 
-        due_in = humanize.naturaltime(canary_warrant["next_canary"])
+        due_in = humanize.naturaltime(
+            canary_warrant["next_canary"], future=True, when=now
+        )
 
         asyncio.create_task(
             send_email(
@@ -66,4 +68,7 @@ async def canary_owner_alerts(state: "State") -> None:
         )
 
 
-tasks = [CronTask(spec="*/15 * * * *", func=canary_owner_alerts)]
+tasks: list[CronTask] = [
+    # Check 1 minute for canary warrants that are due to expire
+    CronTask(spec="*/1 * * * *", func=canary_owner_alerts)
+]

@@ -45,6 +45,10 @@ class CanaryUser:
                 }
             )
 
+        await self.__upper._state.mongo.canary_warrant.delete_many(
+            {"canary_id": canary.id}
+        )
+
         await self.__upper._state.mongo.canary.delete_one(self._canary_query)
 
     async def attempt_verify(self) -> None:
