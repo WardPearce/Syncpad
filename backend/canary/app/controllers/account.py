@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Optional
 
 import pyotp
@@ -104,7 +104,7 @@ class LoginController(Controller):
                 {
                     "to_sign": to_sign,
                     "user_id": ObjectId(user.id),
-                    "expires": datetime.now(tz=timezone.utc) + timedelta(seconds=60),
+                    "expires": datetime.utcnow() + timedelta(seconds=60),
                 }
             )
             return UserToSignModel(to_sign=to_sign, _id=result.inserted_id)
@@ -165,7 +165,7 @@ class LoginController(Controller):
         if given_code.decode() != proof["to_sign"]:
             raise InvalidAccountAuth()
 
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.utcnow()
         token_timedelta = (
             timedelta(days=SETTINGS.jwt.expire_days)
             if not data.one_day_login
@@ -278,7 +278,7 @@ async def create_account(
             **data.dict(),
             "email": email,
             "email_verified": False,
-            "created": datetime.now(tz=timezone.utc),
+            "created": datetime.utcnow(),
             "otp": {"secret": pyotp.random_base32(), "completed": False},
         }
     )

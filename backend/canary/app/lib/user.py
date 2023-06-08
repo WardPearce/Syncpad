@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Union
 
 from app.errors import UserNotFoundException
@@ -27,7 +27,7 @@ async def generate_email_validation(state: "State", email: str) -> str:
         {
             "secret": email_secret,
             "email": email,
-            "expires": datetime.now(tz=timezone.utc) + timedelta(hours=24),
+            "expires": datetime.utcnow() + timedelta(hours=24),
         }
     )
 

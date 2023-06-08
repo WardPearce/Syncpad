@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
 import humanize
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 async def canary_owner_alerts(state: "State") -> None:
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.utcnow()
     current_iso = now.date().isoformat()
 
     alerts = [

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from hashlib import sha256
 from typing import TYPE_CHECKING, Optional
 
@@ -44,6 +44,6 @@ class OneTimePassword:
         await state.mongo.old_otp.insert_one(
             {
                 **otp_search,
-                "expires": datetime.now(tz=timezone.utc) + timedelta(seconds=60),
+                "expires": datetime.utcnow() + timedelta(seconds=60),
             }
         )
