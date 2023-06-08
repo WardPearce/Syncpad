@@ -55,9 +55,9 @@ async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
             "expires", expireAfterSeconds=0
         )
         await state.mongo.canary_warrant.create_index(
-            "publishing_expires",
-            expireAfterSeconds=0,
-            partialFilterExpression={"publishing_expires": {"$exists": True}},
+            "issued",
+            expireAfterSeconds=10800,  # 3 hours
+            partialFilterExpression={"active": False},
         )
 
     return state.mongo

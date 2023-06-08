@@ -29,6 +29,7 @@ from app.models.canary import (
     TrustedCanaryModel,
 )
 from bson import ObjectId
+from bson.errors import InvalidId
 from lib.otp import OneTimePassword
 from litestar import Controller, Request, Response, Router, delete, get, post
 from litestar.contrib.jwt import Token
@@ -109,15 +110,20 @@ async def list_trusted_canaries(
 async def published_warrant(
     state: "State", canary_id: str, page: int = 0
 ) -> PublishedCanaryWarrantModel:
+    try:
+        canary_object_id = ObjectId(canary_id)
+    except InvalidId:
+        raise PublishedWarrantNotFoundException()
+
     warrant = await state.mongo.canary_warrant.find_one(
-        {"canary_id": ObjectId(canary_id), "publishing_expires": {"$exists": False}},
+        {"canary_id": canary_object_id, "concern": {"$exists": True}},
         sort=[("_id", -1)],
         skip=page,
     )
     if not warrant:
         raise PublishedWarrantNotFoundException()
 
-    return PublishedCanaryWarrantModel(**warrant, active=page == 0)
+    return PublishedCanaryWarrantModel(**warrant)
 
 
 class PublishCanary(Controller):
@@ -131,16 +137,31 @@ class PublishCanary(Controller):
         id_: str,
         data: PublishCanaryWarrantModel,
     ) -> None:
+        try:
+            warrant_id = ObjectId(id_)
+        except InvalidId:
+            raise PublishedWarrantNotFoundException()
+
+        warrant = await state.mongo.canary_warrant.find_one(
+            {"_id": warrant_id, "user_id": request.user, "active": False}
+        )
+        if not warrant:
+            raise PublishedWarrantNotFoundException()
+
         await state.mongo.canary_warrant.update_one(
             {
-                "_id": ObjectId(id_),
+                "_id": warrant_id,
                 "user_id": request.user,
-                "publishing_expires": {"$exists": True},
+                "active": False,
             },
             {
-                "$set": {**data.dict(), "concern": data.concern.value},
-                "$unset": {"publishing_expires": True},
+                "$set": {**data.dict(), "concern": data.concern.value, "active": True},
             },
+        )
+
+        await state.mongo.canary_warrant.update_many(
+            {"canary_id": warrant["canary_id"], "_id": {"$ne": warrant_id}},
+            {"$set": {"active": False}},
         )
 
 
@@ -187,7 +208,7 @@ class CanaryController(Controller):
             "canary_id": canary.id,
             "next_canary": next_canary,
             "issued": now,
-            "publishing_expires": now + timedelta(hours=3),
+            "active": False,
         }
 
         await state.mongo.canary_warrant.insert_one(created_warrant)

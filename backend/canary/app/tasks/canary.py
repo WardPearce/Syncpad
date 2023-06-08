@@ -29,7 +29,7 @@ async def canary_owner_alerts(state: "State") -> None:
     ]
     async for canary_warrant in state.mongo.canary_warrant.find(
         {
-            "publishing_expires": {"$exists": False},
+            "active": True,
             "last_alert": {"$ne": current_iso},
             "$or": [
                 {
