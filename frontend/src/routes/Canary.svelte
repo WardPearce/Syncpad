@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
 
+  import Image from "../components/Image.svelte";
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
@@ -235,9 +236,9 @@
     <details>
       <summary class="none">
         <div class="row canary-name">
-          <img
-            class="medium"
-            src={canaryBio.logo}
+          <Image
+            size="medium"
+            src={`${canaryBio.logo}`}
             alt={`Logo for ${canaryBio.domain}`}
           />
           <div class="max">

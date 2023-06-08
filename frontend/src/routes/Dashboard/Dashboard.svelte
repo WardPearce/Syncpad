@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { link, navigate } from "svelte-navigator";
 
+  import Image from "../../components/Image.svelte";
   import apiClient from "../../lib/apiClient";
   import { goToCanary } from "../../lib/canary";
   import type { CanaryModel } from "../../lib/client";
@@ -33,9 +34,9 @@
       <div class="s12 m6 l4">
         <article>
           <div class="row">
-            <img
-              class="small"
-              src={canary.logo}
+            <Image
+              src={`${canary.logo}`}
+              size="small"
               alt={`Logo for ${canary.domain}`}
             />
             {#if canary.domain_verification.completed}
