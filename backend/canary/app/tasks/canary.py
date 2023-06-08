@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import humanize
 from app.env import SETTINGS
@@ -58,9 +58,16 @@ async def canary_owner_alerts(state: "State") -> None:
             canary_warrant["next_canary"], future=True, when=now
         )
 
+        futures: List = [
+            send_email(
+                user.email,
+                f"Canary renewal due in {due_in}",
+                f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/",
+            )
+        ]
         if WebhookTypesEnum.canary_renewals in user.webhooks:
             for webhook in user.webhooks[WebhookTypesEnum.canary_renewals]:
-                asyncio.create_task(
+                futures.append(
                     untrusted_http_request(
                         state=state,
                         url=webhook,
@@ -69,13 +76,7 @@ async def canary_owner_alerts(state: "State") -> None:
                     )
                 )
 
-        asyncio.create_task(
-            send_email(
-                user.email,
-                f"Canary renewal due in {due_in}",
-                f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/",
-            )
-        )
+        asyncio.gather(*futures)
 
         await state.mongo.canary_warrant.update_one(
             {"_id": canary_warrant["_id"]}, {"$set": {"last_alert": current_iso}}
