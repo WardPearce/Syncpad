@@ -6,8 +6,8 @@ import humanize
 from app.env import SETTINGS
 from app.lib.smtp import send_email
 from app.lib.user import User
-from app.tasks._tasks import CronTask
 from errors import UserNotFoundException
+from lib.tasks import CronTabs, Tab
 
 if TYPE_CHECKING:
     from app.types import State
@@ -68,7 +68,7 @@ async def canary_owner_alerts(state: "State") -> None:
         )
 
 
-tasks: list[CronTask] = [
+tasks: list[Tab] = [
     # Check 1 minute for canary warrants that are due to expire
-    CronTask(spec="*/1 * * * *", func=canary_owner_alerts)
+    Tab(spec="*/1 * * * *", func=canary_owner_alerts)
 ]

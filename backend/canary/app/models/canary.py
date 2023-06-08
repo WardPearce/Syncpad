@@ -134,6 +134,10 @@ class PublishCanaryWarrantModel(CustomJsonEncoder):
                 f"Canary documents cannot exceed {SETTINGS.canary.documents.max_amount}"
             )
 
+        for hash_ in value.values():
+            if len(hash_) > 64:
+                raise ValueError("File hash cannot exceed 64 characters")
+
         return value
 
 

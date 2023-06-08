@@ -6,7 +6,7 @@ from app.env import SETTINGS
 from app.lib.jwt import jwt_cookie_auth
 from app.models.customs import CustomJsonEncoder
 from app.tasks import tasks
-from app.tasks._tasks import CronTasks
+from lib.tasks import CronTabs
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
@@ -26,9 +26,9 @@ redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.re
 cache_store = RedisStore(redis=redis)
 
 
-async def init_tasks(state: "State") -> CronTasks:
+async def init_tasks(state: "State") -> CronTabs:
     if not getattr(state, "tasks", None):
-        state.tasks = CronTasks(state, tasks)
+        state.tasks = CronTabs(state, tasks)
         state.tasks.start()
 
     return state.tasks

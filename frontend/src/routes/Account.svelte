@@ -91,133 +91,212 @@
 {:else}
   <h3>Account</h3>
   <article>
-    <h5>Change password</h5>
+    <details>
+      <summary class="none">
+        <div class="row">
+          <div class="max">
+            <h4>Security</h4>
+          </div>
+          <i>arrow_drop_down</i>
+        </div>
+      </summary>
+      <h5>Password reset</h5>
+      {#if user.otp.completed}
+        <h5>OTP reset</h5>
+        <p>Enter your current OTP code to reset it.</p>
+        <div style="display: flex;">
+          {#if otpError}
+            <p>{otpError}</p>
+          {/if}
+
+          <OtpInput onOtpEnter={resetOtp} />
+        </div>
+      {:else}
+        <h5>Setup OTP</h5>
+        <nav class="wrap"><button on:click={logout}>Enable OTP</button></nav>
+      {/if}
+    </details>
   </article>
-  {#if user.otp.completed}
-    <article>
-      <h5>OTP reset</h5>
-      <p>Enter your current OTP code to reset it.</p>
-      <div style="display: flex;">
-        {#if otpError}
-          <p>{otpError}</p>
+
+  <article>
+    <details>
+      <summary class="none">
+        <div class="row">
+          <div class="max">
+            <h4>Privacy</h4>
+          </div>
+          <i>arrow_drop_down</i>
+        </div>
+      </summary>
+      <h5>Login IP processing</h5>
+      <p>
+        Upon logging in, we utilize your IP address to provide you with details
+        about the active session and their location. It is important to
+        acknowledge that all device and location information is securely
+        encrypted using your public key. This information can only be accessed
+        by you once you have successfully logged in.
+      </p>
+      <p>
+        We employ <a
+          href="https://proxycheck.io/"
+          target="_blank"
+          class="link"
+          rel="noopener noreferrer">proxycheck.io</a
+        > to process your IP address; however, it's important to note that they cannot
+        establish a direct correlation between IPs and user accounts.
+      </p>
+      <label class="switch">
+        <input type="checkbox" checked={user.ip_lookup_consent} />
+        <span />
+      </label>
+    </details>
+  </article>
+
+  <article>
+    <details>
+      <summary class="none">
+        <div class="row">
+          <div class="max">
+            <h4>Notifications</h4>
+          </div>
+          <i>arrow_drop_down</i>
+        </div>
+      </summary>
+      <div>
+        <div class="tabs left-align">
+          <a class="active">My canary renewals</a>
+          <a>Canary subscriptions</a>
+          <a>Survey submissions</a>
+        </div>
+        <div
+          class="page padding active surface-variant"
+          style="border-radius: 0 0 .75rem .75rem;"
+        >
+          <h6>Webhooks (0/3)</h6>
+          <ul class="webhooks">
+            <li>
+              <nav class="wrap">
+                <div class="field label border">
+                  <input type="text" />
+                  <label for="webhook">URL #1</label>
+                </div>
+                <button class="square round large">
+                  <i>add</i>
+                </button>
+              </nav>
+            </li>
+          </ul>
+
+          <h6>Browser push notifications</h6>
+          <nav class="wrap"><button>Grant browser notifications</button></nav>
+        </div>
+      </div>
+    </details>
+  </article>
+
+  <article>
+    <details>
+      <summary class="none">
+        <div class="row">
+          <div class="max">
+            <h4>Sessions</h4>
+          </div>
+          <i>arrow_drop_down</i>
+        </div>
+      </summary>
+
+      {#if activeSessions.length === 0}
+        <span class="loader medium" />
+      {:else}
+        {#if activeSessions.length > 1}
+          <button on:click={logoutAllOther}>Logout all other sessions</button>
         {/if}
 
-        <OtpInput onOtpEnter={resetOtp} />
-      </div>
-    </article>
-  {:else}
-    <article>
-      <h5>Setup OTP</h5>
-      <nav class="wrap"><button on:click={logout}>Enable OTP</button></nav>
-    </article>
-  {/if}
-  <article>
-    <h5>Login IP processing</h5>
-    <p>
-      Upon logging in, we utilize your IP address to provide you with details
-      about the active session and their location. It is important to
-      acknowledge that all device and location information is securely encrypted
-      using your public key. This information can only be accessed by you once
-      you have successfully logged in.
-    </p>
-    <p>
-      We employ <a
-        href="https://proxycheck.io/"
-        target="_blank"
-        class="link"
-        rel="noopener noreferrer">proxycheck.io</a
-      > to process your IP address; however, it's important to note that they cannot
-      establish a direct correlation between IPs and user accounts.
-    </p>
-    <label class="switch">
-      <input type="checkbox" checked={user.ip_lookup_consent} />
-      <span />
-    </label>
-  </article>
-  <article>
-    <h5>Notifications</h5>
-    <nav class="wrap"><button>Grant browser notifications</button></nav>
-  </article>
-  <article>
-    <h5>Danger zone</h5>
-    <nav class="wrap">
-      <button class="secondary">Rotate keychain</button>
-      <button class="tertiary">Delete account</button>
-    </nav>
+        {#each activeSessions as session}
+          <article
+            class:surface-variant={session._id !== loggedInSecrets.jti}
+            class:primary-container={session._id === loggedInSecrets.jti}
+          >
+            <div class="grid">
+              <div class="s12 m6 l3">
+                <h6>Location</h6>
+                <p>
+                  <span style="font-weight: bold;">Country:</span>
+                  {#if session.location.country}
+                    {decryptSessionInfo(session.location.country)}
+                  {:else}
+                    Unknown
+                  {/if}
+                </p>
+                <p>
+                  <span style="font-weight: bold;">Region:</span>
+                  {#if session.location.region}
+                    {decryptSessionInfo(session.location.region)}
+                  {:else}
+                    Unknown
+                  {/if}
+                </p>
+                <p>
+                  <span style="font-weight: bold;">IP Address:</span>
+                  {#if session.location.ip}
+                    {decryptSessionInfo(session.location.ip)}
+                  {:else}
+                    Unknown
+                  {/if}
+                </p>
+              </div>
+              <div class="s12 m6 l3">
+                <h6>Device</h6>
+                <p>
+                  <span style="font-weight: bold;">Browser:</span>
+                  {session.uaparser.getBrowser().name}
+                </p>
+                <p>
+                  <span style="font-weight: bold;">Engine:</span>
+                  {session.uaparser.getEngine().name}
+                </p>
+                <p>
+                  <span style="font-weight: bold;">OS:</span>
+                  {session.uaparser.getOS().name}
+                </p>
+              </div>
+              <div class="s12 m6 l3">
+                <h6>Expires</h6>
+                <p>
+                  {relativeDate(session.expires)}
+                </p>
+              </div>
+              <div class="s12 m6 l3">
+                <button on:click={async () => await logoutSession(session._id)}
+                  >Logout
+                  {#if session._id === loggedInSecrets.jti}
+                    current session
+                  {/if}
+                </button>
+              </div>
+            </div>
+          </article>
+        {/each}
+      {/if}
+    </details>
   </article>
 
-  <h3>Sessions</h3>
-
-  {#if activeSessions.length === 0}
-    <span class="loader medium" />
-  {:else}
-    {#if activeSessions.length > 1}
-      <button on:click={logoutAllOther}>Logout all other sessions</button>
-    {/if}
-
-    {#each activeSessions as session}
-      <article class:primary-container={session._id === loggedInSecrets.jti}>
-        <div class="grid">
-          <div class="s12 m6 l3">
-            <h6>Location</h6>
-            <p>
-              <span style="font-weight: bold;">Country:</span>
-              {#if session.location.country}
-                {decryptSessionInfo(session.location.country)}
-              {:else}
-                Unknown
-              {/if}
-            </p>
-            <p>
-              <span style="font-weight: bold;">Region:</span>
-              {#if session.location.region}
-                {decryptSessionInfo(session.location.region)}
-              {:else}
-                Unknown
-              {/if}
-            </p>
-            <p>
-              <span style="font-weight: bold;">IP Address:</span>
-              {#if session.location.ip}
-                {decryptSessionInfo(session.location.ip)}
-              {:else}
-                Unknown
-              {/if}
-            </p>
+  <article>
+    <details>
+      <summary class="none">
+        <div class="row">
+          <div class="max">
+            <h4>Danger zone</h4>
           </div>
-          <div class="s12 m6 l3">
-            <h6>Device</h6>
-            <p>
-              <span style="font-weight: bold;">Browser:</span>
-              {session.uaparser.getBrowser().name}
-            </p>
-            <p>
-              <span style="font-weight: bold;">Engine:</span>
-              {session.uaparser.getEngine().name}
-            </p>
-            <p>
-              <span style="font-weight: bold;">OS:</span>
-              {session.uaparser.getOS().name}
-            </p>
-          </div>
-          <div class="s12 m6 l3">
-            <h6>Expires</h6>
-            <p>
-              {relativeDate(session.expires)}
-            </p>
-          </div>
-          <div class="s12 m6 l3">
-            <button on:click={async () => await logoutSession(session._id)}
-              >Logout
-              {#if session._id === loggedInSecrets.jti}
-                current session
-              {/if}
-            </button>
-          </div>
+          <i>arrow_drop_down</i>
         </div>
-      </article>
-    {/each}
-  {/if}
+      </summary>
+      <nav class="wrap">
+        <button class="secondary">Rotate keychain</button>
+        <button class="tertiary">Delete account</button>
+      </nav>
+    </details>
+  </article>
 {/if}
 
 <style>
@@ -233,5 +312,10 @@
   .s12 {
     display: flex;
     flex-direction: column;
+  }
+
+  .webhooks {
+    list-style: none;
+    margin: 1em 0;
   }
 </style>

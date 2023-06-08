@@ -1,5 +1,5 @@
 from aiohttp import ClientSession
-from app.tasks._tasks import CronTasks
+from lib.tasks import CronTasks
 from litestar.datastructures.state import State as BaseState
 from litestar.stores.redis import RedisStore
 from motor import motor_asyncio

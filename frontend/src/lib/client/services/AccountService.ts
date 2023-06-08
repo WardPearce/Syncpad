@@ -8,6 +8,7 @@ import type { UserJtiModel } from '../models/UserJtiModel';
 import type { UserLoginSignatureModel } from '../models/UserLoginSignatureModel';
 import type { UserModel } from '../models/UserModel';
 import type { UserToSignModel } from '../models/UserToSignModel';
+import type { WebhookModel } from '../models/WebhookModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -159,6 +160,61 @@ export class AccountService {
             query: {
                 'otp': otp,
             },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * AddWebhook
+     * Add a webhook
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountWebhookAddAddWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/webhook/add',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * ListWebhooks
+     * List webhooks
+     * @returns any Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountWebhookListListWebhooks(): CancelablePromise<Record<string, any>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/webhook/list',
+        });
+    }
+
+    /**
+     * RemoveWebhook
+     * Remove a webhook
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountWebhookRemoveRemoveWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/webhook/remove',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

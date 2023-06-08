@@ -200,10 +200,9 @@
     >
 </dialog>
 
+<h3>Publish for {domainName}</h3>
 <article>
     <form on:submit|preventDefault={() => (publishModelActive = true)}>
-        <h3>Publish for {domainName}</h3>
-
         <h6>Next canary</h6>
         <nav class="wrap" style="margin-top: 0;">
             {#each Object.values(CreateCanaryWarrantModel.next) as next}

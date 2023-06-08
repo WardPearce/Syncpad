@@ -23,5 +23,6 @@ export type UserModel = {
     created: string;
     otp: OtpModel;
     email_verified?: boolean;
+    webhooks?: Record<string, any>;
 };
 

@@ -1,11 +1,24 @@
 from datetime import datetime
+from enum import Enum
+from typing import Dict, List
 
 import pyotp
 from app.env import SETTINGS
 from app.models.customs import CustomJsonEncoder, IvField
 from argon2.profiles import RFC_9106_LOW_MEMORY
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, HttpUrl
+
+
+class WebhookTypesEnum(Enum):
+    canary_renewals = "canary_renewals"
+    canary_subscriptions = "canary_renewals"
+    survey_submissions = "survey_submissions"
+
+
+class WebhookModel(BaseModel):
+    url: HttpUrl
+    type: WebhookTypesEnum
 
 
 class EmailModel(BaseModel):
@@ -121,6 +134,7 @@ class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):
     created: datetime
     otp: OtpModel
     email_verified: bool = False
+    webhooks: Dict[WebhookTypesEnum, List[str]] = {}
 
 
 class UserLoginSignatureModel(BaseModel):

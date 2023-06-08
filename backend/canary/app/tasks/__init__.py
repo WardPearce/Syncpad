@@ -1,8 +1,8 @@
 from typing import List
 
 from app.tasks import canary
-from app.tasks._tasks import CronTask
+from lib.tasks import Tab
 
-tasks: List[List[CronTask]] = [canary.tasks]
+tasks: List[List[Tab]] = [canary.tasks]
 
 __all__ = ["tasks"]

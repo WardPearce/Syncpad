@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import pyotp
 from app.errors import (
@@ -24,6 +24,8 @@ from app.models.user import (
     UserLoginSignatureModel,
     UserModel,
     UserToSignModel,
+    WebhookModel,
+    WebhookTypesEnum,
 )
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -363,6 +365,45 @@ class OtpController(Controller):
         return OtpModel(secret=otp_secret, completed=False)
 
 
+class WebhookController(Controller):
+    path = "/webhook"
+
+    @get("/list", description="List webhooks", tags=["account", "webhook"])
+    async def list_webhooks(
+        self, state: "State", request: Request[ObjectId, Token, Any]
+    ) -> Dict[WebhookTypesEnum, List[str]]:
+        user = await User(state, request.user).get()
+        return user.webhooks
+
+    @delete("/remove", description="Remove a webhook", tags=["account", "webhook"])
+    async def remove_webhook(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        data: WebhookModel,
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {"$pull": {f"webhooks.{data.type}": data.url}},
+        )
+
+    @post("/add", description="Add a webhook", tags=["account", "webhook"])
+    async def add_webhook(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        data: WebhookModel,
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {
+                "$push": {f"webhooks.{data.type}": data.url},
+                "$setOnInsert": {"webhooks": {data.type: []}},
+            },
+            upsert=True,
+        )
+
+
 @delete(
     path="/logout",
     description="Logout of User account",
@@ -384,6 +425,7 @@ router = Router(
     route_handlers=[
         LoginController,
         OtpController,
+        WebhookController,
         create_account,
         jwt_info,
         email_resend,

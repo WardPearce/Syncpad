@@ -8,13 +8,13 @@ if TYPE_CHECKING:
     from app.types import State
 
 
-class CronTask(BaseModel):
+class Tab(BaseModel):
     spec: str
     func: Callable[["State"], Any]
 
 
-class CronTasks:
-    def __init__(self, state: "State", tasks: List[List[CronTask]]) -> None:
+class CronTabs:
+    def __init__(self, state: "State", tasks: List[List[Tab]]) -> None:
         self.__tasks = []
 
         for task in tasks:

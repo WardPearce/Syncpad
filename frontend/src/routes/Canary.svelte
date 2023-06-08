@@ -374,7 +374,7 @@
         {currentPublishedWarrant.statement}
       </p>
 
-      {#if serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches}
+      {#if (serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches) || advanceMode}
         <h5>Documents</h5>
         <p>None</p>
       {/if}

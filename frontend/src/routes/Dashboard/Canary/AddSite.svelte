@@ -62,8 +62,8 @@
   }
 </script>
 
+<h3>Add site</h3>
 <article>
-  <h3>Add site</h3>
   <form on:submit|preventDefault={createCanary}>
     <div class="field label border" class:invalid={siteDomain.length > 50}>
       <input

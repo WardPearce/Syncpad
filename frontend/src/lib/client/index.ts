@@ -34,8 +34,10 @@ export type { UserJtiModel } from './models/UserJtiModel';
 export type { UserLoginSignatureModel } from './models/UserLoginSignatureModel';
 export type { UserModel } from './models/UserModel';
 export type { UserToSignModel } from './models/UserToSignModel';
+export { WebhookModel } from './models/WebhookModel';
 
 export { AccountService } from './services/AccountService';
 export { CanaryService } from './services/CanaryService';
 export { SessionService } from './services/SessionService';
 export { WarrantService } from './services/WarrantService';
+export { WebhookService } from './services/WebhookService';
