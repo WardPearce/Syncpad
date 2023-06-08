@@ -19,13 +19,13 @@ from app.models.jwt import UserJtiModel
 from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
     CreateUserModel,
+    NotificationEnum,
     OtpModel,
     PublicUserModel,
     UserLoginSignatureModel,
     UserModel,
     UserToSignModel,
     WebhookModel,
-    WebhookTypesEnum,
 )
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -282,6 +282,13 @@ async def create_account(
             "email_verified": False,
             "created": datetime.utcnow(),
             "otp": {"secret": pyotp.random_base32(), "completed": False},
+            "notifications": {
+                "email": [
+                    NotificationEnum.canary_renewals.value,
+                    NotificationEnum.canary_subscriptions.value,
+                    NotificationEnum.survey_submissions.value,
+                ],
+            },
         }
     )
 
@@ -365,15 +372,12 @@ class OtpController(Controller):
         return OtpModel(secret=otp_secret, completed=False)
 
 
-class WebhookController(Controller):
-    path = "/webhook"
+class EmailNotificationController(Controller):
+    path = "/notifications/email"
 
-    @get("/list", description="List webhooks", tags=["account", "webhook"])
-    async def list_webhooks(
-        self, state: "State", request: Request[ObjectId, Token, Any]
-    ) -> Dict[WebhookTypesEnum, List[str]]:
-        user = await User(state, request.user).get()
-        return user.webhooks
+
+class WebhookController(Controller):
+    path = "/notifications/webhook"
 
     @delete("/remove", description="Remove a webhook", tags=["account", "webhook"])
     async def remove_webhook(
@@ -384,7 +388,7 @@ class WebhookController(Controller):
     ) -> None:
         await state.mongo.user.update_one(
             {"_id": request.user},
-            {"$pull": {f"webhooks.{data.type.value}": data.url}},
+            {"$pull": {f"notifications.webhooks.{data.type.value}": data.url}},
         )
 
     @post("/add", description="Add a webhook", tags=["account", "webhook"])
@@ -395,17 +399,19 @@ class WebhookController(Controller):
         data: WebhookModel,
     ) -> None:
         await state.mongo.user.update_one(
-            {"_id": request.user, "webhooks": {"$exists": False}},
             {
-                "$set": {"webhooks": {data.type.value: []}},
+                "_id": request.user,
+                f"notifications.webhooks.{data.type.value}": {"$exists": False},
             },
-            upsert=True,
+            {
+                "$set": {"notifications.webhooks": {data.type.value: []}},
+            },
         )
 
         await state.mongo.user.update_one(
             {"_id": request.user},
             {
-                "$push": {f"webhooks.{data.type.value}": data.url},
+                "$push": {f"notifications.webhooks.{data.type.value}": data.url},
             },
         )
 

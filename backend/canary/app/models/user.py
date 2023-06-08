@@ -10,7 +10,7 @@ from bson import ObjectId
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 
-class WebhookTypesEnum(Enum):
+class NotificationEnum(Enum):
     canary_renewals = "canary_renewals"
     canary_subscriptions = "canary_subscriptions"
     survey_submissions = "survey_submissions"
@@ -18,7 +18,7 @@ class WebhookTypesEnum(Enum):
 
 class WebhookModel(BaseModel):
     url: HttpUrl
-    type: WebhookTypesEnum
+    type: NotificationEnum
 
 
 class EmailModel(BaseModel):
@@ -129,12 +129,17 @@ class OtpModel(BaseModel):
         )
 
 
+class NotificationsModel(CustomJsonEncoder):
+    email: List[NotificationEnum] = Field(..., max_items=3)
+    webhooks: Dict[NotificationEnum, List[str]] = {}
+
+
 class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):
     id: ObjectId = Field(..., alias="_id")
     created: datetime
     otp: OtpModel
     email_verified: bool = False
-    webhooks: Dict[WebhookTypesEnum, List[str]] = {}
+    notifications: NotificationsModel
 
 
 class UserLoginSignatureModel(BaseModel):

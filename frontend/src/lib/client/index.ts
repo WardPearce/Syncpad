@@ -21,6 +21,7 @@ export { CreateCanaryWarrantModel } from './models/CreateCanaryWarrantModel';
 export type { CreatedCanaryWarrantModel } from './models/CreatedCanaryWarrantModel';
 export type { CreateUserModel } from './models/CreateUserModel';
 export type { DomainVerification } from './models/DomainVerification';
+export type { NotificationsModel } from './models/NotificationsModel';
 export type { OtpModel } from './models/OtpModel';
 export type { PublicCanaryModel } from './models/PublicCanaryModel';
 export type { PublicKeyModel } from './models/PublicKeyModel';

@@ -7,6 +7,7 @@ import type { AccountEd25199Modal } from './AccountEd25199Modal';
 import type { AccountKeychainModal } from './AccountKeychainModal';
 import type { AccountX25519Model } from './AccountX25519Model';
 import type { Argon2Modal } from './Argon2Modal';
+import type { NotificationsModel } from './NotificationsModel';
 import type { OtpModel } from './OtpModel';
 
 export type UserModel = {
@@ -23,6 +24,6 @@ export type UserModel = {
     created: string;
     otp: OtpModel;
     email_verified?: boolean;
-    webhooks?: Record<string, any>;
+    notifications: NotificationsModel;
 };
 

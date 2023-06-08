@@ -17,30 +17,17 @@ export class WebhookService {
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountWebhookAddAddWebhook(
+    public controllersAccountNotificationsWebhookAddAddWebhook(
         requestBody: WebhookModel,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/account/webhook/add',
+            url: '/controllers/account/notifications/webhook/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
-        });
-    }
-
-    /**
-     * ListWebhooks
-     * List webhooks
-     * @returns any Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountWebhookListListWebhooks(): CancelablePromise<Record<string, any>> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/webhook/list',
         });
     }
 
@@ -51,12 +38,12 @@ export class WebhookService {
      * @returns void
      * @throws ApiError
      */
-    public controllersAccountWebhookRemoveRemoveWebhook(
+    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
         requestBody: WebhookModel,
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/webhook/remove',
+            url: '/controllers/account/notifications/webhook/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

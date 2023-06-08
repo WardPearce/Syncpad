@@ -77,29 +77,31 @@
   }
 
   async function removeUrl(url: string) {
-    user.webhooks[currentNotifyTab] = user.webhooks[currentNotifyTab].filter(
-      (webhook) => webhook !== url
-    );
+    user.notifications.webhooks[currentNotifyTab] = user.notifications.webhooks[
+      currentNotifyTab
+    ].filter((webhook) => webhook !== url);
 
-    await apiClient.webhook.controllersAccountWebhookRemoveRemoveWebhook({
-      url: url,
-      type: currentNotifyTab,
-    });
+    await apiClient.webhook.controllersAccountNotificationsWebhookRemoveRemoveWebhook(
+      {
+        url: url,
+        type: currentNotifyTab,
+      }
+    );
   }
 
   async function addWebhook() {
     if (!webhookUrl) return;
 
-    if (!(currentNotifyTab in user.webhooks)) {
-      user.webhooks[currentNotifyTab] = [];
+    if (!(currentNotifyTab in user.notifications.webhooks)) {
+      user.notifications.webhooks[currentNotifyTab] = [];
     }
 
-    user.webhooks[currentNotifyTab] = [
-      ...user.webhooks[currentNotifyTab],
+    user.notifications.webhooks[currentNotifyTab] = [
+      ...user.notifications.webhooks[currentNotifyTab],
       webhookUrl,
     ];
 
-    apiClient.webhook.controllersAccountWebhookAddAddWebhook({
+    apiClient.webhook.controllersAccountNotificationsWebhookAddAddWebhook({
       url: webhookUrl,
       type: currentNotifyTab,
     });
@@ -227,13 +229,13 @@
           <button style="margin: 1em 0;">Grant browser notifications</button>
 
           <h6>
-            Webhooks ({currentNotifyTab in user.webhooks
-              ? user.webhooks[currentNotifyTab].length
+            Webhooks ({currentNotifyTab in user.notifications.webhooks
+              ? user.notifications.webhooks[currentNotifyTab].length
               : 0}/3)
           </h6>
           <ul class="webhooks">
-            {#if currentNotifyTab in user.webhooks}
-              {#each user.webhooks[currentNotifyTab] as webhook, iteration}
+            {#if currentNotifyTab in user.notifications.webhooks}
+              {#each user.notifications.webhooks[currentNotifyTab] as webhook, iteration}
                 <li>
                   <form
                     on:submit|preventDefault={async () =>

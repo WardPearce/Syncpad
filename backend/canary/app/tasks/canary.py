@@ -10,7 +10,7 @@ from errors import UserNotFoundException
 from lib.tasks import CronTabs, Tab
 from lib.url import untrusted_http_request
 from models.canary import PublishedCanaryWarrantModel
-from models.user import WebhookTypesEnum
+from models.user import NotificationEnum
 
 if TYPE_CHECKING:
     from app.types import State
@@ -65,8 +65,10 @@ async def canary_owner_alerts(state: "State") -> None:
                 f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/",
             )
         ]
-        if WebhookTypesEnum.canary_renewals in user.webhooks:
-            for webhook in user.webhooks[WebhookTypesEnum.canary_renewals]:
+        if NotificationEnum.canary_renewals in user.notifications.webhooks:
+            for webhook in user.notifications.webhooks[
+                NotificationEnum.canary_renewals
+            ]:
                 futures.append(
                     untrusted_http_request(
                         state=state,
