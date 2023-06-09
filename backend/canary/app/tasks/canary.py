@@ -17,8 +17,10 @@ if TYPE_CHECKING:
 
 
 async def canary_owner_alerts(state: "State") -> None:
+    # Todo
+    return
+
     now = datetime.utcnow()
-    current_iso = now.date().isoformat()
 
     alerts = [
         now + timedelta(days=90),
@@ -26,23 +28,12 @@ async def canary_owner_alerts(state: "State") -> None:
         now + timedelta(days=7),
         now + timedelta(days=3),
         now + timedelta(days=1),
-        now + timedelta(hours=6),
-        now + timedelta(hours=3),
         now + timedelta(hours=1),
     ]
     async for canary_warrant in state.mongo.canary_warrant.find(
         {
             "active": True,
-            "last_alert": {"$ne": current_iso},
-            "$or": [
-                {
-                    "next_canary": {
-                        "$gte": alert,
-                        "$lt": alert + timedelta(days=1),
-                    }
-                }
-                for alert in alerts
-            ],
+            "concern": {"$exists": True},
         }
     ):
         try:
@@ -60,7 +51,10 @@ async def canary_owner_alerts(state: "State") -> None:
 
         futures: List = []
 
-        if NotificationEnum.canary_renewals in user.notifications.email:
+        if any(
+            NotificationEnum.canary_renewals.value == enum.value
+            for enum in user.notifications.email
+        ):
             futures.append(
                 send_email(
                     user.email,
@@ -69,7 +63,10 @@ async def canary_owner_alerts(state: "State") -> None:
                 )
             )
 
-        if NotificationEnum.canary_renewals in user.notifications.webhooks:
+        if any(
+            NotificationEnum.canary_renewals.value == enum.value
+            for enum in user.notifications.webhooks
+        ):
             for webhook in user.notifications.webhooks[
                 NotificationEnum.canary_renewals
             ]:
@@ -83,10 +80,6 @@ async def canary_owner_alerts(state: "State") -> None:
                 )
 
         asyncio.gather(*futures)
-
-        await state.mongo.canary_warrant.update_one(
-            {"_id": canary_warrant["_id"]}, {"$set": {"last_alert": current_iso}}
-        )
 
 
 tasks: list[Tab] = [
