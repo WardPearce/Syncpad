@@ -225,7 +225,7 @@
         </div>
       </summary>
       <div>
-        <div class="tabs left-align">
+        <div class="tabs left-align scroll">
           {#each Object.values(WebhookModel.type) as webhookType}
             <a
               class:active={webhookType === currentNotifyTab}
@@ -250,7 +250,7 @@
             <span />
           </label>
 
-          <h6>Push notifications</h6>
+          <h6>Browser</h6>
           <button style="margin: 1em 0;">Grant browser notifications</button>
 
           <h6>

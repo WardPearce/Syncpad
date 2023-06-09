@@ -235,7 +235,7 @@
   <article>
     <details>
       <summary class="none">
-        <div class="row canary-name">
+        <div class="row canary-name scroll">
           <Image
             size="medium"
             src={`${canaryBio.logo}`}
@@ -277,7 +277,7 @@
 
   {#if currentPublishedWarrant}
     <article>
-      <nav>
+      <nav class="scroll">
         {#if currentPage === 0}
           <h3>Latest Canary</h3>
         {:else}
