@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Union
 from app.errors import UserNotFoundException
 from app.models.user import UserModel
 from bson import ObjectId
+from sqlalchemy import false
 
 if TYPE_CHECKING:
     from app.types import State
@@ -58,8 +59,11 @@ class User:
         if await self.state.mongo.user.count_documents(self._user_query) == 0:
             raise UserNotFoundException()
 
-    async def get(self) -> UserModel:
+    async def get(self, redact_otp: bool = False) -> UserModel:
         """Get user account details.
+
+        Args:
+            redact_otp (bool, optional): Redact OTP secret. Defaults to False.
 
         Raises:
             UserNotFoundException
@@ -72,4 +76,8 @@ class User:
         if not user:
             raise UserNotFoundException()
 
-        return UserModel(**user)
+        if not redact_otp:
+            return UserModel(**user)
+        else:
+            user["otp"]["secret"] = None
+            return UserModel(**user)

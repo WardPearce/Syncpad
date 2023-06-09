@@ -305,7 +305,7 @@ async def create_account(
 
 @get(path="/me", description="Get user info", tags=["account"])
 async def get_me(state: "State", request: Request[ObjectId, Token, Any]) -> UserModel:
-    return await User(state, request.user).get()
+    return await User(state, request.user).get(redact_otp=True)
 
 
 @get(

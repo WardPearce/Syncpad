@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import pyotp
 from app.env import SETTINGS
@@ -115,15 +115,18 @@ class CreateUserModel(__CreateUserShared):
 
 
 class OtpModel(BaseModel):
-    secret: str
+    secret: Optional[str]
+    provisioning_uri: Optional[str]
     completed: bool = False
-    provisioning_uri: str = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.provisioning_uri = self.__provisioning_uri()
 
-    def __provisioning_uri(self) -> str:
+    def __provisioning_uri(self) -> Optional[str]:
+        if not self.secret:
+            return
+
         return pyotp.totp.TOTP(self.secret).provisioning_uri(
             issuer_name=SETTINGS.site_name, name=SETTINGS.site_name
         )
