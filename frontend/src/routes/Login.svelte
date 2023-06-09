@@ -241,7 +241,9 @@
             />
             <button
               on:click={async () => {
-                await navigator.clipboard.writeText(loggedInUser.otp.secret);
+                await navigator.clipboard.writeText(
+                  `${loggedInUser.otp.secret}`
+                );
               }}
             >
               <i>vpn_key</i>
@@ -261,10 +263,5 @@
     main {
       width: 98%;
     }
-  }
-
-  .red5 {
-    padding: 0.5em 1em;
-    margin: 1em 0;
   }
 </style>

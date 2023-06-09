@@ -62,6 +62,14 @@
   }
 </script>
 
+{#if errorMsg}
+  <article class="primary">
+    <p>
+      {errorMsg}
+    </p>
+  </article>
+{/if}
+
 <h3>Add site</h3>
 <article>
   <form on:submit|preventDefault={createCanary}>
