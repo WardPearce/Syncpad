@@ -3,8 +3,8 @@
 /* eslint-disable */
 
 export type OtpModel = {
-    secret: string;
+    secret?: (null | string);
+    provisioning_uri?: (null | string);
     completed?: boolean;
-    provisioning_uri?: string;
 };
 

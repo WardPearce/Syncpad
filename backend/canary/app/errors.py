@@ -23,6 +23,7 @@ class ErrorCodes(Enum):
     unsupported_file_type = 2011
     already_trusted_canary = 2012
     warrant_not_found = 2013
+    too_many_webhooks = 2014
 
 
 class UserNotFoundException(NotFoundException):
@@ -122,6 +123,16 @@ class UnsupportedFileType(ValidationException):
         super().__init__(
             detail="Uploaded file is not supported",
             extra={ERROR_CODE_KEY: ErrorCodes.unsupported_file_type.value},
+        )
+
+
+class TooManyWebhooks(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="To many webhooks added",
+            extra={ERROR_CODE_KEY: ErrorCodes.too_many_webhooks.value},
         )
 
 

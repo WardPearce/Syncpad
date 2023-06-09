@@ -134,7 +134,7 @@ class OtpModel(BaseModel):
 
 class NotificationsModel(CustomJsonEncoder):
     email: List[NotificationEnum] = Field(..., max_items=3)
-    webhooks: Dict[NotificationEnum, List[str]] = {}
+    webhooks: Dict[NotificationEnum, List[str]]
 
 
 class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):

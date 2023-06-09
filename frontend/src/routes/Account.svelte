@@ -122,10 +122,12 @@
       webhookUrl,
     ];
 
-    apiClient.webhook.controllersAccountNotificationsWebhookAddAddWebhook({
-      url: webhookUrl,
-      type: currentNotifyTab,
-    });
+    await apiClient.webhook.controllersAccountNotificationsWebhookAddAddWebhook(
+      {
+        url: webhookUrl,
+        type: currentNotifyTab,
+      }
+    );
 
     webhookUrl = "";
   }
@@ -279,19 +281,21 @@
                 </li>
               {/each}
             {/if}
-            <li>
-              <form on:submit|preventDefault={addWebhook}>
-                <nav class="wrap">
-                  <div class="field label border">
-                    <input type="text" bind:value={webhookUrl} />
-                    <label for="webhook">Add Webhook</label>
-                  </div>
-                  <button class="square round large">
-                    <i>add</i>
-                  </button>
-                </nav>
-              </form>
-            </li>
+            {#if !(currentNotifyTab in user.notifications.webhooks) || user.notifications.webhooks[currentNotifyTab].length < 3}
+              <li>
+                <form on:submit|preventDefault={addWebhook}>
+                  <nav class="wrap">
+                    <div class="field label border">
+                      <input type="text" bind:value={webhookUrl} />
+                      <label for="webhook">Add Webhook</label>
+                    </div>
+                    <button class="square round large">
+                      <i>add</i>
+                    </button>
+                  </nav>
+                </form>
+              </li>
+            {/if}
           </ul>
         </div>
       </div>

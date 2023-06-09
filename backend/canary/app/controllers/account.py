@@ -8,6 +8,7 @@ from app.errors import (
     InvalidAccountAuth,
     InvalidCaptcha,
     OtpAlreadyCompleted,
+    TooManyWebhooks,
     UserNotFoundException,
 )
 from app.lib.jwt import delete_all_user_sessions, delete_session, jwt_cookie_auth
@@ -288,6 +289,7 @@ async def create_account(
                     NotificationEnum.canary_subscriptions.value,
                     NotificationEnum.survey_submissions.value,
                 ],
+                "webhooks": {},
             },
         }
     )
@@ -436,6 +438,13 @@ class WebhookController(Controller):
         request: Request[ObjectId, Token, Any],
         data: WebhookModel,
     ) -> None:
+        user = await User(state, request.user).get()
+        if (
+            data.type in user.notifications.webhooks
+            and len(user.notifications.webhooks[data.type]) >= 3
+        ):
+            raise TooManyWebhooks()
+
         await state.mongo.user.update_one(
             {
                 "_id": request.user,
