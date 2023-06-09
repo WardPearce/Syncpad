@@ -20,13 +20,16 @@ export class SignKeypairUndefinedError extends Error {
     }
 }
 
-export enum SignatureKeyLocation {
-    localPrivateSignKeypair = "localPrivateSignKeypair",
-    localPublicSignKeypair = "localPublicSignKeypair"
+export enum SignaturePublicKeyLocation {
+    localKeypair = "localPublicSignKeypair"
 }
 
-export type PublicKey = Uint8Array | SignatureKeyLocation | string;
-export type PrivateKey = Uint8Array | SignatureKeyLocation;
+export enum SignaturePrivateKeyLocation {
+    localKeypair = "localPrivateSignKeypair"
+}
+
+export type PublicKey = Uint8Array | SignaturePublicKeyLocation | string;
+export type PrivateKey = Uint8Array | SignaturePrivateKeyLocation;
 
 export interface KeyPair {
     publicKey: PublicKey;
@@ -44,9 +47,9 @@ export function seedKeypair(seed: Uint8Array): sodium.KeyPair {
 export function determineKeyLocation(key: PublicKey | PrivateKey): Uint8Array {
     if (key instanceof Uint8Array) {
         return key;
-    } else if (key === SignatureKeyLocation.localPrivateSignKeypair || key === SignatureKeyLocation.localPublicSignKeypair) {
+    } else if (key === SignaturePublicKeyLocation.localKeypair || key === SignaturePrivateKeyLocation.localKeypair) {
         const storedSecrets = get(localSecrets);
-        const keypairKey = key === SignatureKeyLocation.localPrivateSignKeypair ? "privateKey" : "publicKey";
+        const keypairKey = key === SignaturePrivateKeyLocation.localKeypair ? "privateKey" : "publicKey";
         if (typeof storedSecrets === "undefined" || !("rawSignKeypair" in storedSecrets) || !(keypairKey in storedSecrets["rawSignKeypair"])) {
             throw new SignKeypairUndefinedError();
         }

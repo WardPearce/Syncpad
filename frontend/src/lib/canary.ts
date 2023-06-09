@@ -8,7 +8,7 @@ import apiClient from "./apiClient";
 import { type CanaryModel } from './client/models/CanaryModel';
 import { hashBase64Encode } from './crypto/hash';
 import secretKey, { SecretkeyLocation } from './crypto/secretKey';
-import signatures, { SignatureKeyLocation } from "./crypto/signatures";
+import signatures, { SignaturePrivateKeyLocation, SignaturePublicKeyLocation } from "./crypto/signatures";
 
 
 export function goToCanary(canary: CanaryModel): void {
@@ -37,7 +37,7 @@ export async function getTrustedCanary(domain: string): Promise<string | void> {
       const untrusted = await apiClient.canary.controllersCanaryDomainTrustedGetTrusted(domain);
 
       signatures.validateHash(
-        SignatureKeyLocation.localPublicSignKeypair,
+        SignaturePublicKeyLocation.localKeypair,
         untrusted.signature,
         JSON.stringify({
           "domain": domain,
@@ -62,7 +62,7 @@ export async function listTrustedCanaries(): Promise<Record<string, string>> {
       for (const [domain, canary] of Object.entries(untrustedCanaries)) {
         try {
           signatures.validateHash(
-            SignatureKeyLocation.localPublicSignKeypair,
+            SignaturePublicKeyLocation.localKeypair,
             canary.signature,
             JSON.stringify({
               "domain": domain,
@@ -95,7 +95,7 @@ export async function syncTrustedCanaries() {
         {
           public_key_hash: publicKeyHash,
           signature: signatures.signHash(
-            SignatureKeyLocation.localPrivateSignKeypair,
+            SignaturePrivateKeyLocation.localKeypair,
             JSON.stringify({
               "domain": domain,
               "public_key_hash": publicKeyHash
@@ -110,7 +110,7 @@ export async function syncTrustedCanaries() {
     if (!(domain in localSavedCanaries)) {
       try {
         signatures.validateHash(
-          SignatureKeyLocation.localPublicSignKeypair,
+          SignaturePublicKeyLocation.localKeypair,
           canary.signature,
           JSON.stringify({
             "domain": domain,
@@ -144,7 +144,7 @@ export async function saveCanaryAsTrusted(domain: string, publicKeyHash: string)
       {
         public_key_hash: publicKeyHash,
         signature: signatures.signHash(
-          SignatureKeyLocation.localPrivateSignKeypair,
+          SignaturePrivateKeyLocation.localKeypair,
           JSON.stringify({
             "domain": domain,
             "public_key_hash": publicKeyHash
