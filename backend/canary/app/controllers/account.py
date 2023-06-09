@@ -106,7 +106,7 @@ class LoginController(Controller):
                 {
                     "to_sign": to_sign,
                     "user_id": ObjectId(user.id),
-                    "expires": datetime.utcnow() + timedelta(seconds=60),
+                    "expires": datetime.utcnow() + timedelta(minutes=4),
                 }
             )
             return UserToSignModel(to_sign=to_sign, _id=result.inserted_id)
