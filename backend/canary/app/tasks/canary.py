@@ -4,16 +4,52 @@ from typing import TYPE_CHECKING, List
 
 import humanize
 from app.env import SETTINGS
+from app.errors import DomainValidationError, UserNotFoundException
+from app.lib.canary import Canary
 from app.lib.smtp import send_email
+from app.lib.tasks import Tab
+from app.lib.url import untrusted_http_request
 from app.lib.user import User
-from errors import UserNotFoundException
-from lib.tasks import CronTabs, Tab
-from lib.url import untrusted_http_request
-from models.canary import PublishedCanaryWarrantModel
-from models.user import NotificationEnum
+from app.models.canary import CanaryModel, PublishedCanaryWarrantModel
+from app.models.user import NotificationEnum
 
 if TYPE_CHECKING:
     from app.types import State
+
+
+async def __handle_canary_verification(state: "State", canary: CanaryModel) -> None:
+    try:
+        await Canary(state, canary.domain).user(canary.user_id).attempt_verify()
+    except DomainValidationError:
+        return
+
+    try:
+        user = await User(state, canary.user_id).get()
+    except UserNotFoundException:
+        return
+
+    await send_email(
+        to=user.email,
+        subject="Canary domain verified!",
+        content=f"Your canary domain {canary.domain} has been verified!",
+    )
+
+
+async def canary_domain_verification(state: "State") -> None:
+    futures = []
+
+    async for canary in state.mongo.canary.find(
+        {
+            "domain_verification.completed": False,
+            "created": {"$gte": datetime.utcnow() - timedelta(days=1)},
+        }
+    ):
+        futures.append(
+            __handle_canary_verification(state=state, canary=CanaryModel(**canary))
+        )
+
+    if futures:
+        asyncio.gather(*futures)
 
 
 async def canary_owner_alerts(state: "State") -> None:
@@ -79,10 +115,12 @@ async def canary_owner_alerts(state: "State") -> None:
                     )
                 )
 
-        asyncio.gather(*futures)
+        if futures:
+            asyncio.gather(*futures)
 
 
 tasks: list[Tab] = [
     # Check 1 minute for canary warrants that are due to expire
-    Tab(spec="*/1 * * * *", func=canary_owner_alerts)
+    Tab(spec="*/1 * * * *", func=canary_owner_alerts),
+    Tab(spec="0 */1 * * *", func=canary_domain_verification),
 ]
