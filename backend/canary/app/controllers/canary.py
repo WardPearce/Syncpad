@@ -222,12 +222,18 @@ class CanaryController(Controller):
     ) -> None:
         canary = await Canary(state, domain).get()
 
-        await state.mongo.subscribed_canary.insert_one(
-            {
-                "user_id": request.user,
-                "canary_id": canary.id,
-            }
-        )
+        if (
+            await state.mongo.subscribed_canary.count_documents(
+                {"user_id": request.user, "canary_id": canary.id}
+            )
+            == 0
+        ):
+            await state.mongo.subscribed_canary.insert_one(
+                {
+                    "user_id": request.user,
+                    "canary_id": canary.id,
+                }
+            )
 
     @post(
         "/create/warrant",
