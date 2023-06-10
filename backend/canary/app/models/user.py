@@ -93,7 +93,7 @@ class __CreateUserShared(EmailModel):
     keychain: AccountKeychainModal
     kdf: Argon2Modal
 
-    ip_lookup_consent: bool = True
+    ip_lookup_consent: bool = False
 
     signature: str = Field(
         ...,
