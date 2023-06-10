@@ -380,7 +380,7 @@ class EmailNotificationController(Controller):
     @post(
         "/add",
         description="Enable email notification",
-        tags=["account", "notifications", "webhook"],
+        tags=["account", "notifications"],
     )
     async def add_email(
         self,
@@ -395,7 +395,7 @@ class EmailNotificationController(Controller):
     @delete(
         "/remove",
         description="Disable email notification",
-        tags=["account", "notifications", "webhook"],
+        tags=["account", "notifications"],
     )
     async def remove_email(
         self,
