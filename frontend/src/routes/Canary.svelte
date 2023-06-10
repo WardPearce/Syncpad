@@ -39,6 +39,8 @@
 
   let firstCanaryVisit = true;
 
+  const currentTime = dayjs();
+
   let currentPage = 0;
   let statementApiError = "";
   let canaryApiError = "";
@@ -343,6 +345,22 @@
       {#if !serverKeyHashMatches || !canaryBioMatches || !canaryWarrantMatches}
         <article class="error">
           <p>This canary failed validation, do NOT trust it.</p>
+        </article>
+      {/if}
+      {#if utcDate(currentPublishedWarrant.issued) > currentTime}
+        <article class="error">
+          <p>
+            This canary is from the future, do NOT trust it. Please check your
+            system clock.
+          </p>
+        </article>
+      {/if}
+      {#if currentPublishedWarrant.active && currentTime > utcDate(currentPublishedWarrant.next_canary)}
+        <article class="error">
+          <p>
+            This canary is out of date, please consider any statements made as
+            untrue. If this is a mistake, contact the canary owner to update it.
+          </p>
         </article>
       {/if}
       <div class="grid">
