@@ -15,6 +15,7 @@ from app.errors import (
     UnsupportedFileType,
 )
 from app.lib.canary import Canary
+from app.lib.otp import OneTimePassword
 from app.lib.s3 import format_path, s3_create_client
 from app.lib.user import User
 from app.models.canary import (
@@ -168,6 +169,66 @@ class PublishCanary(Controller):
 class CanaryController(Controller):
     path = "/{domain:str}"
 
+    @get(
+        "/subscriptions/am",
+        description="Check if user is subscribed to a canary",
+        tags=["canary", "subscription"],
+    )
+    async def am_subscribed(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        domain: str,
+    ) -> bool:
+        canary = await Canary(state, domain).get()
+
+        return (
+            await state.mongo.subscribed_canary.count_documents(
+                {"user_id": request.user, "canary_id": canary.id}
+            )
+            > 0
+        )
+
+    @delete(
+        "/subscription/unsubscribe",
+        description="Unsubscribe from a canary",
+        tags=["canary", "subscription"],
+    )
+    async def unsubscribe(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        domain: str,
+    ) -> None:
+        canary = await Canary(state, domain).get()
+
+        await state.mongo.subscribed_canary.delete_one(
+            {
+                "user_id": request.user,
+                "canary_id": canary.id,
+            }
+        )
+
+    @post(
+        "/subscription/subscribe",
+        description="Subscribe to a canary",
+        tags=["canary", "subscription"],
+    )
+    async def subscribe(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        domain: str,
+    ) -> None:
+        canary = await Canary(state, domain).get()
+
+        await state.mongo.subscribed_canary.insert_one(
+            {
+                "user_id": request.user,
+                "canary_id": canary.id,
+            }
+        )
+
     @post(
         "/create/warrant",
         description="Create a warrant for a canary",
@@ -272,8 +333,15 @@ class CanaryController(Controller):
 
     @delete("/delete", description="Delete a canary", tags=["canary"])
     async def delete_canary(
-        self, domain: str, request: Request[ObjectId, Token, Any], state: "State"
+        self,
+        domain: str,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        otp: str,
     ) -> None:
+        user = await User(state, request.user).get()
+        await OneTimePassword.validate_user(state, user, otp)
+
         await Canary(state, domain).user(request.user).delete()
 
     @get(

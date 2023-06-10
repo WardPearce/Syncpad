@@ -9,6 +9,7 @@ import { AccountService } from './services/AccountService';
 import { CanaryService } from './services/CanaryService';
 import { NotificationsService } from './services/NotificationsService';
 import { SessionService } from './services/SessionService';
+import { SubscriptionService } from './services/SubscriptionService';
 import { WarrantService } from './services/WarrantService';
 import { WebhookService } from './services/WebhookService';
 
@@ -20,6 +21,7 @@ export class CanaryClient {
     public readonly canary: CanaryService;
     public readonly notifications: NotificationsService;
     public readonly session: SessionService;
+    public readonly subscription: SubscriptionService;
     public readonly warrant: WarrantService;
     public readonly webhook: WebhookService;
 
@@ -42,6 +44,7 @@ export class CanaryClient {
         this.canary = new CanaryService(this.request);
         this.notifications = new NotificationsService(this.request);
         this.session = new SessionService(this.request);
+        this.subscription = new SubscriptionService(this.request);
         this.warrant = new WarrantService(this.request);
         this.webhook = new WebhookService(this.request);
     }

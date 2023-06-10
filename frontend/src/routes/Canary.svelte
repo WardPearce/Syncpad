@@ -25,6 +25,14 @@
 
   let isLoading = true;
 
+  enum SubscribeStatus {
+    Unsubscribed,
+    Subscribed,
+    LoadingStatus,
+  }
+
+  let subscribeStatus: SubscribeStatus = SubscribeStatus.LoadingStatus;
+
   let canaryBioMatches = false;
   let serverKeyHashMatches = false;
   let canaryWarrantMatches = false;
@@ -96,6 +104,9 @@
       }
 
       await getPublishedCanary();
+
+      // Load subscription status in the background
+      loadSubscribeStatus();
     } catch (error) {
       canaryApiError = error.body.detail;
     }
@@ -103,9 +114,29 @@
     isLoading = false;
   });
 
-  let subscribed = false;
   async function toggleSubscribe() {
-    subscribed = !subscribed;
+    if (subscribeStatus === SubscribeStatus.Subscribed) {
+      subscribeStatus = SubscribeStatus.Unsubscribed;
+      await apiClient.subscription.controllersCanaryDomainSubscriptionUnsubscribeUnsubscribe(
+        domainName
+      );
+    } else {
+      subscribeStatus = SubscribeStatus.Subscribed;
+      await apiClient.subscription.controllersCanaryDomainSubscriptionSubscribeSubscribe(
+        domainName
+      );
+    }
+  }
+
+  async function loadSubscribeStatus() {
+    let status =
+      await apiClient.subscription.controllersCanaryDomainSubscriptionsAmAmSubscribed(
+        domainName
+      );
+
+    subscribeStatus = status
+      ? SubscribeStatus.Subscribed
+      : SubscribeStatus.Unsubscribed;
   }
 
   async function getPublishedCanary(page: number = 0) {
@@ -220,17 +251,19 @@
     </article>
   {/if}
 
-  <nav class="right-align">
-    <button on:click={toggleSubscribe}>
-      {#if !subscribed}
-        <i>notifications</i>
-        <span>Subscribe</span>
-      {:else}
-        <i>notifications_active</i>
-        <span>Unsubscribe</span>
-      {/if}
-    </button>
-  </nav>
+  {#if subscribeStatus !== SubscribeStatus.LoadingStatus}
+    <nav class="right-align">
+      <button on:click={toggleSubscribe}>
+        {#if subscribeStatus === SubscribeStatus.Unsubscribed}
+          <i>notifications</i>
+          <span>Subscribe</span>
+        {:else}
+          <i>notifications_active</i>
+          <span>Unsubscribe</span>
+        {/if}
+      </button>
+    </nav>
+  {/if}
 
   <article>
     <details>
