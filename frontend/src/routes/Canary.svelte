@@ -358,8 +358,8 @@
       {#if currentPublishedWarrant.active && currentTime > utcDate(currentPublishedWarrant.next_canary)}
         <article class="error">
           <p>
-            This canary is out of date, please consider any statements made as
-            untrue. If this is a mistake, contact the canary owner to update it.
+            This canary is out of date, please consider the site compromised
+            until a new canary is published saying otherwise.
           </p>
         </article>
       {/if}
