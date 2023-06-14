@@ -119,21 +119,21 @@
   async function toggleSubscribe() {
     if (subscribeStatus === SubscribeStatus.Subscribed) {
       subscribeStatus = SubscribeStatus.Unsubscribed;
-      await apiClient.subscription.controllersCanaryDomainSubscriptionUnsubscribeUnsubscribe(
-        domainName
+      await apiClient.subscription.controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
+        canaryBio._id
       );
     } else {
       subscribeStatus = SubscribeStatus.Subscribed;
-      await apiClient.subscription.controllersCanaryDomainSubscriptionSubscribeSubscribe(
-        domainName
+      await apiClient.subscription.controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
+        canaryBio._id
       );
     }
   }
 
   async function loadSubscribeStatus() {
     let status =
-      await apiClient.subscription.controllersCanaryDomainSubscriptionsAmAmSubscribed(
-        domainName
+      await apiClient.subscription.controllersCanarySubscriptionCanaryIdAmSubscribed(
+        canaryBio._id
       );
 
     subscribeStatus = status

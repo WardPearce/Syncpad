@@ -11,18 +11,18 @@ export class SubscriptionService {
     /**
      * AmSubscribed
      * Check if user is subscribed to a canary
-     * @param domain
+     * @param canaryId
      * @returns boolean Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersCanaryDomainSubscriptionsAmAmSubscribed(
-        domain: string,
+    public controllersCanarySubscriptionCanaryIdAmSubscribed(
+        canaryId: string,
     ): CancelablePromise<boolean> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/canary/{domain}/subscriptions/am',
+            url: '/controllers/canary/subscription/{canary_id}',
             path: {
-                'domain': domain,
+                'canary_id': canaryId,
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,
@@ -33,18 +33,18 @@ export class SubscriptionService {
     /**
      * Subscribe
      * Subscribe to a canary
-     * @param domain
+     * @param canaryId
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanaryDomainSubscriptionSubscribeSubscribe(
-        domain: string,
+    public controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
+        canaryId: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/canary/{domain}/subscription/subscribe',
+            url: '/controllers/canary/subscription/{canary_id}/subscribe',
             path: {
-                'domain': domain,
+                'canary_id': canaryId,
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,
@@ -55,18 +55,18 @@ export class SubscriptionService {
     /**
      * Unsubscribe
      * Unsubscribe from a canary
-     * @param domain
+     * @param canaryId
      * @returns void
      * @throws ApiError
      */
-    public controllersCanaryDomainSubscriptionUnsubscribeUnsubscribe(
-        domain: string,
+    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
+        canaryId: string,
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/canary/{domain}/subscription/unsubscribe',
+            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
             path: {
-                'domain': domain,
+                'canary_id': canaryId,
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,

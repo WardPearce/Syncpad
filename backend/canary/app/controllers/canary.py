@@ -166,31 +166,31 @@ class PublishCanary(Controller):
         )
 
 
-class CanaryController(Controller):
-    path = "/{domain:str}"
+class CanarySubscription(Controller):
+    path = "/subscription/{canary_id:str}"
 
     @get(
-        "/subscriptions/am",
+        "/",
         description="Check if user is subscribed to a canary",
         tags=["canary", "subscription"],
     )
     async def am_subscribed(
-        self,
-        request: Request[ObjectId, Token, Any],
-        state: "State",
-        domain: str,
+        self, request: Request[ObjectId, Token, Any], state: "State", canary_id: str
     ) -> bool:
-        canary = await Canary(state, domain).get()
+        try:
+            id_ = ObjectId(canary_id)
+        except InvalidId:
+            return False
 
         return (
             await state.mongo.subscribed_canary.count_documents(
-                {"user_id": request.user, "canary_id": canary.id}
+                {"user_id": request.user, "canary_id": id_}
             )
             > 0
         )
 
     @delete(
-        "/subscription/unsubscribe",
+        "/unsubscribe",
         description="Unsubscribe from a canary",
         tags=["canary", "subscription"],
     )
@@ -198,19 +198,22 @@ class CanaryController(Controller):
         self,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        domain: str,
+        canary_id: str,
     ) -> None:
-        canary = await Canary(state, domain).get()
+        try:
+            id_ = ObjectId(canary_id)
+        except InvalidId:
+            return
 
         await state.mongo.subscribed_canary.delete_one(
             {
                 "user_id": request.user,
-                "canary_id": canary.id,
+                "canary_id": id_,
             }
         )
 
     @post(
-        "/subscription/subscribe",
+        "/subscribe",
         description="Subscribe to a canary",
         tags=["canary", "subscription"],
     )
@@ -218,22 +221,29 @@ class CanaryController(Controller):
         self,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        domain: str,
+        canary_id: str,
     ) -> None:
-        canary = await Canary(state, domain).get()
+        try:
+            id_ = ObjectId(canary_id)
+        except InvalidId:
+            return
 
         if (
             await state.mongo.subscribed_canary.count_documents(
-                {"user_id": request.user, "canary_id": canary.id}
+                {"user_id": request.user, "canary_id": id_}
             )
             == 0
         ):
             await state.mongo.subscribed_canary.insert_one(
                 {
                     "user_id": request.user,
-                    "canary_id": canary.id,
+                    "canary_id": id_,
                 }
             )
+
+
+class CanaryController(Controller):
+    path = "/{domain:str}"
 
     @post(
         "/create/warrant",
@@ -408,5 +418,6 @@ router = Router(
         published_warrant,
         PublishCanary,
         CanaryController,
+        CanarySubscription,
     ],
 )
