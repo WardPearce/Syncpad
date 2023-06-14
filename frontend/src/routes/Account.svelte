@@ -256,6 +256,22 @@
           class="page padding active surface-variant"
           style="border-radius: 0 0 .75rem .75rem;"
         >
+          {#if currentNotifyTab === WebhookModel.type.CANARY_RENEWALS}
+            <p>
+              Whenever your canary is due for renewal, receive a alert via these
+              channels.
+            </p>
+          {:else if currentNotifyTab === WebhookModel.type.CANARY_SUBSCRIPTIONS}
+            <p>
+              Receive a notification whenever a canary you are subscribed via
+              these channels.
+            </p>
+          {:else}
+            <p>
+              Whenever a user submits a survey you created, receive a
+              notification via these channels.
+            </p>
+          {/if}
           <h6>Emails</h6>
           <label class="switch" style="margin: 1em 0;">
             <input

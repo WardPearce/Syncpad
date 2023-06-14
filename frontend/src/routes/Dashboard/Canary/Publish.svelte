@@ -80,18 +80,28 @@
                     { next: nextCanary }
                 );
 
-            const latestBlock = await (
-                await fetch(
-                    `${import.meta.env.VITE_BLOCKSTREAM_API}/blocks/tip/hash`
-                )
-            ).text();
+            let latestBlock: string;
+            try {
+                latestBlock = await (
+                    await fetch(
+                        `${
+                            import.meta.env.VITE_BLOCKSTREAM_API
+                        }/blocks/tip/hash`
+                    )
+                ).text();
+            } catch {
+                errorMsg = `Failed to fetch latest BTC block from ${
+                    import.meta.env.VITE_BLOCKSTREAM_API
+                }`;
+                return;
+            }
 
             const formattedStatement = statement
                 .replaceAll("{domain}", domainName)
                 .replaceAll("{nextCanary}", createdWarrant.next_canary)
                 .replaceAll("{currentDate}", createdWarrant.issued);
 
-            await apiClient.warrant.controllersCanaryWarrantIdPublishPublish(
+            await apiClient.warrant.controllersCanaryWarrantWarrantIdPublishPublish(
                 createdWarrant._id,
                 {
                     statement: formattedStatement,

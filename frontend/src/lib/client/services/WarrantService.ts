@@ -41,20 +41,20 @@ export class WarrantService {
     /**
      * Publish
      * Publish a canary
-     * @param id
+     * @param warrantId
      * @param requestBody
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanaryWarrantIdPublishPublish(
-        id: string,
+    public controllersCanaryWarrantWarrantIdPublishPublish(
+        warrantId: string,
         requestBody: PublishCanaryWarrantModel,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/canary/warrant/{id_}/publish',
+            url: '/controllers/canary/warrant/{warrant_id}/publish',
             path: {
-                'id_': id,
+                'warrant_id': warrantId,
             },
             body: requestBody,
             mediaType: 'application/json',

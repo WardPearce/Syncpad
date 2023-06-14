@@ -128,30 +128,30 @@ async def published_warrant(
 
 
 class PublishCanary(Controller):
-    path = "/warrant/{id_:str}"
+    path = "/warrant/{warrant_id:str}"
 
     @post("/publish", description="Publish a canary", tags=["canary", "warrant"])
     async def publish(
         self,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        id_: str,
+        warrant_id: str,
         data: PublishCanaryWarrantModel,
     ) -> None:
         try:
-            warrant_id = ObjectId(id_)
+            id_ = ObjectId(warrant_id)
         except InvalidId:
             raise PublishedWarrantNotFoundException()
 
         warrant = await state.mongo.canary_warrant.find_one(
-            {"_id": warrant_id, "user_id": request.user, "active": False}
+            {"_id": id_, "user_id": request.user, "active": False}
         )
         if not warrant:
             raise PublishedWarrantNotFoundException()
 
         await state.mongo.canary_warrant.update_one(
             {
-                "_id": warrant_id,
+                "_id": id_,
                 "user_id": request.user,
                 "active": False,
             },
@@ -161,7 +161,7 @@ class PublishCanary(Controller):
         )
 
         await state.mongo.canary_warrant.update_many(
-            {"canary_id": warrant["canary_id"], "_id": {"$ne": warrant_id}},
+            {"canary_id": warrant["canary_id"], "_id": {"$ne": id_}},
             {"$set": {"active": False}},
         )
 
