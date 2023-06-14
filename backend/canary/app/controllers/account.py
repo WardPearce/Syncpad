@@ -228,6 +228,11 @@ class LoginController(Controller):
             ).dict()
         )
 
+        # If OTP mark as completed, redact secrets.
+        if user.otp.completed:
+            user.otp.secret = None
+            user.otp.provisioning_uri = None
+
         return jwt_cookie_auth.login(
             identifier=str(user.id),
             token_expiration=token_timedelta,
@@ -463,6 +468,38 @@ class WebhookController(Controller):
         )
 
 
+class PrivacyController(Controller):
+    path = "/privacy"
+
+    @delete(
+        "/ip-progressing/disallow",
+        tags=["account", "privacy"],
+    )
+    async def ip_progressing(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {"$set": {"ip_lookup_consent": False}},
+        )
+
+    @post(
+        "/ip-progressing/consent",
+        tags=["account", "privacy"],
+    )
+    async def ip_progressing_consent(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {"$set": {"ip_lookup_consent": True}},
+        )
+
+
 @delete(
     path="/logout",
     description="Logout of User account",
@@ -486,6 +523,7 @@ router = Router(
         OtpController,
         WebhookController,
         EmailNotificationController,
+        PrivacyController,
         create_account,
         jwt_info,
         email_resend,

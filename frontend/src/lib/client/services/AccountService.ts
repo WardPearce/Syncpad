@@ -251,6 +251,30 @@ export class AccountService {
     }
 
     /**
+     * IpProgressing
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/privacy/ip-progressing/disallow',
+        });
+    }
+
+    /**
+     * IpProgressingConsent
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/privacy/ip-progressing/consent',
+        });
+    }
+
+    /**
      * CreateAccount
      * Create a user account
      * @param captcha

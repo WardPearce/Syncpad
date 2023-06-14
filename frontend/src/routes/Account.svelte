@@ -33,6 +33,16 @@
 
   let otpError = "";
 
+  async function toggleIpLookupConsent() {
+    if (user.ip_lookup_consent) {
+      await apiClient.privacy.controllersAccountPrivacyIpProgressingDisallowIpProgressing();
+    } else {
+      await apiClient.privacy.controllersAccountPrivacyIpProgressingConsentIpProgressingConsent();
+    }
+
+    user.ip_lookup_consent = !user.ip_lookup_consent;
+  }
+
   // Replace when crypto publicKey.ts is implemented
   function decryptSessionInfo(base64CipherText: string): string {
     try {
@@ -210,7 +220,11 @@
         establish a direct correlation between IPs and user accounts.
       </p>
       <label class="switch">
-        <input type="checkbox" checked={user.ip_lookup_consent} />
+        <input
+          type="checkbox"
+          checked={user.ip_lookup_consent}
+          on:click={toggleIpLookupConsent}
+        />
         <span />
       </label>
     </details>

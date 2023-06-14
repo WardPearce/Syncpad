@@ -337,7 +337,7 @@
           <h6>This canary is no longer active.</h6>
           <button
             on:click={async () => {
-              getPublishedCanary(0), (currentPage = 0);
+              (currentPage = 0), await getPublishedCanary(0);
             }}>Go to latest</button
           >
         </nav>
