@@ -342,14 +342,39 @@
       </p>
 
       {#if advanceMode}
+        <h6>Canary ID</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={canaryBio._id} />
+        </div>
+
         <h6>Public key</h6>
         <div class="field border" style="margin-top: 0;">
           <input readonly value={canaryBio.keypair.public_key} />
         </div>
 
-        <h6>Hash</h6>
+        <h6>Public key hash</h6>
         <div class="field border" style="margin-top: 0;">
           <input readonly value={serverPublicKeyHash} />
+        </div>
+
+        <h6>Algorithms</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={canaryBio.algorithms} />
+        </div>
+
+        <h6>Signature</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={canaryBio.signature} />
+        </div>
+
+        <h6>Created</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={relativeDate(canaryBio.created)} />
+        </div>
+
+        <h5>Raw message</h5>
+        <div class="field textarea extra border" style="margin-top: 0;">
+          <textarea readonly value={JSON.stringify(canaryBio, null, 2)} />
         </div>
       {/if}
     </details>
