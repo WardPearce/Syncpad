@@ -1,4 +1,5 @@
-import { CanaryClient } from "./client";
+import { validateData } from "./ajvValidate";
+import { ApiError, CanaryClient } from "./client";
 
 import type { ApiRequestOptions } from "./client/core/ApiRequestOptions";
 import type { CancelablePromise } from "./client/core/CancelablePromise";
@@ -16,6 +17,27 @@ class CSrfHttpRequest extends FetchHttpRequest {
 
             this.config.HEADERS["x-csrftoken"] = csrfToken;
         }
+
+        try {
+            validateData(
+                options.url.toLowerCase(),
+                options.method.toLowerCase(),
+                options.body
+            );
+        } catch (error) {
+            throw new ApiError(
+                options,
+                {
+                    url: "",
+                    ok: false,
+                    status: 400,
+                    statusText: "400",
+                    body: { detail: error.message }
+                },
+                error.message
+            );
+        }
+
         return request(this.config, options);
     }
 }

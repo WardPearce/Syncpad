@@ -135,14 +135,16 @@
   }
 
   async function loadSubscribeStatus() {
-    let status =
-      await apiClient.subscription.controllersCanarySubscriptionCanaryIdAmSubscribed(
-        canaryBio._id
-      );
+    try {
+      let status =
+        await apiClient.subscription.controllersCanarySubscriptionCanaryIdAmSubscribed(
+          canaryBio._id
+        );
 
-    subscribeStatus = status
-      ? SubscribeStatus.Subscribed
-      : SubscribeStatus.Unsubscribed;
+      subscribeStatus = status
+        ? SubscribeStatus.Subscribed
+        : SubscribeStatus.Unsubscribed;
+    } catch {}
   }
 
   async function downloadDocument(toDownload: DocumentCanaryWarrantModel) {
