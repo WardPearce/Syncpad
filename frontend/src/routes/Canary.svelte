@@ -508,6 +508,16 @@
 
                       <p>{prettyBytes(document.size)}</p>
 
+                      {#if advanceMode}
+                        <div
+                          class="field border label"
+                          style="margin-top: 1em;"
+                        >
+                          <label for="file-hash">BLAKE2b hash</label>
+                          <input readonly value={document.hash} />
+                        </div>
+                      {/if}
+
                       {#if documentDownloading.includes(document.file_id)}
                         <span class="loader small" />
                       {:else}

@@ -34,7 +34,7 @@ class __CanarySharedModel(CustomJsonEncoder, DomainModel):
     about: str = Field(..., max_length=500)
     signature: str = Field(..., max_length=128)
     algorithms: str = Field(
-        "XCHACHA20_POLY1305+ED25519+BLAKE2b",
+        "ED25519+BLAKE2b",
         max_length=120,
         description="Algorithms used for canary",
     )
