@@ -28,7 +28,7 @@ class CSrfHttpRequest extends FetchHttpRequest {
             throw new ApiError(
                 options,
                 {
-                    url: "",
+                    url: options.url,
                     ok: false,
                     status: 400,
                     statusText: "400",
