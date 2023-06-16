@@ -9,9 +9,9 @@
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type {
-    DocumentCanaryWarrantModel,
-    PublicCanaryModel,
-    PublishedCanaryWarrantModel,
+      DocumentCanaryWarrantModel,
+      PublicCanaryModel,
+      PublishedCanaryWarrantModel,
   } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
@@ -52,6 +52,7 @@
   let currentPublishedWarrant: PublishedCanaryWarrantModel | undefined;
   let currentPublishedWarrantBlockTime: number;
   let documentHashes: Record<string, string> = {};
+  let documentDownloading: string[] = [];
   onMount(async () => {
     try {
       canaryBio =
@@ -149,6 +150,8 @@
       return;
     }
 
+    documentDownloading = [...documentDownloading, toDownload.hash];
+
     let documentData: Uint8Array;
     try {
       documentData = new Uint8Array(
@@ -169,6 +172,10 @@
     anchor.download = toDownload.filename;
     anchor.click();
     window.URL.revokeObjectURL(url);
+
+    documentDownloading = documentDownloading.filter(
+      (hash) => hash !== toDownload.hash
+    );
   }
 
   async function getPublishedCanary(page: number = 0) {
@@ -474,16 +481,20 @@
 
                       <p>{prettyBytes(document.size)}</p>
 
-                      <nav class="wrap">
-                        <button
-                          on:click={async () => {
-                            await downloadDocument(document);
-                          }}
-                          class="small"
-                        >
-                          <i>download</i>
-                        </button>
-                      </nav>
+                      {#if documentDownloading.includes(document.hash)}
+                        <span class="loader small" />
+                      {:else}
+                        <nav class="wrap">
+                          <button
+                            on:click={async () => {
+                              await downloadDocument(document);
+                            }}
+                            class="small secondary"
+                          >
+                            <i>download</i>
+                          </button>
+                        </nav>
+                      {/if}
                     </div>
                   </div>
                 </article>
