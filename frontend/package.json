@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run generate; vite",
-    "build": "npm run generate; vite build",
+    "build": "vite build",
     "preview": "npm run generate; vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "generate": "openapi --input http://localhost/api/schema/openapi.json --output ./src/lib/client --name CanaryClient; curl -o ./src/lib/client/schema.json http://localhost/api/schema/openapi.json  > /dev/null 2>&1"
