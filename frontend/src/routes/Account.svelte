@@ -15,11 +15,18 @@
   } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { relativeDate } from "../lib/date";
-  import { localSecrets, type LocalSecretsModel } from "../stores";
+  import {
+    advanceModeStore,
+    localSecrets,
+    type LocalSecretsModel,
+  } from "../stores";
 
   interface SessionDeviceModel extends SessionModel {
     uaparser: UAParser;
   }
+
+  let advanceMode: boolean;
+  advanceModeStore.subscribe((value) => (advanceMode = value));
 
   let activeSessions: SessionDeviceModel[] = [];
   let loggedInSecrets = get(localSecrets) as LocalSecretsModel;
@@ -418,6 +425,45 @@
       {/if}
     </details>
   </article>
+
+  {#if advanceMode}
+    <article>
+      <details>
+        <summary class="none">
+          <div class="row">
+            <div class="max">
+              <h4>Advance mode</h4>
+            </div>
+            <i>arrow_drop_down</i>
+          </div>
+        </summary>
+        <p>
+          When advance mode is enabled, you'll be provided with extra
+          information around how our systems work.
+        </p>
+
+        <h6>User ID</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={user._id} />
+        </div>
+
+        <h6>Algorithms</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={user.algorithms} />
+        </div>
+
+        <h6>Signature</h6>
+        <div class="field border" style="margin-top: 0;">
+          <input readonly value={user.signature} />
+        </div>
+
+        <h6>Raw account infomation</h6>
+        <div class="field textarea extra border" style="margin-top: 0;">
+          <textarea readonly value={JSON.stringify(user, null, 2)} />
+        </div>
+      </details>
+    </article>
+  {/if}
 
   <article>
     <details>
