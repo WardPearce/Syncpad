@@ -160,7 +160,7 @@ class PublishCanary(Controller):
         if not warrant:
             raise PublishedWarrantNotFoundException()
 
-        if len(warrant["documents"]) > SETTINGS.canary.documents.max_amount:
+        if len(warrant["documents"]) >= SETTINGS.canary.documents.max_amount:
             raise TooManyFiles()
 
         uploaded_file = await s3_upload_file(
