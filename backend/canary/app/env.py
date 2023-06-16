@@ -48,7 +48,6 @@ class Documents(BaseModel):
     max_size: int = 36700000
     allowed_extensions: List[str] = [
         ".pdf",
-        ".html",
         ".png",
         ".jpeg",
         ".jpg",
