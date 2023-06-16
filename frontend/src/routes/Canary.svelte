@@ -9,9 +9,9 @@
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type {
-      DocumentCanaryWarrantModel,
-      PublicCanaryModel,
-      PublishedCanaryWarrantModel,
+    DocumentCanaryWarrantModel,
+    PublicCanaryModel,
+    PublishedCanaryWarrantModel,
   } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
@@ -150,7 +150,7 @@
       return;
     }
 
-    documentDownloading = [...documentDownloading, toDownload.hash];
+    documentDownloading = [...documentDownloading, toDownload.file_id];
 
     let documentData: Uint8Array;
     try {
@@ -174,7 +174,7 @@
     window.URL.revokeObjectURL(url);
 
     documentDownloading = documentDownloading.filter(
-      (hash) => hash !== toDownload.hash
+      (id) => id !== toDownload.file_id
     );
   }
 
@@ -473,7 +473,7 @@
         {#if Object.keys(currentPublishedWarrant.documents).length > 0}
           <div class="grid">
             {#each currentPublishedWarrant.documents as document}
-              <div class="s12 m6 l3">
+              <div class="s12 m6 l4">
                 <article class="border surface-variant">
                   <div class="row">
                     <div class="max">
@@ -481,7 +481,7 @@
 
                       <p>{prettyBytes(document.size)}</p>
 
-                      {#if documentDownloading.includes(document.hash)}
+                      {#if documentDownloading.includes(document.file_id)}
                         <span class="loader small" />
                       {:else}
                         <nav class="wrap">
