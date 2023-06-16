@@ -117,24 +117,19 @@ class CreatedCanaryWarrantModel(CustomJsonEncoder):
         return value.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-class UploadDocumentCanaryWarrantModel(BaseModel):
-    hash_: str = Field(..., alias="hash")
-    file: UploadFile
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
 class DocumentCanaryWarrantModel(BaseModel):
     hash_: str = Field(..., alias="hash")
     filename: str
     download_url: str = ""
     file_id: str
+    size: int
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.download_url = f"{SETTINGS.s3.download_url}/canary/document/{self.file_id}"
+        self.download_url = (
+            f"{SETTINGS.s3.download_url}/canary/documents/{self.file_id}"
+        )
 
 
 class PublishCanaryWarrantModel(CustomJsonEncoder):
@@ -152,4 +147,4 @@ class PublishedCanaryWarrantModel(PublishCanaryWarrantModel, CreatedCanaryWarran
     canary_id: ObjectId
     user_id: ObjectId
     active: bool
-    documents: List[DocumentCanaryWarrantModel] = []
+    documents: List[DocumentCanaryWarrantModel]

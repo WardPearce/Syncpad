@@ -15,7 +15,7 @@ export type PublishedCanaryWarrantModel = {
     canary_id: any;
     user_id: any;
     active: boolean;
-    documents?: Array<DocumentCanaryWarrantModel>;
+    documents: Array<DocumentCanaryWarrantModel>;
 };
 
 export namespace PublishedCanaryWarrantModel {

@@ -24,6 +24,8 @@ class ErrorCodes(Enum):
     already_trusted_canary = 2012
     warrant_not_found = 2013
     too_many_webhooks = 2014
+    too_many_files = 2015
+    blake2_invalid = 2016
 
 
 class UserNotFoundException(NotFoundException):
@@ -143,6 +145,26 @@ class CanaryNotFoundException(NotFoundException):
         super().__init__(
             detail="Canary not found",
             extra={ERROR_CODE_KEY: ErrorCodes.canary_not_found.value},
+        )
+
+
+class InvalidBlake2Hash(NotFoundException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Invalid blake2 hash",
+            extra={ERROR_CODE_KEY: ErrorCodes.blake2_invalid.value},
+        )
+
+
+class TooManyFiles(NotFoundException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="To many files uploaded",
+            extra={ERROR_CODE_KEY: ErrorCodes.too_many_files.value},
         )
 
 

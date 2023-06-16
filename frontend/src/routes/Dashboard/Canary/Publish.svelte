@@ -9,6 +9,7 @@
         CreateCanaryWarrantModel,
         PublishCanaryWarrantModel,
     } from "../../../lib/client";
+    import hash from "../../../lib/crypto/hash";
     import secretKey, {
         SecretkeyLocation,
     } from "../../../lib/crypto/secretKey";
@@ -43,6 +44,7 @@
     let statement = statementTemplates["Operation as normal"].toString();
     let nextCanary = CreateCanaryWarrantModel.next.FORTNIGHT;
     let canaryConcern = PublishCanaryWarrantModel.concern.NONE;
+    let documents: FileList;
 
     let customTemplate = false;
     let publishModelActive = false;
@@ -101,6 +103,29 @@
                 .replaceAll("{nextCanary}", createdWarrant.next_canary)
                 .replaceAll("{currentDate}", createdWarrant.issued);
 
+            let documentHashes: Record<string, string> = {};
+
+            if (documents) {
+                let documentPromises: Promise<Response>[] = Array.from(
+                    documents
+                ).map(async (document) => {
+                    const docHash = hash.hashBase64Encode(
+                        new Uint8Array(await document.arrayBuffer()),
+                        true
+                    );
+
+                    documentHashes[document.name] = docHash;
+
+                    return apiClient.document.controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
+                        createdWarrant._id,
+                        docHash,
+                        [document]
+                    );
+                });
+
+                await Promise.all(documentPromises);
+            }
+
             await apiClient.warrant.controllersCanaryWarrantWarrantIdPublishPublish(
                 createdWarrant._id,
                 {
@@ -121,6 +146,7 @@
                             issued: createdWarrant.issued,
                             domain: domainName,
                             id: createdWarrant._id,
+                            document_hashes: documentHashes,
                         })
                     ),
                 }
@@ -250,7 +276,7 @@
         <nav style="margin-bottom: 2em;margin-top: 0;">
             <div class="field label suffix border" style="margin-top: 0;">
                 <input type="text" />
-                <input type="file" multiple={true} />
+                <input type="file" multiple={true} bind:files={documents} />
                 <label for="files">Files</label>
                 <i>attach_file</i>
                 <span class="helper"> Max 15MB each - Max 3 files </span>

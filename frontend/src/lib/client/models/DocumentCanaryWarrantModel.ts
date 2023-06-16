@@ -7,5 +7,6 @@ export type DocumentCanaryWarrantModel = {
     filename: string;
     download_url?: string;
     file_id: string;
+    size: number;
 };
 

@@ -7,6 +7,7 @@ from aiobotocore.session import get_session
 from app.env import SETTINGS
 from app.errors import FileTooBig, UnsupportedFileType
 from litestar.datastructures import UploadFile
+from pydantic import BaseModel
 
 
 def format_path(*paths: str) -> str:
@@ -24,13 +25,19 @@ def s3_create_client():
     )
 
 
+class UploadedFile(BaseModel):
+    size: int
+    file_id: str
+    path: str
+
+
 async def s3_upload_file(
     file: UploadFile,
     path: List[str],
     max_size: int,
     allowed_extensions: List[str],
     filename: Optional[str] = None,
-) -> str:
+) -> UploadedFile:
     file_ext = pathlib.Path(file.filename).suffix
 
     if file_ext not in allowed_extensions:
@@ -83,4 +90,8 @@ async def s3_upload_file(
             MultipartUpload={"Parts": parts},
         )
 
-    return filename_ext
+    return UploadedFile(
+        size=total_size,
+        file_id=filename_ext,
+        path=formatted_path,
+    )

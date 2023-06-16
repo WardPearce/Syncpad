@@ -1,8 +1,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UploadDocumentCanaryWarrantModel } from '../models/UploadDocumentCanaryWarrantModel';
-
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 
@@ -14,19 +12,22 @@ export class DocumentService {
      * UploadDocument
      * Upload a canary warrant document
      * @param warrantId
+     * @param hash
      * @param formData
-     * @returns any Request fulfilled, document follows
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanaryWarrantWarrantIdDocumentUploadDocument(
+    public controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
         warrantId: string,
-        formData: Array<UploadDocumentCanaryWarrantModel>,
+        hash: string,
+        formData: Blob,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
-            method: 'PUT',
-            url: '/controllers/canary/warrant/{warrant_id}/document',
+            method: 'POST',
+            url: '/controllers/canary/warrant/{warrant_id}/document/{hash_}',
             path: {
                 'warrant_id': warrantId,
+                'hash_': hash,
             },
             formData: formData,
             mediaType: 'multipart/form-data',

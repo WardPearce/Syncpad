@@ -1,5 +1,6 @@
 <script lang="ts">
   import dayjs from "dayjs";
+  import prettyBytes from "pretty-bytes";
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
 
@@ -49,6 +50,7 @@
   let publicServerKey: Uint8Array;
   let currentPublishedWarrant: PublishedCanaryWarrantModel | undefined;
   let currentPublishedWarrantBlockTime: number;
+  let documentHashes: Record<string, string> = {};
   onMount(async () => {
     try {
       canaryBio =
@@ -144,6 +146,7 @@
   async function getPublishedCanary(page: number = 0) {
     isLoading = true;
     currentPage = page;
+    documentHashes = {};
 
     try {
       const untrustedWarrant =
@@ -151,6 +154,10 @@
           canaryBio._id,
           page
         );
+
+      untrustedWarrant.documents?.forEach((document) => {
+        documentHashes[document.filename] = document.hash;
+      });
 
       try {
         signatures.validateHash(
@@ -164,6 +171,7 @@
             issued: untrustedWarrant.issued,
             domain: domainName,
             id: untrustedWarrant._id,
+            document_hashes: documentHashes,
           })
         );
         canaryWarrantMatches = true;
@@ -427,7 +435,36 @@
 
       {#if (serverKeyHashMatches && canaryBioMatches && canaryWarrantMatches) || advanceMode}
         <h5>Documents</h5>
-        <p>None</p>
+        {#if Object.keys(currentPublishedWarrant.documents).length > 0}
+          <div class="grid">
+            {#each currentPublishedWarrant.documents as document}
+              <div class="s12 m6 l3">
+                <article class="border surface-variant">
+                  <div class="row">
+                    <div class="max">
+                      <h6>{document.filename}</h6>
+
+                      <p>{prettyBytes(document.size)}</p>
+
+                      <nav class="wrap">
+                        <a
+                          href={document.download_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="button small"
+                        >
+                          <i>download</i>
+                        </a>
+                      </nav>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            {/each}
+          </div>
+        {:else}
+          <p>No documents</p>
+        {/if}
       {/if}
 
       {#if advanceMode}

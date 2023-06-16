@@ -32,7 +32,6 @@ export { PublishedCanaryWarrantModel } from './models/PublishedCanaryWarrantMode
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';
 export type { TrustedCanaryModel } from './models/TrustedCanaryModel';
-export type { UploadDocumentCanaryWarrantModel } from './models/UploadDocumentCanaryWarrantModel';
 export type { UserJtiModel } from './models/UserJtiModel';
 export type { UserLoginSignatureModel } from './models/UserLoginSignatureModel';
 export type { UserModel } from './models/UserModel';

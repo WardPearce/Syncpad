@@ -11,7 +11,9 @@ from app.errors import (
     CanaryTaken,
     DomainValidationError,
     FileTooBig,
+    InvalidBlake2Hash,
     PublishedWarrantNotFoundException,
+    TooManyFiles,
     UnsupportedFileType,
 )
 from app.lib.canary import Canary
@@ -29,7 +31,6 @@ from app.models.canary import (
     PublishCanaryWarrantModel,
     PublishedCanaryWarrantModel,
     TrustedCanaryModel,
-    UploadDocumentCanaryWarrantModel,
 )
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -132,8 +133,8 @@ async def published_warrant(
 class PublishCanary(Controller):
     path = "/warrant/{warrant_id:str}"
 
-    @put(
-        "/document",
+    @post(
+        "/document/{hash_:str}",
         description="Upload a canary warrant document",
         tags=["canary", "warrant", "document"],
     )
@@ -142,11 +143,12 @@ class PublishCanary(Controller):
         request: Request[ObjectId, Token, Any],
         state: "State",
         warrant_id: str,
-        data: Annotated[
-            List[UploadDocumentCanaryWarrantModel],
-            Body(media_type=RequestEncodingType.MULTI_PART),
-        ],
+        hash_: str,
+        data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
     ) -> None:
+        if len(hash_) > 64:
+            raise InvalidBlake2Hash()
+
         try:
             id_ = ObjectId(warrant_id)
         except InvalidId:
@@ -158,27 +160,28 @@ class PublishCanary(Controller):
         if not warrant:
             raise PublishedWarrantNotFoundException()
 
-        if len(data) > SETTINGS.canary.documents.max_amount:
-            raise FileTooBig()
+        if len(warrant["documents"]) > SETTINGS.canary.documents.max_amount:
+            raise TooManyFiles()
 
-        documents: List[dict] = []
-        for document in data:
-            documents.append(
-                DocumentCanaryWarrantModel(
-                    hash_=document.hash_,
-                    filename=document.file.filename,
-                    file_id=await s3_upload_file(
-                        document.file,
-                        ["canary", "documents"],
-                        max_size=SETTINGS.canary.documents.max_size,
-                        allowed_extensions=SETTINGS.canary.documents.allowed_extensions,
-                    ),
-                ).dict()
-            )
+        uploaded_file = await s3_upload_file(
+            data,
+            ["canary", "documents"],
+            max_size=SETTINGS.canary.documents.max_size,
+            allowed_extensions=SETTINGS.canary.documents.allowed_extensions,
+        )
 
         await state.mongo.canary_warrant.update_one(
             {"_id": id_, "user_id": request.user, "active": False},
-            {"$set": {"documents": documents}},
+            {
+                "$push": {
+                    "documents": {
+                        "hash": hash_,
+                        "filename": data.filename,
+                        "file_id": uploaded_file.file_id,
+                        "size": uploaded_file.size,
+                    }
+                }
+            },
         )
 
     @post("/publish", description="Publish a canary", tags=["canary", "warrant"])
@@ -435,13 +438,9 @@ class CanaryController(Controller):
         state: "State",
         data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
     ) -> None:
-        logo_ext = pathlib.Path(data.filename).suffix
-        if logo_ext not in SETTINGS.canary.logo.allowed_extensions:
-            raise UnsupportedFileType()
-
         canary = await Canary(state, domain).user(request.user).get()
 
-        filename = await s3_upload_file(
+        uploaded_file = await s3_upload_file(
             data,
             ["canary", "logos"],
             max_size=SETTINGS.canary.logo.max_size,
@@ -450,7 +449,7 @@ class CanaryController(Controller):
         )
 
         await state.mongo.canary.update_one(
-            {"_id": canary.id}, {"$set": {"logo": filename}}
+            {"_id": canary.id}, {"$set": {"logo": uploaded_file.file_id}}
         )
 
 
