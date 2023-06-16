@@ -1,7 +1,7 @@
 import secrets
 from typing import List, Optional
 
-from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
+from pydantic import BaseModel, BaseSettings, Field
 
 
 class MongoDB(BaseModel):
@@ -23,6 +23,7 @@ class S3(BaseModel):
     folder: str = "purplix"
     download_url: str
     endpoint_url: Optional[str] = None
+    chunk_size = 655400
 
 
 class OpenAPI(BaseModel):
@@ -44,7 +45,7 @@ class mCaptcha(BaseModel):
 
 class Documents(BaseModel):
     max_amount: int = 3
-    max_size: int = 5243000
+    max_size: int = 36700000
     allowed_extensions: List[str] = [
         ".pdf",
         ".html",
@@ -84,7 +85,7 @@ class Smtp(BaseModel):
 
 
 class CanaryLogo(BaseModel):
-    max_size = 1049000
+    max_size = 358400
     allowed_extensions: List[str] = [
         ".png",
         ".jpeg",

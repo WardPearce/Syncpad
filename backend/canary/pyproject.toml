@@ -33,7 +33,7 @@ humanize = "^4.6.0"
 
 [tool.poetry.group.dev.dependencies]
 motor-types = "^1.0.0b1"
-types-aiobotocore = "^2.5.0.post2"
+types-aiobotocore = {extras = ["essential"], version = "^2.5.0.post2"}
 
 [build-system]
 requires = ["poetry-core"]

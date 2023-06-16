@@ -1,9 +1,10 @@
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Optional
+from typing import List, Optional
 
 from app.env import SETTINGS
 from bson import ObjectId
+from litestar.datastructures import UploadFile
 from models.customs import CustomJsonEncoder, IvField
 from pydantic import BaseModel, Field, validator
 
@@ -116,6 +117,26 @@ class CreatedCanaryWarrantModel(CustomJsonEncoder):
         return value.strftime("%Y-%m-%dT%H:%M:%S")
 
 
+class UploadDocumentCanaryWarrantModel(BaseModel):
+    hash_: str = Field(..., alias="hash")
+    file: UploadFile
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class DocumentCanaryWarrantModel(BaseModel):
+    hash_: str = Field(..., alias="hash")
+    filename: str
+    download_url: str = ""
+    file_id: str
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.download_url = f"{SETTINGS.s3.download_url}/canary/document/{self.file_id}"
+
+
 class PublishCanaryWarrantModel(CustomJsonEncoder):
     signature: str = Field(
         ...,
@@ -124,24 +145,11 @@ class PublishCanaryWarrantModel(CustomJsonEncoder):
     )
     btc_latest_block: str = Field(..., max_length=64)
     statement: str = Field("", max_length=5500)
-    file_hashes: Dict[str, str] = {}
     concern: CanaryConcernEnum
-
-    @validator("file_hashes")
-    def validate_file_hashes(cls, value: dict) -> dict:
-        if len(value) > SETTINGS.canary.documents.max_amount:
-            raise ValueError(
-                f"Canary documents cannot exceed {SETTINGS.canary.documents.max_amount}"
-            )
-
-        for hash_ in value.values():
-            if len(hash_) > 64:
-                raise ValueError("File hash cannot exceed 64 characters")
-
-        return value
 
 
 class PublishedCanaryWarrantModel(PublishCanaryWarrantModel, CreatedCanaryWarrantModel):
     canary_id: ObjectId
     user_id: ObjectId
     active: bool
+    documents: List[DocumentCanaryWarrantModel] = []

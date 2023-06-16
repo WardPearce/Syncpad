@@ -8,7 +8,6 @@ from app.env import SETTINGS
 from app.errors import CanaryNotFoundException, DomainValidationError
 from app.models.canary import CanaryModel, PublicCanaryModel
 from bson import ObjectId
-from httpx import head
 
 if TYPE_CHECKING:
     from app.types import State

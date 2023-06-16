@@ -6,7 +6,6 @@ export type PublishCanaryWarrantModel = {
     signature: string;
     btc_latest_block: string;
     statement?: string;
-    file_hashes?: Record<string, any>;
     concern: PublishCanaryWarrantModel.concern;
 };
 

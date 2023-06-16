@@ -106,7 +106,7 @@
         <label for="logo">Logo</label>
         <i>attach_file</i>
 
-        <span class="helper"> Max 1MB - Best size 192x192 - PNG & JPEG </span>
+        <span class="helper"> Max 350KB - Best size 192x192 - PNG & JPEG </span>
       </div>
     </nav>
 

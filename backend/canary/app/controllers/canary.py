@@ -2,7 +2,7 @@ import hashlib
 import pathlib
 import secrets
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Optional, Tuple
 
 from app.env import SETTINGS
 from app.errors import (
@@ -16,23 +16,25 @@ from app.errors import (
 )
 from app.lib.canary import Canary
 from app.lib.otp import OneTimePassword
-from app.lib.s3 import format_path, s3_create_client
+from app.lib.s3 import s3_upload_file
 from app.lib.user import User
 from app.models.canary import (
     CanaryModel,
     CreateCanaryModel,
     CreateCanaryWarrantModel,
     CreatedCanaryWarrantModel,
+    DocumentCanaryWarrantModel,
     NextCanaryEnum,
     PublicCanaryModel,
     PublishCanaryWarrantModel,
     PublishedCanaryWarrantModel,
     TrustedCanaryModel,
+    UploadDocumentCanaryWarrantModel,
 )
 from bson import ObjectId
 from bson.errors import InvalidId
 from lib.otp import OneTimePassword
-from litestar import Controller, Request, Response, Router, delete, get, post
+from litestar import Controller, Request, Response, Router, delete, get, post, put
 from litestar.contrib.jwt import Token
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
@@ -129,6 +131,55 @@ async def published_warrant(
 
 class PublishCanary(Controller):
     path = "/warrant/{warrant_id:str}"
+
+    @put(
+        "/document",
+        description="Upload a canary warrant document",
+        tags=["canary", "warrant", "document"],
+    )
+    async def upload_document(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        warrant_id: str,
+        data: Annotated[
+            List[UploadDocumentCanaryWarrantModel],
+            Body(media_type=RequestEncodingType.MULTI_PART),
+        ],
+    ) -> None:
+        try:
+            id_ = ObjectId(warrant_id)
+        except InvalidId:
+            raise PublishedWarrantNotFoundException()
+
+        warrant = await state.mongo.canary_warrant.find_one(
+            {"_id": id_, "user_id": request.user, "active": False}
+        )
+        if not warrant:
+            raise PublishedWarrantNotFoundException()
+
+        if len(data) > SETTINGS.canary.documents.max_amount:
+            raise FileTooBig()
+
+        documents: List[dict] = []
+        for document in data:
+            documents.append(
+                DocumentCanaryWarrantModel(
+                    hash_=document.hash_,
+                    filename=document.file.filename,
+                    file_id=await s3_upload_file(
+                        document.file,
+                        ["canary", "documents"],
+                        max_size=SETTINGS.canary.documents.max_size,
+                        allowed_extensions=SETTINGS.canary.documents.allowed_extensions,
+                    ),
+                ).dict()
+            )
+
+        await state.mongo.canary_warrant.update_one(
+            {"_id": id_, "user_id": request.user, "active": False},
+            {"$set": {"documents": documents}},
+        )
 
     @post("/publish", description="Publish a canary", tags=["canary", "warrant"])
     async def publish(
@@ -286,6 +337,7 @@ class CanaryController(Controller):
             "next_canary": next_canary,
             "issued": now,
             "active": False,
+            "documents": [],
         }
 
         await state.mongo.canary_warrant.insert_one(created_warrant)
@@ -381,31 +433,24 @@ class CanaryController(Controller):
         domain: str,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        data: Annotated[
-            List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)
-        ],
+        data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
     ) -> None:
-        logo_ext = pathlib.Path(data[0].filename).suffix
+        logo_ext = pathlib.Path(data.filename).suffix
         if logo_ext not in SETTINGS.canary.logo.allowed_extensions:
             raise UnsupportedFileType()
 
         canary = await Canary(state, domain).user(request.user).get()
 
-        logo = await data[0].read(SETTINGS.canary.logo.max_size + 24)
-        if len(logo) > SETTINGS.canary.logo.max_size:
-            raise FileTooBig()
-
-        logo_filename = f"{canary.id}{logo_ext}"
-
-        async with s3_create_client() as s3:
-            await s3.put_object(
-                Bucket=SETTINGS.s3.bucket,
-                Key=format_path("canary", "logos", logo_filename),
-                Body=logo,
-            )
+        filename = await s3_upload_file(
+            data,
+            ["canary", "logos"],
+            max_size=SETTINGS.canary.logo.max_size,
+            allowed_extensions=SETTINGS.canary.logo.allowed_extensions,
+            filename=str(canary.id),
+        )
 
         await state.mongo.canary.update_one(
-            {"_id": canary.id}, {"$set": {"logo": logo_filename}}
+            {"_id": canary.id}, {"$set": {"logo": filename}}
         )
 
 

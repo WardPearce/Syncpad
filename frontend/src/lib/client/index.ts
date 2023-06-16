@@ -20,6 +20,7 @@ export type { CreateCanaryModel } from './models/CreateCanaryModel';
 export { CreateCanaryWarrantModel } from './models/CreateCanaryWarrantModel';
 export type { CreatedCanaryWarrantModel } from './models/CreatedCanaryWarrantModel';
 export type { CreateUserModel } from './models/CreateUserModel';
+export type { DocumentCanaryWarrantModel } from './models/DocumentCanaryWarrantModel';
 export type { DomainVerification } from './models/DomainVerification';
 export type { NotificationsModel } from './models/NotificationsModel';
 export type { OtpModel } from './models/OtpModel';
@@ -31,6 +32,7 @@ export { PublishedCanaryWarrantModel } from './models/PublishedCanaryWarrantMode
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';
 export type { TrustedCanaryModel } from './models/TrustedCanaryModel';
+export type { UploadDocumentCanaryWarrantModel } from './models/UploadDocumentCanaryWarrantModel';
 export type { UserJtiModel } from './models/UserJtiModel';
 export type { UserLoginSignatureModel } from './models/UserLoginSignatureModel';
 export type { UserModel } from './models/UserModel';
@@ -39,6 +41,7 @@ export { WebhookModel } from './models/WebhookModel';
 
 export { AccountService } from './services/AccountService';
 export { CanaryService } from './services/CanaryService';
+export { DocumentService } from './services/DocumentService';
 export { NotificationsService } from './services/NotificationsService';
 export { PrivacyService } from './services/PrivacyService';
 export { SessionService } from './services/SessionService';
