@@ -144,7 +144,11 @@ class PublishCanary(Controller):
         state: "State",
         warrant_id: str,
         hash_: str,
-        data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
+        data: Annotated[
+            # Annoying has to be a list, otherwise schema error.
+            List[UploadFile],
+            Body(media_type=RequestEncodingType.MULTI_PART),
+        ],
     ) -> None:
         if len(hash_) > 64:
             raise InvalidBlake2Hash()
@@ -164,7 +168,7 @@ class PublishCanary(Controller):
             raise TooManyFiles()
 
         uploaded_file = await s3_upload_file(
-            data,
+            data[0],
             ["canary", "documents"],
             max_size=SETTINGS.canary.documents.max_size,
             allowed_extensions=SETTINGS.canary.documents.allowed_extensions,
@@ -176,7 +180,7 @@ class PublishCanary(Controller):
                 "$push": {
                     "documents": {
                         "hash": hash_,
-                        "filename": data.filename,
+                        "filename": data[0].filename,
                         "file_id": uploaded_file.file_id,
                         "size": uploaded_file.size,
                     }
@@ -436,12 +440,14 @@ class CanaryController(Controller):
         domain: str,
         request: Request[ObjectId, Token, Any],
         state: "State",
-        data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
+        data: Annotated[
+            List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
     ) -> None:
         canary = await Canary(state, domain).user(request.user).get()
 
         uploaded_file = await s3_upload_file(
-            data,
+            data[0],
             ["canary", "logos"],
             max_size=SETTINGS.canary.logo.max_size,
             allowed_extensions=SETTINGS.canary.logo.allowed_extensions,

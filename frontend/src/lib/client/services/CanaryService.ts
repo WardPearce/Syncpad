@@ -127,7 +127,7 @@ export class CanaryService {
     public controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
         warrantId: string,
         hash: string,
-        formData: Blob,
+        formData: Array<Blob>,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
@@ -304,7 +304,7 @@ export class CanaryService {
      */
     public controllersCanaryDomainLogoUpdateUpdateLogo(
         domain: string,
-        formData: Blob,
+        formData: Array<Blob>,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
