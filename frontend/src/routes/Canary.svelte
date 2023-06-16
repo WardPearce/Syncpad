@@ -9,6 +9,7 @@
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type {
+    DocumentCanaryWarrantModel,
     PublicCanaryModel,
     PublishedCanaryWarrantModel,
   } from "../lib/client";
@@ -141,6 +142,33 @@
     subscribeStatus = status
       ? SubscribeStatus.Subscribed
       : SubscribeStatus.Unsubscribed;
+  }
+
+  async function downloadDocument(toDownload: DocumentCanaryWarrantModel) {
+    if (!toDownload.download_url) {
+      return;
+    }
+
+    let documentData: Uint8Array;
+    try {
+      documentData = new Uint8Array(
+        await (await fetch(toDownload.download_url)).arrayBuffer()
+      );
+    } catch {
+      return;
+    }
+
+    const documentHash = hashBase64Encode(documentData, true);
+    if (documentHash !== toDownload.hash) {
+      return;
+    }
+
+    const anchor = document.createElement("a");
+    const url = window.URL.createObjectURL(new Blob([documentData]));
+    anchor.href = url;
+    anchor.download = toDownload.filename;
+    anchor.click();
+    window.URL.revokeObjectURL(url);
   }
 
   async function getPublishedCanary(page: number = 0) {
@@ -447,14 +475,14 @@
                       <p>{prettyBytes(document.size)}</p>
 
                       <nav class="wrap">
-                        <a
-                          href={document.download_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="button small"
+                        <button
+                          on:click={async () => {
+                            await downloadDocument(document);
+                          }}
+                          class="small"
                         >
                           <i>download</i>
-                        </a>
+                        </button>
                       </nav>
                     </div>
                   </div>
