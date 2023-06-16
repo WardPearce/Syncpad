@@ -45,7 +45,7 @@ class mCaptcha(BaseModel):
 
 class Documents(BaseModel):
     max_amount: int = 3
-    max_size: int = 36700000
+    max_size: int = 52430000
     allowed_extensions: List[str] = [
         ".pdf",
         ".png",

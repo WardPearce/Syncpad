@@ -474,7 +474,7 @@
           <div class="grid">
             {#each currentPublishedWarrant.documents as document}
               <div class="s12 m6 l4">
-                <article class="border surface-variant">
+                <article class="surface-variant">
                   <div class="row">
                     <div class="max">
                       <h6>{document.filename}</h6>
