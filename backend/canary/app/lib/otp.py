@@ -8,7 +8,7 @@ from app.models.user import UserModel
 from bson import ObjectId
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 class OneTimePassword:

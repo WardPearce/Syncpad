@@ -7,7 +7,7 @@ from aiohttp_proxy import ProxyConnector
 from env import SETTINGS
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 async def untrusted_http_request(

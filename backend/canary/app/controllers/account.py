@@ -44,7 +44,7 @@ from nacl.public import PublicKey, SealedBox
 from nacl.signing import VerifyKey
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 class LoginController(Controller):

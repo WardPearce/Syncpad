@@ -8,7 +8,7 @@ from litestar import Request, Router, delete, get
 from litestar.contrib.jwt import Token
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 @get(path="/", description="List active sessions", tags=["session"])

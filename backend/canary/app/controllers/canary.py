@@ -42,7 +42,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 @post(path="/create", description="Create a canary for a given domain", tags=["canary"])

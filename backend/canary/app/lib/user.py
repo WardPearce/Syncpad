@@ -8,7 +8,7 @@ from bson import ObjectId
 from sqlalchemy import false
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 async def generate_email_validation(state: "State", email: str) -> str:

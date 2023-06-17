@@ -7,7 +7,7 @@ from litestar.contrib.jwt import JWTCookieAuth, Token
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 async def delete_all_user_sessions(state: "State", user_id: ObjectId) -> None:

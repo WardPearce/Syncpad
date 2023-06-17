@@ -21,7 +21,7 @@ from pydantic import BaseModel
 from redis.asyncio import Redis
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db)
 cache_store = RedisStore(redis=redis)
@@ -119,6 +119,7 @@ app = Litestar(
         title=SETTINGS.open_api.title,
         create_examples=True,
         root_schema_site="elements",
+        enabled_endpoints={"elements", "openapi.json", "openapi.yaml"},
         license=License(
             name="GNU Affero General Public License v3.0",
             identifier="AGPL-3.0",

@@ -4,7 +4,7 @@ from app.env import SETTINGS
 from errors import InvalidCaptcha
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 async def validate_captcha(state: "State", token: Optional[str]) -> None:

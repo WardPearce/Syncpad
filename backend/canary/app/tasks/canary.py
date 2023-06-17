@@ -14,7 +14,7 @@ from app.models.canary import CanaryModel, PublishedCanaryWarrantModel
 from app.models.user import NotificationEnum
 
 if TYPE_CHECKING:
-    from app.types import State
+    from custom_types import State
 
 
 async def __handle_canary_verification(state: "State", canary: CanaryModel) -> None:
