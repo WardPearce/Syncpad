@@ -1,7 +1,7 @@
 import pathlib
 import secrets
 from os import path
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from aiobotocore.session import get_session
 from app.env import SETTINGS
@@ -9,12 +9,15 @@ from app.errors import FileTooBig, UnsupportedFileType
 from litestar.datastructures import UploadFile
 from pydantic import BaseModel
 
+if TYPE_CHECKING:
+    from types_aiobotocore_s3 import S3Client
+
 
 def format_path(*paths: str) -> str:
     return path.join(SETTINGS.s3.folder, *paths)
 
 
-def s3_create_client():
+def s3_create_client() -> "S3Client":
     session = get_session()
     return session.create_client(
         service_name="s3",

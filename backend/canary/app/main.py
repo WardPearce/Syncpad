@@ -11,9 +11,10 @@ from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
+from litestar.connection.request import Request
 from litestar.middleware.rate_limit import RateLimitConfig
-from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import Server
+from litestar.openapi import OpenAPIConfig, OpenAPIController
+from litestar.openapi.spec import License, Server
 from litestar.stores.redis import RedisStore
 from motor import motor_asyncio
 from pydantic import BaseModel
@@ -87,6 +88,19 @@ async def wipe_cache_on_shutdown() -> None:
     await redis.close()
 
 
+class OpenAPIControllerRouteFix(OpenAPIController):
+    def render_stoplight_elements(self, request: Request) -> str:
+        # Gross hack to overwrite the path for the openapi schema file.
+        # due to reverse proxying.
+        path_copy = str(self.path)
+        self.path = SETTINGS.proxy_urls.backend + self.path
+
+        render = super().render_stoplight_elements(request)
+
+        self.path = path_copy
+        return render
+
+
 app = Litestar(
     route_handlers=[routes],
     on_startup=[init_mongo, init_redis, init_aiohttp, init_tasks],
@@ -103,6 +117,15 @@ app = Litestar(
     ),
     openapi_config=OpenAPIConfig(
         title=SETTINGS.open_api.title,
+        create_examples=True,
+        root_schema_site="elements",
+        license=License(
+            name="GNU Affero General Public License v3.0",
+            identifier="AGPL-3.0",
+            url="https://github.com/WardPearce/Purplix.io/blob/main/LICENSE",
+        ),
+        openapi_controller=OpenAPIControllerRouteFix,
+        terms_of_service=f"{SETTINGS.proxy_urls.frontend}/terms-of-service",
         version=SETTINGS.open_api.version,
         servers=[Server(url=SETTINGS.proxy_urls.backend, description="Production API")],
     ),
