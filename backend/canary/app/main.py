@@ -99,7 +99,11 @@ app = Litestar(
         RateLimitConfig(rate_limit=("minute", 60), exclude=["/schema"]).middleware
     ],
     cors_config=CORSConfig(
-        allow_origins=[SETTINGS.proxy_urls.backend, SETTINGS.proxy_urls.frontend],
+        allow_origins=[
+            SETTINGS.proxy_urls.backend,
+            SETTINGS.proxy_urls.frontend,
+            SETTINGS.proxy_urls.docs,
+        ],
         allow_credentials=True,
     ),
     openapi_config=OpenAPIConfig(
