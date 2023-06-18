@@ -116,7 +116,7 @@ async def published_warrant(
         raise PublishedWarrantNotFoundException()
 
     warrant = await state.mongo.canary_warrant.find_one(
-        {"canary_id": canary_object_id, "signature": {"$exists": True}},
+        {"canary_id": canary_object_id, "published": True},
         sort=[("_id", -1)],
         skip=page,
     )
@@ -155,7 +155,7 @@ class PublishCanary(Controller):
             raise PublishedWarrantNotFoundException()
 
         warrant = await state.mongo.canary_warrant.find_one(
-            {"_id": id_, "user_id": request.user, "signature": {"$exists": False}}
+            {"_id": id_, "user_id": request.user, "published": False}
         )
         if not warrant:
             raise PublishedWarrantNotFoundException()
@@ -198,7 +198,7 @@ class PublishCanary(Controller):
             raise PublishedWarrantNotFoundException()
 
         warrant = await state.mongo.canary_warrant.find_one(
-            {"_id": id_, "user_id": request.user, "signature": {"$exists": False}}
+            {"_id": id_, "user_id": request.user, "published": False}
         )
         if not warrant:
             raise PublishedWarrantNotFoundException()
@@ -210,7 +210,12 @@ class PublishCanary(Controller):
                 "active": False,
             },
             {
-                "$set": {**data.dict(), "concern": data.concern.value, "active": True},
+                "$set": {
+                    **data.dict(),
+                    "concern": data.concern.value,
+                    "active": True,
+                    "published": True,
+                },
             },
         )
 
@@ -341,6 +346,7 @@ class CanaryController(Controller):
             "issued": now,
             "active": False,
             "documents": [],
+            "published": False,
         }
 
         await state.mongo.canary_warrant.insert_one(created_warrant)

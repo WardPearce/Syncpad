@@ -69,7 +69,7 @@ async def canary_owner_alerts(state: "State") -> None:
     async for canary_warrant in state.mongo.canary_warrant.find(
         {
             "active": True,
-            "signature": {"$exists": True},
+            "published": True,
         }
     ):
         try:
