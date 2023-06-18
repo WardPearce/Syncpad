@@ -155,7 +155,7 @@ class PublishCanary(Controller):
             raise PublishedWarrantNotFoundException()
 
         warrant = await state.mongo.canary_warrant.find_one(
-            {"_id": id_, "user_id": request.user, "active": False}
+            {"_id": id_, "user_id": request.user, "concern": {"$exists": False}}
         )
         if not warrant:
             raise PublishedWarrantNotFoundException()
@@ -198,7 +198,7 @@ class PublishCanary(Controller):
             raise PublishedWarrantNotFoundException()
 
         warrant = await state.mongo.canary_warrant.find_one(
-            {"_id": id_, "user_id": request.user, "active": False}
+            {"_id": id_, "user_id": request.user, "concern": {"$exists": False}}
         )
         if not warrant:
             raise PublishedWarrantNotFoundException()
