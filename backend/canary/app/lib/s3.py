@@ -1,7 +1,7 @@
 import pathlib
 import secrets
 from os import path
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from aiobotocore.session import get_session
 from app.env import SETTINGS
@@ -36,7 +36,7 @@ class UploadedFile(BaseModel):
 
 async def s3_upload_file(
     file: UploadFile,
-    path: List[str],
+    path: Tuple[str, ...],
     max_size: int,
     allowed_extensions: List[str],
     filename: Optional[str] = None,

@@ -1,8 +1,7 @@
 import hashlib
-import pathlib
 import secrets
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Annotated, Any, Dict, List
 
 from app.env import SETTINGS
 from app.errors import (
@@ -10,11 +9,9 @@ from app.errors import (
     CanaryNotFoundException,
     CanaryTaken,
     DomainValidationError,
-    FileTooBig,
     InvalidBlake2Hash,
     PublishedWarrantNotFoundException,
     TooManyFiles,
-    UnsupportedFileType,
 )
 from app.lib.canary import Canary
 from app.lib.otp import OneTimePassword
@@ -25,7 +22,6 @@ from app.models.canary import (
     CreateCanaryModel,
     CreateCanaryWarrantModel,
     CreatedCanaryWarrantModel,
-    DocumentCanaryWarrantModel,
     NextCanaryEnum,
     PublicCanaryModel,
     PublishCanaryWarrantModel,
@@ -169,7 +165,7 @@ class PublishCanary(Controller):
 
         uploaded_file = await s3_upload_file(
             data[0],
-            ["canary", "documents"],
+            ("canary", "documents"),
             max_size=SETTINGS.canary.documents.max_size,
             allowed_extensions=SETTINGS.canary.documents.allowed_extensions,
         )
@@ -448,7 +444,7 @@ class CanaryController(Controller):
 
         uploaded_file = await s3_upload_file(
             data[0],
-            ["canary", "logos"],
+            ("canary", "logos"),
             max_size=SETTINGS.canary.logo.max_size,
             allowed_extensions=SETTINGS.canary.logo.allowed_extensions,
             filename=str(canary.id),
