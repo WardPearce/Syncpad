@@ -11,7 +11,7 @@ export function utcDate(date: string | number | Date | dayjs.Dayjs): dayjs.Dayjs
 
 export function relativeDate(date: string | number | Date | dayjs.Dayjs): string {
   const localDate = utcDate(date);
-  if (localDate.diff(dayjs(), "month") > 0) {
+  if (dayjs().diff(localDate, "month") > 0) {
     return localDate.format("MMMM D, YYYY");
   }
   return localDate.fromNow();

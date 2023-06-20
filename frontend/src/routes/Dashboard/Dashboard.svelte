@@ -19,7 +19,7 @@
 <div class="grid">
   <div class="s12 m6 l4">
     <article class="border center-align middle-align" style="height: 100%;">
-      <a class="button" href="/dashboard/survery/create" use:link>
+      <a class="button" href="/dashboard/survey/create" use:link>
         <i>add</i>
         <span>Create survey</span>
       </a>

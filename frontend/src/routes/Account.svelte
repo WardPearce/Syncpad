@@ -270,8 +270,8 @@
             </p>
           {:else if currentNotifyTab === WebhookModel.type.CANARY_SUBSCRIPTIONS}
             <p>
-              Receive a notification whenever a canary you are subscribed via
-              these channels.
+              Receive a notification whenever a canary you are subscribed to
+              publishes a new warrant via these channels.
             </p>
           {:else}
             <p>
