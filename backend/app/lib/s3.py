@@ -4,10 +4,11 @@ from os import path
 from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from aiobotocore.session import get_session
-from app.env import SETTINGS
-from app.errors import FileTooBig, UnsupportedFileType
 from litestar.datastructures import UploadFile
 from pydantic import BaseModel
+
+from app.env import SETTINGS
+from app.errors import FileTooBig, UnsupportedFileType
 
 if TYPE_CHECKING:
     from types_aiobotocore_s3 import S3Client
