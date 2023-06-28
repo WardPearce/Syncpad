@@ -8,15 +8,12 @@ import type { AccountKeychainModal } from './AccountKeychainModal';
 import type { AccountX25519Model } from './AccountX25519Model';
 import type { Argon2Modal } from './Argon2Modal';
 
-export type CreateUserModel = {
+export type AccountUpdatePassword = {
     auth: AccountAuthModal;
     keypair: AccountX25519Model;
     sign_keypair: AccountEd25199Modal;
     keychain: AccountKeychainModal;
     kdf: Argon2Modal;
     signature: string;
-    email: string;
-    ip_lookup_consent?: boolean;
-    algorithms?: string;
 };
 

@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AccountUpdatePassword } from '../models/AccountUpdatePassword';
 import type { CreateUserModel } from '../models/CreateUserModel';
 import type { OtpModel } from '../models/OtpModel';
 import type { PublicUserModel } from '../models/PublicUserModel';
@@ -349,6 +350,32 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/account/me',
+        });
+    }
+
+    /**
+     * PasswordReset
+     * Reset password
+     * @param requestBody
+     * @param otp
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountPasswordResetPasswordReset(
+        requestBody: AccountUpdatePassword,
+        otp?: (null | string),
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/password/reset',
+            query: {
+                'otp': otp,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
         });
     }
 

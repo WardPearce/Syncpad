@@ -1,12 +1,24 @@
 <script lang="ts">
+    import TextArea from "../../../components/Survey/TextArea.svelte";
+    import TextInput from "../../../components/Survey/TextInput.svelte";
+    import { SurveyComponentsTypes } from "../../../components/Survey/modes";
+
     let componentDialogOpen = false;
     let surveyStructure = [];
 
     let surveyTitle = "Untitled Survey";
     let editTitle = false;
+
+    const surveyComponents = [TextInput, TextArea];
 </script>
 
 <dialog class="max" class:active={componentDialogOpen}>
+    {#each surveyComponents as surveyComp}
+        <svelte:component
+            this={surveyComp}
+            mode={SurveyComponentsTypes.preview}
+        />
+    {/each}
     <nav class="right-align">
         <button class="border" on:click={() => (componentDialogOpen = false)}
             >Cancel</button

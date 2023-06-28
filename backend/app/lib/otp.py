@@ -3,9 +3,10 @@ from hashlib import sha256
 from typing import TYPE_CHECKING, Optional
 
 import pyotp
+from bson import ObjectId
+
 from app.errors import InvalidAccountAuth
 from app.models.user import UserModel
-from bson import ObjectId
 
 if TYPE_CHECKING:
     from custom_types import State
@@ -36,6 +37,9 @@ class OneTimePassword:
 
         otp_count = await state.mongo.old_otp.count_documents(otp_search)
         if otp_count > 0:
+            raise InvalidAccountAuth()
+
+        if model.otp.secret is None:
             raise InvalidAccountAuth()
 
         if not OneTimePassword(state=state, key=model.otp.secret).verify(given_code):

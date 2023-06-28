@@ -3,6 +3,21 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import pyotp
+from bson import ObjectId
+from bson.errors import InvalidId
+from env import SETTINGS
+from litestar import Request, Response, Router, delete
+from litestar.background_tasks import BackgroundTask
+from litestar.contrib.jwt import Token
+from litestar.controller import Controller
+from litestar.exceptions import ValidationException
+from litestar.handlers import get, post
+from litestar.response import RedirectResponse
+from nacl.encoding import Base64Encoder
+from nacl.exceptions import BadSignatureError
+from nacl.public import PublicKey, SealedBox
+from nacl.signing import VerifyKey
+
 from app.errors import (
     EmailTaken,
     InvalidAccountAuth,
@@ -19,6 +34,7 @@ from app.lib.user import User, generate_email_validation
 from app.models.jwt import UserJtiModel
 from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
+    AccountUpdatePassword,
     CreateUserModel,
     NotificationEnum,
     OtpModel,
@@ -28,20 +44,6 @@ from app.models.user import (
     UserToSignModel,
     WebhookModel,
 )
-from bson import ObjectId
-from bson.errors import InvalidId
-from env import SETTINGS
-from litestar import Request, Response, Router, delete
-from litestar.background_tasks import BackgroundTask
-from litestar.contrib.jwt import Token
-from litestar.controller import Controller
-from litestar.exceptions import ValidationException
-from litestar.handlers import get, post
-from litestar.response import RedirectResponse
-from nacl.encoding import Base64Encoder
-from nacl.exceptions import BadSignatureError
-from nacl.public import PublicKey, SealedBox
-from nacl.signing import VerifyKey
 
 if TYPE_CHECKING:
     from custom_types import State
@@ -259,6 +261,32 @@ async def email_resend(state: "State", request: Request[ObjectId, Token, Any]) -
             email_secret = await generate_email_validation(state, user.email)
 
         await send_email_verify(to=user.email, email_secret=email_secret)
+
+
+@post(
+    "/password/reset",
+    description="Reset password",
+    tags=["account"],
+)
+async def password_reset(
+    state: "State",
+    request: Request[ObjectId, Token, Any],
+    data: AccountUpdatePassword,
+    otp: Optional[str],
+) -> None:
+    user = await User(state, request.user).get()
+
+    try:
+        await OneTimePassword.validate_user(state, user, otp)
+    except InvalidAccountAuth:
+        raise
+
+    await state.mongo.user.update_one(
+        {"_id": user.id},
+        {"$set": data.dict()},
+    )
+
+    await delete_all_user_sessions(state, request.user)
 
 
 @post(
@@ -529,5 +557,6 @@ router = Router(
         email_resend,
         logout,
         get_me,
+        password_reset,
     ],
 )

@@ -4,10 +4,11 @@ import { navigate } from "svelte-navigator";
 import { zxcvbn } from "@zxcvbn-ts/core";
 import sodium from "libsodium-wrappers-sumo";
 
+import { get } from 'svelte/store';
 import { emailVerificationRequired, localSecrets, setLocalSecrets } from "../stores";
 import apiClient from "./apiClient";
 import { syncTrustedCanaries } from './canary';
-import type { CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
+import type { AccountUpdatePassword, CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
 import { base64Decode, base64Encode } from "./crypto/codecUtils";
 import secretKey from "./crypto/secretKey";
 import signatures from "./crypto/signatures";
@@ -24,6 +25,15 @@ export class RegisterError extends Error {
     super(message);
   }
 }
+
+export class UserNotLoggedIn extends Error {
+  constructor() {
+    super();
+    this.message = "No user currently logged in.";
+  }
+}
+
+
 
 export class OtpRequiredError extends Error {
   constructor() {
@@ -50,6 +60,101 @@ export async function logout() {
   try {
     await apiClient.account.controllersAccountLogoutLogout();
   } catch { }
+}
+
+export async function* resetPassword(newPassword: string, otpCode?: string) {
+  const loggedInUser = get(localSecrets);
+
+  if (loggedInUser === undefined) {
+    throw new UserNotLoggedIn();
+  }
+
+  const rawSalt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
+
+  yield "Deriving new key from password";
+
+  const kdf = {
+    salt: base64Encode(rawSalt),
+    time_cost: sodium.crypto_pwhash_OPSLIMIT_SENSITIVE,
+    memory_cost: sodium.crypto_pwhash_MEMLIMIT_SENSITIVE,
+  };
+
+  const rawNewDerivedKey = sodium.crypto_pwhash(
+    32,
+    newPassword,
+    rawSalt,
+    kdf.time_cost,
+    kdf.memory_cost,
+    sodium.crypto_pwhash_ALG_DEFAULT
+  );
+
+  yield "Seeding new auth keypair";
+
+  const rawAuthKeys = signatures.seedKeypair(rawNewDerivedKey);
+
+  yield "Encrypting keychain with new key";
+
+  const rawKeychain = base64Decode(loggedInUser.rawKeychain);
+
+  const safeKeychain = secretKey.encrypt(
+    rawNewDerivedKey,
+    rawKeychain,
+  );
+
+  const safePrivateKey = secretKey.encrypt(
+    rawKeychain,
+    base64Decode(loggedInUser.rawKeypair.privateKey)
+  );
+
+  const safeSignPrivateKey = secretKey.encrypt(
+    rawKeychain,
+    base64Decode(loggedInUser.rawSignKeypair.privateKey)
+  );
+
+  let updatePassword: CreateUserModel = {
+    email: loggedInUser.email,
+    kdf: {
+      time_cost: kdf.time_cost,
+      memory_cost: kdf.memory_cost,
+      salt: kdf.salt,
+    },
+    keychain: {
+      iv: safeKeychain.iv,
+      cipher_text: safeKeychain.cipherText,
+    },
+    auth: {
+      public_key: base64Encode(rawAuthKeys.publicKey),
+    },
+    keypair: {
+      cipher_text: safePrivateKey.cipherText,
+      iv: safePrivateKey.iv,
+      public_key: loggedInUser.rawKeypair.publicKey,
+    },
+    sign_keypair: {
+      cipher_text: safeSignPrivateKey.cipherText,
+      iv: safeSignPrivateKey.iv,
+      public_key: loggedInUser.rawSignKeypair.publicKey
+    },
+    signature: "",
+  };
+
+  yield "Signing new user data";
+
+  updatePassword.signature = signatures.signHash(
+    rawAuthKeys.privateKey,
+    JSON.stringify(updatePassword)
+  );
+
+  try {
+    await apiClient.account.controllersAccountPasswordResetPasswordReset(
+      { ...updatePassword, email: undefined } as AccountUpdatePassword,
+      otpCode
+    );
+  } catch (error) {
+    throw new RegisterError(error.body.detail);
+  }
+
+  await logout();
 }
 
 export async function* login(

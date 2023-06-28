@@ -17,8 +17,8 @@ export type UserModel = {
     sign_keypair: AccountEd25199Modal;
     keychain: AccountKeychainModal;
     kdf: Argon2Modal;
-    ip_lookup_consent?: boolean;
     signature: string;
+    ip_lookup_consent?: boolean;
     algorithms?: string;
     _id: any;
     created: string;

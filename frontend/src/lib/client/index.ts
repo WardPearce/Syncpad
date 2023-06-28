@@ -12,6 +12,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 export type { AccountAuthModal } from './models/AccountAuthModal';
 export type { AccountEd25199Modal } from './models/AccountEd25199Modal';
 export type { AccountKeychainModal } from './models/AccountKeychainModal';
+export type { AccountUpdatePassword } from './models/AccountUpdatePassword';
 export type { AccountX25519Model } from './models/AccountX25519Model';
 export type { Argon2Modal } from './models/Argon2Modal';
 export type { CanaryEd25519Model } from './models/CanaryEd25519Model';

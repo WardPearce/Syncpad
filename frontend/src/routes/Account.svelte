@@ -6,7 +6,7 @@
 
   import OtpInput from "../components/OtpInput.svelte";
   import PageLoading from "../components/PageLoading.svelte";
-  import account, { logout } from "../lib/account";
+  import account, { logout, resetPassword } from "../lib/account";
   import apiClient from "../lib/apiClient";
   import {
     WebhookModel,
@@ -32,13 +32,20 @@
   let loggedInSecrets = get(localSecrets) as LocalSecretsModel;
   let user: UserModel;
 
+  enum resetDialogStates {
+    closed,
+    password,
+    otp,
+  }
+  let resetDialogError = "";
+  let resetDialogState = resetDialogStates.closed;
+  let newRawPassword = "";
+
   let webhookUrl = "";
   let currentNotifyTab: WebhookModel.type = WebhookModel.type.CANARY_RENEWALS;
 
   let privateKey: Uint8Array;
   let publicKey: Uint8Array;
-
-  let otpError = "";
 
   async function toggleIpLookupConsent() {
     if (user.ip_lookup_consent) {
@@ -89,7 +96,17 @@
       await apiClient.account.controllersAccountOtpResetResetOtp(otpCode);
       await account.logout();
     } catch (error) {
-      otpError = error.body.detail;
+      resetDialogError = error.body.detail;
+    }
+  }
+
+  async function resetPass(otpCode: string) {
+    try {
+      for await (const _ of resetPassword(newRawPassword, otpCode)) {
+        // Do nothing
+      }
+    } catch (error) {
+      resetDialogError = error.body.detail;
     }
   }
 
@@ -170,6 +187,44 @@
 {#if !user}
   <PageLoading />
 {:else}
+  <dialog
+    class:active={resetDialogState !== resetDialogStates.closed}
+    class="surface-variant"
+  >
+    {#if resetDialogError}
+      <div class="error" style="padding: 0.3em 1em;">
+        <p>{resetDialogError}</p>
+      </div>
+    {/if}
+
+    {#if resetDialogState === resetDialogStates.otp}
+      <p>Please enter your current OTP code to reset it.</p>
+    {:else}
+      <div class="field label border fill">
+        <input type="password" bind:value={newRawPassword} required />
+        <label for="password">New Password</label>
+      </div>
+    {/if}
+
+    <div style="display: flex;">
+      <OtpInput
+        onOtpEnter={resetDialogState === resetDialogStates.otp
+          ? resetOtp
+          : resetPass}
+      />
+    </div>
+
+    <nav class="wrap">
+      <button
+        class="tertiary"
+        on:click={() => (resetDialogState = resetDialogStates.closed)}
+      >
+        <i>close</i>
+        <span>Cancel reset</span>
+      </button>
+    </nav>
+  </dialog>
+
   <h3>Account</h3>
   <article>
     <details>
@@ -181,21 +236,23 @@
           <i>arrow_drop_down</i>
         </div>
       </summary>
-      <h5>Password reset</h5>
-      {#if user.otp.completed}
-        <h5>OTP reset</h5>
-        <p>Enter your current OTP code to reset it.</p>
-        <div style="display: flex;">
-          {#if otpError}
-            <p>{otpError}</p>
-          {/if}
+      <nav class="wrap">
+        {#if user.otp.completed}
+          <button
+            on:click={() => (resetDialogState = resetDialogStates.password)}
+          >
+            <i>password</i>
+            <span>Password reset</span>
+          </button>
 
-          <OtpInput onOtpEnter={resetOtp} />
-        </div>
-      {:else}
-        <h5>Setup OTP</h5>
-        <nav class="wrap"><button on:click={logout}>Enable OTP</button></nav>
-      {/if}
+          <button on:click={() => (resetDialogState = resetDialogStates.otp)}>
+            <i>restart_alt</i>
+            <span>OTP reset</span>
+          </button>
+        {:else}
+          <button on:click={logout}>OTP enable</button>
+        {/if}
+      </nav>
     </details>
   </article>
 
@@ -476,8 +533,14 @@
         </div>
       </summary>
       <nav class="wrap">
-        <button class="secondary">Rotate keychain</button>
-        <button class="tertiary">Delete account</button>
+        <button class="secondary">
+          <i>autorenew</i>
+          <span>Rotate keychain</span>
+        </button>
+        <button class="tertiary">
+          <i>delete_forever</i>
+          <span>Delete account</span>
+        </button>
       </nav>
     </details>
   </article>

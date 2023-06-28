@@ -3,11 +3,12 @@ from enum import Enum
 from typing import Dict, List, Optional
 
 import pyotp
-from app.env import SETTINGS
-from app.models.customs import CustomJsonEncoder, IvField
 from argon2.profiles import RFC_9106_LOW_MEMORY
 from bson import ObjectId
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
+
+from app.env import SETTINGS
+from app.models.customs import CustomJsonEncoder, IvField
 
 
 class NotificationEnum(Enum):
@@ -86,20 +87,21 @@ class AccountKeychainModal(IvField):
     )
 
 
-class __CreateUserShared(EmailModel):
+class AccountUpdatePassword(BaseModel):
     auth: AccountAuthModal
     keypair: AccountX25519Model
     sign_keypair: AccountEd25199Modal
     keychain: AccountKeychainModal
     kdf: Argon2Modal
-
-    ip_lookup_consent: bool = False
-
     signature: str = Field(
         ...,
         max_length=128,
         description="Locally signed with ed25519 private key to validate account data hasn't been changed. Base64 encoded",
     )  # Used for the client to validate our response.
+
+
+class __CreateUserShared(EmailModel, AccountUpdatePassword):
+    ip_lookup_consent: bool = False
 
     # Assumed client side algorithms being used, help for future proofing
     # if we need to move away from outdated algorithms.
