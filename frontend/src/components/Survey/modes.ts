@@ -1,5 +1,5 @@
 export enum SurveyComponentsTypes {
-  preview,
+  create,
   input,
   result
 }
