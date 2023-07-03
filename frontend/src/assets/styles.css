@@ -10,6 +10,7 @@
 main {
     max-height: none !important;
     min-height: 100vh !important;
+    overflow: hidden !important;
     padding-bottom: 15em !important;
 }
 
