@@ -21,8 +21,9 @@
         Blank: "",
         "Operation as normal":
             "I hereby declare that as of {currentDate}, I am still in complete control of {domain} and all its associated data. As the owner and administrator of the website, I have not received any subpoenas or warrants for data, nor have I received any gag order limiting me from informing users as such, and I remain committed to protecting the privacy and security of all users of my website. This statement will be reviewed and updated as necessary on or before {nextCanary}.",
-        "Canary provider moved":
-            "I hereby declare that as of {currentDate}, I am issuing this statement to inform users that we are moving our canary from Purplix.io to another canary service. As the owner and administrator of the website, I affirm that this change is solely related to the canary service provider and does not indicate any compromise of user data or any legal demands received. The new canary service will provide continued transparency and timely updates regarding the status of user privacy and security.",
+        "Canary provider moved": `I hereby declare that as of {currentDate}, I am issuing this statement to inform users that we are moving our canary from ${
+            import.meta.env.VITE_SITE_NAME
+        } to another canary service. As the owner and administrator of the website, I affirm that this change is solely related to the canary service provider and does not indicate any compromise of user data or any legal demands received. The new canary service will provide continued transparency and timely updates regarding the status of user privacy and security.`,
         "Warrents - No user data compromised":
             "I hereby declare that as of {currentDate}, I have received a warrant for data related to {domain}. However, I can confirm that no user data has been compromised as a result of this warrant. I am diligently protecting the privacy and security of all users. This statement will be reviewed and updated as necessary on or before {nextCanary}.",
         "Warrents - User data compromised":

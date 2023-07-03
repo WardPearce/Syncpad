@@ -3,17 +3,19 @@
 
     export let mode: SurveyComponentsTypes = SurveyComponentsTypes.preview;
     export let paragraph: string | null = null;
-    export let question: string = "Textarea input";
+    export let question: string = "Placeholder question";
     export let regex: string | null = null;
     export let value: string = "";
 </script>
 
-<article class:surface-variant={mode === SurveyComponentsTypes.preview}>
+<article>
     <h5>{question}</h5>
     <div class="field textarea border">
         <textarea
-            disabled={mode in
-                [SurveyComponentsTypes.preview, SurveyComponentsTypes.result]}
+            disabled={[
+                SurveyComponentsTypes.preview,
+                SurveyComponentsTypes.result,
+            ].includes(mode)}
             bind:value
         />
         {#if regex}

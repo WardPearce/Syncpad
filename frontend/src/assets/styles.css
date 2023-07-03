@@ -7,6 +7,17 @@
     background-color: var(--on-background) !important;
 }
 
+main {
+    max-height: none !important;
+    min-height: 100vh !important;
+    padding-bottom: 15em !important;
+}
+
+menu {
+    overflow-x: scroll !important;
+    max-height: 200px;
+}
+
 .logo img {
     width: 35px;
 }

@@ -1,30 +1,23 @@
 <script lang="ts">
+    import type { ComponentType } from "svelte";
     import TextArea from "../../../components/Survey/TextArea.svelte";
     import TextInput from "../../../components/Survey/TextInput.svelte";
     import { SurveyComponentsTypes } from "../../../components/Survey/modes";
 
-    let componentDialogOpen = false;
-    let surveyStructure = [];
+    let surveyStructure: ComponentType[] = [];
 
     let surveyTitle = "Untitled Survey";
     let editTitle = false;
 
-    const surveyComponents = [TextInput, TextArea];
-</script>
+    const surveyComponents = [
+        { name: "Text area", component: TextArea },
+        { name: "Text input", component: TextInput },
+    ];
 
-<dialog class="max" class:active={componentDialogOpen}>
-    {#each surveyComponents as surveyComp}
-        <svelte:component
-            this={surveyComp}
-            mode={SurveyComponentsTypes.preview}
-        />
-    {/each}
-    <nav class="right-align">
-        <button class="border" on:click={() => (componentDialogOpen = false)}
-            >Cancel</button
-        >
-    </nav>
-</dialog>
+    function addComponent(component: ComponentType) {
+        surveyStructure = [...surveyStructure, component];
+    }
+</script>
 
 {#if !editTitle}
     <nav>
@@ -40,17 +33,30 @@
                 <input type="text" bind:value={surveyTitle} />
             </div>
             <button class="square round">
-                <i>save</i>
+                <i>check</i>
             </button>
         </nav>
     </form>
 {/if}
 
-<button
-    type="button"
-    style="margin-top: 1em;"
-    on:click={() => (componentDialogOpen = true)}
->
-    <i>add</i>
-    <span>Add component</span>
-</button>
+{#each surveyStructure as surveyComp}
+    <svelte:component this={surveyComp} mode={SurveyComponentsTypes.preview} />
+{/each}
+
+<article class="border no-padding middle-align center-align">
+    <div class="padding">
+        <button type="button">
+            <i>add</i>
+            <span>Add question</span>
+            <menu>
+                {#each surveyComponents as survey}
+                    <a
+                        href={`#${survey.name}`}
+                        on:click={() => addComponent(survey.component)}
+                        >{survey.name}</a
+                    >
+                {/each}
+            </menu>
+        </button>
+    </div>
+</article>
