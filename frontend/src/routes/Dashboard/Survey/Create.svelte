@@ -1,57 +1,48 @@
-<article>
-    <div class="grid">
-        <div class="s12 m6 l7">
-            <div class="field border large fill">
-                <input type="text" value="Untitled Question" />
-            </div>
-        </div>
-        <div class="s12 m6 l3">
-            <div class="field suffix large border">
-                <select>
-                    <option>Short answer</option>
-                    <option>Paragraph</option>
-                    <option>Multiple choice</option>
-                    <option>Checkbox</option>
-                </select>
-                <i>arrow_drop_down</i>
-            </div>
-        </div>
-    </div>
-    <article class="surface-variant">
-        <nav class="right-align">
-            <button class="border">
-                <i>add</i>
-                <span>Add Description</span>
-            </button>
+<script lang="ts">
+    import type { ComponentType } from "svelte";
+    import Question from "../../../components/Survey/Question.svelte";
+    import Title from "../../../components/Survey/Title.svelte";
 
-            <button class="border">
-                <i>done_all</i>
-                <span>Regex</span>
-            </button>
+    let surveyIndex = 0;
+    let surveyQuestions: { index: number; component: ComponentType }[] = [];
 
-            <button class="square border tertiary-border tertiary-text round">
-                <i>delete</i>
-                <div class="tooltip">Delete question</div>
-            </button>
+    addQuestion();
 
-            <button class="square border round">
-                <i>content_copy</i>
-                <div class="tooltip">Duplicate question</div>
-            </button>
+    function addQuestion() {
+        surveyQuestions = [
+            ...surveyQuestions,
+            { index: surveyIndex++, component: Question },
+        ];
+    }
 
-            <label class="switch">
-                <input type="checkbox" />
-                <span style="padding-left: .3em;">Required</span>
-            </label>
-        </nav>
-    </article>
-</article>
+    function removeQuestion(index: number) {
+        surveyQuestions = surveyQuestions.filter(
+            (question) => question.index !== index
+        );
+    }
+</script>
+
+<div class="center-questions">
+    <Title />
+
+    {#each surveyQuestions as question}
+        <svelte:component
+            this={question.component}
+            {removeQuestion}
+            surveyIndex={question.index}
+        />
+    {/each}
+
+    <button on:click={addQuestion} style="margin-top: 2em;">
+        <i>add</i>
+        <span>New Question</span>
+    </button>
+</div>
 
 <style>
-    @media only screen and (max-width: 800px) {
-        nav {
-            align-items: start;
-            flex-direction: column;
-        }
+    .center-questions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>

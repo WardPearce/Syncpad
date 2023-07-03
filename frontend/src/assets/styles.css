@@ -34,6 +34,10 @@ menu {
     transition: none !important;
 }
 
+.extra-large-width {
+    width: 45rem !important;
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;
