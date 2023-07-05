@@ -3,7 +3,9 @@
     import ShortAnswer from "./ShortAnswer.svelte";
 
     export let removeQuestion: (index: number) => void;
-    export let surveyIndex: number;
+    export let startDrag: () => void;
+    export let stopDrag: () => void;
+    export let surveyId: number;
 
     const questions = {
         "Short answer": ShortAnswer,
@@ -18,7 +20,13 @@
 </script>
 
 <article class="extra-large-width">
-    <div class="drag-area">
+    <div
+        class="drag-area"
+        on:mousedown={startDrag}
+        on:touchstart={startDrag}
+        on:mouseup={stopDrag}
+        on:touchend={stopDrag}
+    >
         <i>drag_handle</i>
     </div>
     <div class="grid">
@@ -43,7 +51,7 @@
         <nav class="right-align">
             <button
                 class="square border tertiary-border tertiary-text round"
-                on:click={() => removeQuestion(surveyIndex)}
+                on:click={() => removeQuestion(surveyId)}
             >
                 <i>delete</i>
                 <div class="tooltip">Delete question</div>

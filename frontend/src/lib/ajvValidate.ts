@@ -6,8 +6,7 @@ ajv.addSchema(schema, "schema.json");
 
 class ValidationException extends Error {
   constructor(errors: string) {
-    const message = `Validation failed:\n${errors}`;
-    super(message);
+    super(`Validation failed:\n${errors}`);
     this.name = "ValidationException";
   }
 }

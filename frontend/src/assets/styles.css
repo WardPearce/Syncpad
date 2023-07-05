@@ -19,6 +19,10 @@ menu {
     max-height: 200px;
 }
 
+.drop-target {
+    outline: solid 2px var(--primary) !important;
+}
+
 .logo img {
     width: 35px;
 }
