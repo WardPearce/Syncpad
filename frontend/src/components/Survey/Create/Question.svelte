@@ -1,20 +1,20 @@
 <script lang="ts">
+    import { SurveyAnswerType } from "../types";
     import Checkboxes from "./Checkboxes.svelte";
     import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
     import { selectOnClick } from "./helpers";
-    import { SurveyAnswerType } from "./types";
 
     export let removeQuestion: (index: number) => void;
     export let duplicateQuestion: (index: number) => void;
     export let startDrag: () => void;
     export let stopDrag: () => void;
-    export let surveyId: number;
+    export let questionId: number;
     export let question: string;
     export let regex: string | null = null;
     export let required: boolean = false;
-    export let type: SurveyAnswerType = SurveyAnswerType["Short answer"];
+    export let type: SurveyAnswerType;
 
     let regexDialogOpen: boolean = false;
     const regexPatterns = {
@@ -32,13 +32,13 @@
     };
 
     const answerTypes = {
-        "Short answer": ShortAnswer,
+        "Short Answer": ShortAnswer,
         Paragraph: Paragraph,
-        "Multiple choice": MultipleChoice,
+        "Multiple Choice": MultipleChoice,
         Checkboxes: Checkboxes,
     };
     const regexAllowed = ["Proxy<ShortAnswer>", "Proxy<Paragraph>"];
-    let selectedAnswer = ShortAnswer;
+    let selectedAnswer = answerTypes[SurveyAnswerType[type]];
 
     function setRegex(event: Event) {
         const target = event.target as HTMLSelectElement;
@@ -106,7 +106,9 @@
                 <div class="field suffix large border">
                     <select on:change={changeAnswer}>
                         {#each Object.keys(answerTypes) as answer}
-                            <option>{answer}</option>
+                            <option selected={SurveyAnswerType[answer] === type}
+                                >{answer}</option
+                            >
                         {/each}
                     </select>
                     <i>arrow_drop_down</i>
@@ -118,7 +120,7 @@
             <nav class="right-align">
                 <button
                     class="square border tertiary-border tertiary-text round"
-                    on:click={() => removeQuestion(surveyId)}
+                    on:click={() => removeQuestion(questionId)}
                 >
                     <i>delete</i>
                     <div class="tooltip">Delete question</div>
@@ -136,7 +138,7 @@
 
                 <button
                     class="square border round"
-                    on:click={() => duplicateQuestion(surveyId)}
+                    on:click={() => duplicateQuestion(questionId)}
                 >
                     <i>content_copy</i>
                     <div class="tooltip">Duplicate question</div>

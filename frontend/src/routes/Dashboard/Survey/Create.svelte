@@ -1,21 +1,26 @@
 <script lang="ts">
-    import type { ComponentType } from "svelte";
     import { dndzone } from "svelte-dnd-action";
 
-    import Question from "../../../components/Survey/Question.svelte";
-    import Title from "../../../components/Survey/Title.svelte";
+    import { navigate } from "svelte-navigator";
+    import Question from "../../../components/Survey/Create/Question.svelte";
+    import Title from "../../../components/Survey/Create/Title.svelte";
     import { SurveyAnswerType } from "../../../components/Survey/types";
+    import { base64Encode } from "../../../lib/crypto/codecUtils";
+    import hash from "../../../lib/crypto/hash";
+    import publicKey from "../../../lib/crypto/publicKey";
+    import secretKey from "../../../lib/crypto/secretKey";
+    import signatures from "../../../lib/crypto/signatures";
 
-    let surveyId = 0;
+    let lastQuestionIdId = 0;
     let surveyQuestions: {
         id: number;
-        component: ComponentType;
         regex: string | null;
         required: boolean;
         question: string;
         type: SurveyAnswerType;
     }[] = [];
     let dragDisabled = true;
+    let publishingSurvey = false;
 
     addQuestion();
 
@@ -40,12 +45,11 @@
         surveyQuestions = [
             ...surveyQuestions,
             {
-                id: surveyId++,
-                component: Question,
+                id: lastQuestionIdId++,
                 regex: null,
                 required: false,
                 question: "Untitled Question",
-                type: SurveyAnswerType["Short answer"],
+                type: SurveyAnswerType["Short Answer"],
             },
         ];
     }
@@ -58,8 +62,7 @@
             surveyQuestions = [
                 ...surveyQuestions,
                 {
-                    id: surveyId++,
-                    component: question.component,
+                    id: lastQuestionIdId++,
                     regex: question.regex,
                     required: question.required,
                     question: question.question,
@@ -75,7 +78,74 @@
         );
     }
 
-    async function onPublish() {}
+    async function onPublish() {
+        publishingSurvey = true;
+
+        const rawKey = secretKey.generateKey();
+        const rawKeyPair = publicKey.generateKeypair();
+        const rawSignKeyPair = signatures.generateKeypair();
+
+        let questionsEncrypted: {
+            id: number;
+            regex: { cipher_text; iv: string } | null;
+            required: boolean;
+            question: {
+                cipher_text: string;
+                iv: string;
+            };
+            type: SurveyAnswerType;
+            signature: string;
+        }[] = [];
+
+        for (const question of surveyQuestions) {
+            const questionEncrypted = secretKey.encrypt(
+                rawKey,
+                question.question
+            );
+            const regexEncrypted = question.regex
+                ? secretKey.encrypt(rawKey, question.regex)
+                : null;
+
+            const payload = {
+                id: question.id,
+                regex: regexEncrypted
+                    ? {
+                          cipher_text: regexEncrypted.cipherText,
+                          iv: regexEncrypted.iv,
+                      }
+                    : null,
+                required: question.required,
+                question: {
+                    cipher_text: questionEncrypted.cipherText,
+                    iv: questionEncrypted.iv,
+                },
+                type: question.type,
+                signature: "",
+            };
+
+            payload.signature = signatures.signHash(
+                rawSignKeyPair.privateKey,
+                JSON.stringify(payload)
+            );
+
+            questionsEncrypted.push(payload);
+        }
+
+        navigate(
+            `/s/{placeHolderId}/${base64Encode(
+                rawKey,
+                true
+            )}/${hash.hashBase64Encode(
+                rawKeyPair.publicKey,
+                true
+            )}/${hash.hashBase64Encode(rawSignKeyPair.publicKey, true)}`,
+            {
+                replace: true,
+            }
+        );
+
+        publishingSurvey = false;
+    }
 </script>
 
 <div class="center-questions">
@@ -83,10 +153,10 @@
         <h6>Ensuring Secure and Confidential Survey Data</h6>
 
         <p>
-            All survey questions, answers, and metadata are protected through
-            end-to-end encryption. This means that only the individuals who you
-            share the link with can view the questions, while the answers remain
-            confidential and accessible only to you.
+            All survey questions, answers, and sensitive metadata are protected
+            through end-to-end encryption. This means that only the individuals
+            who you share the link with can view the questions, while the
+            answers remain confidential and accessible only to you.
         </p>
 
         <nav class="right-align">
@@ -110,9 +180,8 @@
         style="margin-top: 1em;"
     >
         {#each surveyQuestions as question (question.id)}
-            <svelte:component
-                this={question.component}
-                surveyId={question.id}
+            <Question
+                questionId={question.id}
                 bind:regex={question.regex}
                 bind:required={question.required}
                 bind:question={question.question}

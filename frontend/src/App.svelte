@@ -188,6 +188,12 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
+      path="/s/:surveyId/:publicKeyHash/:SignPublicKeyHash"
+      component={() => import("./routes/Survey.svelte")}
+    >
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
       path="/c/:domainName/:publicKeyHash"
       component={() => import("./routes/Canary.svelte")}
     >
