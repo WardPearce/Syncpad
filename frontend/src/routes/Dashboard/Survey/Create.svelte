@@ -12,9 +12,11 @@
     import signatures from "../../../lib/crypto/signatures";
 
     let lastQuestionIdId = 0;
+    let surveyTitle = "Untitled survey";
     let surveyQuestions: {
         id: number;
         regex: string | null;
+        description: string | null;
         required: boolean;
         question: string;
         type: SurveyAnswerType;
@@ -50,6 +52,7 @@
                 required: false,
                 question: "Untitled Question",
                 type: SurveyAnswerType["Short Answer"],
+                description: null,
             },
         ];
     }
@@ -67,6 +70,7 @@
                     required: question.required,
                     question: question.question,
                     type: question.type,
+                    description: question.description,
                 },
             ];
         }
@@ -88,13 +92,16 @@
         let questionsEncrypted: {
             id: number;
             regex: { cipher_text; iv: string } | null;
+            description: {
+                cipher_text: string;
+                iv: string;
+            } | null;
             required: boolean;
             question: {
                 cipher_text: string;
                 iv: string;
             };
             type: SurveyAnswerType;
-            signature: string;
         }[] = [];
 
         for (const question of surveyQuestions) {
@@ -105,6 +112,9 @@
             const regexEncrypted = question.regex
                 ? secretKey.encrypt(rawKey, question.regex)
                 : null;
+            const descriptionEncrypted = question.description
+                ? secretKey.encrypt(rawKey, question.description)
+                : null;
 
             const payload = {
                 id: question.id,
@@ -114,22 +124,40 @@
                           iv: regexEncrypted.iv,
                       }
                     : null,
+                description: descriptionEncrypted
+                    ? {
+                          cipher_text: descriptionEncrypted.cipherText,
+                          iv: descriptionEncrypted.iv,
+                      }
+                    : null,
                 required: question.required,
                 question: {
                     cipher_text: questionEncrypted.cipherText,
                     iv: questionEncrypted.iv,
                 },
                 type: question.type,
-                signature: "",
             };
-
-            payload.signature = signatures.signHash(
-                rawSignKeyPair.privateKey,
-                JSON.stringify(payload)
-            );
 
             questionsEncrypted.push(payload);
         }
+
+        const surveyTitleEncrypted = secretKey.encrypt(rawKey, surveyTitle);
+
+        const surveyPayload = {
+            title: {
+                cipher_text: surveyTitleEncrypted.cipherText,
+                iv: surveyTitleEncrypted.iv,
+            },
+            questions: questionsEncrypted,
+            signature: "",
+        };
+
+        console.log(surveyPayload);
+
+        surveyPayload.signature = signatures.signHash(
+            rawSignKeyPair.privateKey,
+            JSON.stringify(surveyPayload)
+        );
 
         navigate(
             `/s/{placeHolderId}/${base64Encode(
@@ -166,7 +194,7 @@
             </button>
         </nav>
     </article>
-    <Title />
+    <Title title={surveyTitle} />
 
     <div
         use:dndzone={{
@@ -183,6 +211,7 @@
             <Question
                 questionId={question.id}
                 bind:regex={question.regex}
+                bind:description={question.description}
                 bind:required={question.required}
                 bind:question={question.question}
                 bind:type={question.type}

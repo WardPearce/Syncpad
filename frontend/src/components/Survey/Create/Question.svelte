@@ -13,9 +13,11 @@
     export let questionId: number;
     export let question: string;
     export let regex: string | null = null;
+    export let description: string | null = null;
     export let required: boolean = false;
     export let type: SurveyAnswerType;
 
+    let addDescription: boolean = false;
     let regexDialogOpen: boolean = false;
     const regexPatterns = {
         Email: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -114,6 +116,21 @@
                     <i>arrow_drop_down</i>
                 </div>
             </div>
+        </div>
+        <div>
+            {#if addDescription || description !== null}
+                <div class="field label textarea fill large">
+                    <textarea bind:value={description} />
+                    <label for="desc">Description</label>
+                </div>
+            {:else}
+                <button
+                    class="border small"
+                    on:click={() => (addDescription = true)}
+                >
+                    Add description
+                </button>
+            {/if}
         </div>
         <svelte:component this={selectedAnswer} />
         <article class="surface-variant">
