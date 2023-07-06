@@ -5,7 +5,7 @@ import aiocron
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 class Tab(BaseModel):

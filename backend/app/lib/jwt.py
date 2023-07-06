@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING, Any, Optional, cast
 
-from app.env import SETTINGS
 from bson.objectid import ObjectId
 from litestar.connection import ASGIConnection
 from litestar.contrib.jwt import JWTCookieAuth, Token
 from pydantic import BaseModel
 
+from app.env import SETTINGS
+
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 async def delete_all_user_sessions(state: "State", user_id: ObjectId) -> None:

@@ -9,7 +9,7 @@ from app.errors import InvalidAccountAuth
 from app.models.user import UserModel
 
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 class OneTimePassword:

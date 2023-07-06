@@ -4,13 +4,14 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import yarl
+from bson import ObjectId
+
 from app.env import SETTINGS
 from app.errors import CanaryNotFoundException, DomainValidationError
 from app.models.canary import CanaryModel, PublicCanaryModel
-from bson import ObjectId
 
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 class CanaryUser:

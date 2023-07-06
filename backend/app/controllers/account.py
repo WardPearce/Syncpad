@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import pyotp
 from bson import ObjectId
@@ -46,7 +46,7 @@ from app.models.user import (
 )
 
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 class LoginController(Controller):

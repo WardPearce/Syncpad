@@ -2,13 +2,14 @@ import secrets
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Union
 
-from app.errors import UserNotFoundException
-from app.models.user import UserModel
 from bson import ObjectId
 from sqlalchemy import false
 
+from app.errors import UserNotFoundException
+from app.models.user import UserModel
+
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 async def generate_email_validation(state: "State", email: str) -> str:

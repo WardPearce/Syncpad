@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, List
 
 import humanize
+
 from app.env import SETTINGS
 from app.errors import DomainValidationError, UserNotFoundException
 from app.lib.canary import Canary
@@ -14,7 +15,7 @@ from app.models.canary import CanaryModel, PublishedCanaryWarrantModel
 from app.models.user import NotificationEnum
 
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 async def __handle_canary_verification(state: "State", canary: CanaryModel) -> None:

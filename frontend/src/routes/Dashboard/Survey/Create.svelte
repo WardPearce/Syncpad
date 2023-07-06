@@ -2,9 +2,12 @@
     import { dndzone } from "svelte-dnd-action";
 
     import { navigate } from "svelte-navigator";
+    import PageLoading from "../../../components/PageLoading.svelte";
     import Question from "../../../components/Survey/Create/Question.svelte";
     import Title from "../../../components/Survey/Create/Title.svelte";
     import { SurveyAnswerType } from "../../../components/Survey/types";
+    import apiClient from "../../../lib/apiClient";
+    import type { SurveyQuestionModel } from "../../../lib/client";
     import { base64Encode } from "../../../lib/crypto/codecUtils";
     import hash from "../../../lib/crypto/hash";
     import publicKey from "../../../lib/crypto/publicKey";
@@ -13,6 +16,7 @@
 
     let lastQuestionIdId = 0;
     let surveyTitle = "Untitled survey";
+    let surveyDescription = "";
     let surveyQuestions: {
         id: number;
         regex: string | null;
@@ -24,25 +28,6 @@
     }[] = [];
     let dragDisabled = true;
     let publishingSurvey = false;
-
-    type SurveyQuestion = {
-        id: number;
-        regex: { cipher_text; iv: string } | null;
-        description: {
-            cipher_text: string;
-            iv: string;
-        } | null;
-        required: boolean;
-        choices: {
-            cipher_text: string;
-            iv: string;
-        }[];
-        question: {
-            cipher_text: string;
-            iv: string;
-        };
-        type: SurveyAnswerType;
-    };
 
     addQuestion();
 
@@ -111,7 +96,7 @@
         const rawKeyPair = publicKey.generateKeypair();
         const rawSignKeyPair = signatures.generateKeypair();
 
-        let questionsEncrypted: SurveyQuestion[] = [];
+        let questionsEncrypted: SurveyQuestionModel[] = [];
 
         for (const question of surveyQuestions) {
             const questionEncrypted = secretKey.encrypt(
@@ -125,7 +110,7 @@
                 ? secretKey.encrypt(rawKey, question.description)
                 : null;
 
-            const payload: SurveyQuestion = {
+            const payload: SurveyQuestionModel = {
                 id: question.id,
                 regex: regexEncrypted
                     ? {
@@ -145,10 +130,11 @@
                     iv: questionEncrypted.iv,
                 },
                 type: question.type,
-                choices: [],
             };
 
             if (question.choices && question.choices.length > 0) {
+                payload.choices = [];
+
                 for (const choice of question.choices) {
                     const choiceEncrypted = secretKey.encrypt(rawKey, choice);
                     payload.choices.push({
@@ -162,25 +148,36 @@
         }
 
         const surveyTitleEncrypted = secretKey.encrypt(rawKey, surveyTitle);
+        const surveyDescriptionEncrypted = secretKey.encrypt(
+            rawKey,
+            surveyDescription
+        );
 
         const surveyPayload = {
             title: {
                 cipher_text: surveyTitleEncrypted.cipherText,
                 iv: surveyTitleEncrypted.iv,
             },
+            description: {
+                cipher_text: surveyDescriptionEncrypted.cipherText,
+                iv: surveyDescriptionEncrypted.iv,
+            },
             questions: questionsEncrypted,
             signature: "",
         };
-
-        console.log(surveyPayload);
 
         surveyPayload.signature = signatures.signHash(
             rawSignKeyPair.privateKey,
             JSON.stringify(surveyPayload)
         );
 
+        const savedSurvey =
+            await apiClient.survey.controllersSurveyCreateCreateSurvey(
+                surveyPayload
+            );
+
         navigate(
-            `/s/{placeHolderId}/${base64Encode(
+            `/s/${savedSurvey._id}/${base64Encode(
                 rawKey,
                 true
             )}/${hash.hashBase64Encode(
@@ -196,59 +193,64 @@
     }
 </script>
 
-<div class="center-questions">
-    <article class="extra-large-width secondary-container">
-        <h6>Ensuring Secure and Confidential Survey Data</h6>
+{#if publishingSurvey}
+    <PageLoading />
+{:else}
+    <div class="center-questions">
+        <article class="extra-large-width secondary-container">
+            <h6>Ensuring Secure and Confidential Survey Data</h6>
 
-        <p>
-            All survey questions, answers, and sensitive metadata are protected
-            through end-to-end encryption. This means that only the individuals
-            who you share the link with can view the questions, while the
-            answers remain confidential and accessible only to you.
-        </p>
+            <p>
+                All survey questions, answers, and sensitive metadata are
+                protected through end-to-end encryption. This means that only
+                the individuals who you share the link with can view the
+                questions, while the answers remain confidential and accessible
+                only to you.
+            </p>
 
-        <nav class="right-align">
-            <button on:click={onPublish}>
-                <i>publish</i>
-                <span>Publish</span>
-            </button>
-        </nav>
-    </article>
-    <Title title={surveyTitle} />
+            <nav class="right-align">
+                <button on:click={onPublish}>
+                    <i>publish</i>
+                    <span>Publish</span>
+                </button>
+            </nav>
+        </article>
+        <Title title={surveyTitle} description={surveyDescription} />
 
-    <div
-        use:dndzone={{
-            items: surveyQuestions,
-            dragDisabled: dragDisabled,
-            morphDisabled: true,
-            dropTargetClasses: ["drop-target"],
-        }}
-        on:consider={handleConsider}
-        on:finalize={handleFinalize}
-        style="margin-top: 1em;"
-    >
-        {#each surveyQuestions as question (question.id)}
-            <Question
-                questionId={question.id}
-                bind:regex={question.regex}
-                bind:description={question.description}
-                bind:required={question.required}
-                bind:question={question.question}
-                bind:type={question.type}
-                bind:choices={question.choices}
-                {duplicateQuestion}
-                {removeQuestion}
-                {startDrag}
-                {stopDrag}
-            />
-        {/each}
+        <div
+            use:dndzone={{
+                items: surveyQuestions,
+                dragDisabled: dragDisabled,
+                morphDisabled: true,
+                dropTargetClasses: ["drop-target"],
+            }}
+            on:consider={handleConsider}
+            on:finalize={handleFinalize}
+            style="margin-top: 1em;"
+        >
+            {#each surveyQuestions as question (question.id)}
+                <Question
+                    questionId={question.id}
+                    bind:regex={question.regex}
+                    bind:description={question.description}
+                    bind:required={question.required}
+                    bind:question={question.question}
+                    bind:type={question.type}
+                    bind:choices={question.choices}
+                    {duplicateQuestion}
+                    {removeQuestion}
+                    {startDrag}
+                    {stopDrag}
+                />
+            {/each}
+        </div>
+
+        <button on:click={addQuestion} style="margin-top: 2em;">
+            <i>add</i>
+            <span>New Question</span>
+        </button>
     </div>
-
-    <button on:click={addQuestion} style="margin-top: 2em;">
-        <i>add</i>
-        <span>New Question</span>
-    </button>
-</div>
+{/if}
 
 <style>
     .center-questions {

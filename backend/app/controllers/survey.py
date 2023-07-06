@@ -1,5 +1,27 @@
-from pydantic import BaseModel
+from datetime import datetime
+from typing import TYPE_CHECKING, Any
+
+from bson import ObjectId
+from litestar import Request, Router, post
+from litestar.contrib.jwt import Token
+
+if TYPE_CHECKING:
+    from app.custom_types import State
+
+from app.models.survey import SurveyCreateModel, SurveyModel
 
 
-class SurveyQuestionModel(BaseModel):
-    id: int
+@post("/create", description="Create a survey")
+async def create_survey(
+    request: Request[ObjectId, Token, Any], data: SurveyCreateModel, state: "State"
+) -> SurveyModel:
+    insert = {**data.dict(), "created": datetime.utcnow(), "user_id": request.user}
+    await state.mongo.surveys.insert_one(insert)
+    return SurveyModel(**insert)
+
+
+router = Router(
+    path="/survey",
+    tags=["survey"],
+    route_handlers=[create_survey],
+)

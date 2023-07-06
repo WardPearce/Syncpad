@@ -12,6 +12,7 @@ import { NotificationsService } from './services/NotificationsService';
 import { PrivacyService } from './services/PrivacyService';
 import { SessionService } from './services/SessionService';
 import { SubscriptionService } from './services/SubscriptionService';
+import { SurveyService } from './services/SurveyService';
 import { WarrantService } from './services/WarrantService';
 import { WebhookService } from './services/WebhookService';
 
@@ -26,6 +27,7 @@ export class CanaryClient {
     public readonly privacy: PrivacyService;
     public readonly session: SessionService;
     public readonly subscription: SubscriptionService;
+    public readonly survey: SurveyService;
     public readonly warrant: WarrantService;
     public readonly webhook: WebhookService;
 
@@ -51,6 +53,7 @@ export class CanaryClient {
         this.privacy = new PrivacyService(this.request);
         this.session = new SessionService(this.request);
         this.subscription = new SubscriptionService(this.request);
+        this.survey = new SurveyService(this.request);
         this.warrant = new WarrantService(this.request);
         this.webhook = new WebhookService(this.request);
     }
