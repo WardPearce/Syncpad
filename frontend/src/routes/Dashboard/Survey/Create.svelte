@@ -4,6 +4,7 @@
 
     import Question from "../../../components/Survey/Question.svelte";
     import Title from "../../../components/Survey/Title.svelte";
+    import { SurveyAnswerType } from "../../../components/Survey/types";
 
     let surveyId = 0;
     let surveyQuestions: {
@@ -12,6 +13,7 @@
         regex: string | null;
         required: boolean;
         question: string;
+        type: SurveyAnswerType;
     }[] = [];
     let dragDisabled = true;
 
@@ -43,6 +45,7 @@
                 regex: null,
                 required: false,
                 question: "Untitled Question",
+                type: SurveyAnswerType["Short answer"],
             },
         ];
     }
@@ -60,6 +63,7 @@
                     regex: question.regex,
                     required: question.required,
                     question: question.question,
+                    type: question.type,
                 },
             ];
         }
@@ -70,9 +74,28 @@
             (question) => question.id !== index
         );
     }
+
+    async function onPublish() {}
 </script>
 
 <div class="center-questions">
+    <article class="extra-large-width secondary-container">
+        <h6>Ensuring Secure and Confidential Survey Data</h6>
+
+        <p>
+            All survey questions, answers, and metadata are protected through
+            end-to-end encryption. This means that only the individuals who you
+            share the link with can view the questions, while the answers remain
+            confidential and accessible only to you.
+        </p>
+
+        <nav class="right-align">
+            <button on:click={onPublish}>
+                <i>publish</i>
+                <span>Publish</span>
+            </button>
+        </nav>
+    </article>
     <Title />
 
     <div
@@ -93,6 +116,7 @@
                 bind:regex={question.regex}
                 bind:required={question.required}
                 bind:question={question.question}
+                bind:type={question.type}
                 {duplicateQuestion}
                 {removeQuestion}
                 {startDrag}

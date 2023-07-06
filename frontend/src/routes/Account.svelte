@@ -1,5 +1,4 @@
 <script lang="ts">
-  import sodium from "libsodium-wrappers-sumo";
   import { onMount } from "svelte";
   import { get } from "svelte/store";
   import UAParser from "ua-parser-js";
@@ -13,7 +12,10 @@
     type SessionModel,
     type UserModel,
   } from "../lib/client";
-  import { base64Decode } from "../lib/crypto/codecUtils";
+  import publicKey, {
+    PrivateKeyLocation,
+    PublicKeyLocation,
+  } from "../lib/crypto/publicKey";
   import { relativeDate } from "../lib/date";
   import {
     advanceModeStore,
@@ -44,9 +46,6 @@
   let webhookUrl = "";
   let currentNotifyTab: WebhookModel.type = WebhookModel.type.CANARY_RENEWALS;
 
-  let privateKey: Uint8Array;
-  let publicKey: Uint8Array;
-
   async function toggleIpLookupConsent() {
     if (user.ip_lookup_consent) {
       await apiClient.privacy.controllersAccountPrivacyIpProgressingDisallowIpProgressing();
@@ -57,16 +56,14 @@
     user.ip_lookup_consent = !user.ip_lookup_consent;
   }
 
-  // Replace when crypto publicKey.ts is implemented
-  function decryptSessionInfo(base64CipherText: string): string {
+  function boxSealOpen(toDecrypt: string): string {
     try {
-      return new TextDecoder().decode(
-        sodium.crypto_box_seal_open(
-          base64Decode(base64CipherText),
-          publicKey,
-          privateKey
-        )
-      );
+      return publicKey.boxSealOpen(
+        PublicKeyLocation.localKeypair,
+        PrivateKeyLocation.localKeypair,
+        toDecrypt,
+        true
+      ) as string;
     } catch (error) {
       return "Failed to decrypted";
     }
@@ -169,13 +166,10 @@
   onMount(async () => {
     user = await apiClient.account.controllersAccountMeGetMe();
 
-    privateKey = base64Decode(loggedInSecrets.rawKeypair.privateKey);
-    publicKey = base64Decode(loggedInSecrets.rawKeypair.publicKey);
-
     (await apiClient.session.controllersSessionGetSessions()).forEach(
       (session) =>
         activeSessions.push({
-          uaparser: new UAParser(decryptSessionInfo(session.device as string)),
+          uaparser: new UAParser(boxSealOpen(session.device as string)),
           ...session,
         })
     );
@@ -425,7 +419,7 @@
                 <p>
                   <span style="font-weight: bold;">Country:</span>
                   {#if session.location.country}
-                    {decryptSessionInfo(session.location.country)}
+                    {boxSealOpen(session.location.country)}
                   {:else}
                     Unknown
                   {/if}
@@ -433,7 +427,7 @@
                 <p>
                   <span style="font-weight: bold;">Region:</span>
                   {#if session.location.region}
-                    {decryptSessionInfo(session.location.region)}
+                    {boxSealOpen(session.location.region)}
                   {:else}
                     Unknown
                   {/if}
@@ -441,7 +435,7 @@
                 <p>
                   <span style="font-weight: bold;">IP Address:</span>
                   {#if session.location.ip}
-                    {decryptSessionInfo(session.location.ip)}
+                    {boxSealOpen(session.location.ip)}
                   {:else}
                     Unknown
                   {/if}

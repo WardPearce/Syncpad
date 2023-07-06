@@ -10,6 +10,7 @@ import apiClient from "./apiClient";
 import { syncTrustedCanaries } from './canary';
 import type { AccountUpdatePassword, CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
 import { base64Decode, base64Encode } from "./crypto/codecUtils";
+import publicKey from './crypto/publicKey';
 import secretKey from "./crypto/secretKey";
 import signatures from "./crypto/signatures";
 
@@ -381,7 +382,7 @@ export async function* register(email: string, password: string, captchaToken?: 
 
   yield "Generating keypair";
 
-  const rawKeypair = sodium.crypto_box_keypair();
+  const rawKeypair = publicKey.generateKeypair();
   const safePrivateKey = secretKey.encrypt(
     rawKeychain,
     rawKeypair.privateKey

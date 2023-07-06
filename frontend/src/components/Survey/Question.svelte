@@ -4,6 +4,7 @@
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
     import { selectOnClick } from "./helpers";
+    import { SurveyAnswerType } from "./types";
 
     export let removeQuestion: (index: number) => void;
     export let duplicateQuestion: (index: number) => void;
@@ -13,6 +14,7 @@
     export let question: string;
     export let regex: string | null = null;
     export let required: boolean = false;
+    export let type: SurveyAnswerType = SurveyAnswerType["Short answer"];
 
     let regexDialogOpen: boolean = false;
     const regexPatterns = {
@@ -45,6 +47,7 @@
 
     function changeAnswer(event: Event) {
         const target = event.target as HTMLSelectElement;
+        type = SurveyAnswerType[target.value];
         selectedAnswer = answerTypes[target.value];
     }
 </script>
