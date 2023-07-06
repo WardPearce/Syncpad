@@ -1,7 +1,7 @@
 from typing import List
 
+from app.lib.tasks import Tab
 from app.tasks import canary
-from lib.tasks import Tab
 
 tasks: List[List[Tab]] = [canary.tasks]
 

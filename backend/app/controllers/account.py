@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Optional
 import pyotp
 from bson import ObjectId
 from bson.errors import InvalidId
-from env import SETTINGS
 from litestar import Request, Response, Router, delete
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jwt import Token
@@ -18,6 +17,7 @@ from nacl.exceptions import BadSignatureError
 from nacl.public import PublicKey, SealedBox
 from nacl.signing import VerifyKey
 
+from app.env import SETTINGS
 from app.errors import (
     EmailTaken,
     InvalidAccountAuth,

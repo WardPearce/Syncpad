@@ -3,6 +3,14 @@ import secrets
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Annotated, Any, Dict, List
 
+from bson import ObjectId
+from bson.errors import InvalidId
+from litestar import Controller, Request, Response, Router, delete, get, post, put
+from litestar.contrib.jwt import Token
+from litestar.datastructures import UploadFile
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
+
 from app.env import SETTINGS
 from app.errors import (
     CanaryAlreadyTrusted,
@@ -28,14 +36,6 @@ from app.models.canary import (
     PublishedCanaryWarrantModel,
     TrustedCanaryModel,
 )
-from bson import ObjectId
-from bson.errors import InvalidId
-from lib.otp import OneTimePassword
-from litestar import Controller, Request, Response, Router, delete, get, post, put
-from litestar.contrib.jwt import Token
-from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 
 if TYPE_CHECKING:
     from custom_types import State

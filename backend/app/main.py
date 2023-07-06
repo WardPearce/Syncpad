@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, cast
 
 import aiohttp
-from lib.tasks import CronTabs
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
@@ -18,6 +17,7 @@ from redis.asyncio import Redis
 from app.controllers import routes
 from app.env import SETTINGS
 from app.lib.jwt import jwt_cookie_auth
+from app.lib.tasks import CronTabs
 from app.models.customs import CustomJsonEncoder
 from app.tasks import tasks
 

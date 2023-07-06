@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, List, Literal, Union
 
 from aiohttp import ClientResponse, ClientTimeout
 from aiohttp_proxy import ProxyConnector
-from env import SETTINGS
+
+from app.env import SETTINGS
 
 if TYPE_CHECKING:
     from app.custom_types import State

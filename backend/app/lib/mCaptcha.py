@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Optional
 
 from app.env import SETTINGS
-from errors import InvalidCaptcha
+from app.errors import InvalidCaptcha
 
 if TYPE_CHECKING:
-    from custom_types import State
+    from app.custom_types import State
 
 
 async def validate_captcha(state: "State", token: Optional[str]) -> None:
