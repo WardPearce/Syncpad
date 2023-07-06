@@ -17,12 +17,32 @@
         id: number;
         regex: string | null;
         description: string | null;
+        choices: string[];
         required: boolean;
         question: string;
         type: SurveyAnswerType;
     }[] = [];
     let dragDisabled = true;
     let publishingSurvey = false;
+
+    type SurveyQuestion = {
+        id: number;
+        regex: { cipher_text; iv: string } | null;
+        description: {
+            cipher_text: string;
+            iv: string;
+        } | null;
+        required: boolean;
+        choices: {
+            cipher_text: string;
+            iv: string;
+        }[];
+        question: {
+            cipher_text: string;
+            iv: string;
+        };
+        type: SurveyAnswerType;
+    };
 
     addQuestion();
 
@@ -53,6 +73,7 @@
                 question: "Untitled Question",
                 type: SurveyAnswerType["Short Answer"],
                 description: null,
+                choices: [],
             },
         ];
     }
@@ -71,6 +92,7 @@
                     question: question.question,
                     type: question.type,
                     description: question.description,
+                    choices: question.choices,
                 },
             ];
         }
@@ -89,20 +111,7 @@
         const rawKeyPair = publicKey.generateKeypair();
         const rawSignKeyPair = signatures.generateKeypair();
 
-        let questionsEncrypted: {
-            id: number;
-            regex: { cipher_text; iv: string } | null;
-            description: {
-                cipher_text: string;
-                iv: string;
-            } | null;
-            required: boolean;
-            question: {
-                cipher_text: string;
-                iv: string;
-            };
-            type: SurveyAnswerType;
-        }[] = [];
+        let questionsEncrypted: SurveyQuestion[] = [];
 
         for (const question of surveyQuestions) {
             const questionEncrypted = secretKey.encrypt(
@@ -116,7 +125,7 @@
                 ? secretKey.encrypt(rawKey, question.description)
                 : null;
 
-            const payload = {
+            const payload: SurveyQuestion = {
                 id: question.id,
                 regex: regexEncrypted
                     ? {
@@ -136,7 +145,18 @@
                     iv: questionEncrypted.iv,
                 },
                 type: question.type,
+                choices: [],
             };
+
+            if (question.choices && question.choices.length > 0) {
+                for (const choice of question.choices) {
+                    const choiceEncrypted = secretKey.encrypt(rawKey, choice);
+                    payload.choices.push({
+                        cipher_text: choiceEncrypted.cipherText,
+                        iv: choiceEncrypted.iv,
+                    });
+                }
+            }
 
             questionsEncrypted.push(payload);
         }
@@ -215,6 +235,7 @@
                 bind:required={question.required}
                 bind:question={question.question}
                 bind:type={question.type}
+                bind:choices={question.choices}
                 {duplicateQuestion}
                 {removeQuestion}
                 {startDrag}

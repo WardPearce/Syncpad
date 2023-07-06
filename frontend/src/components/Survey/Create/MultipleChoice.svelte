@@ -1,16 +1,21 @@
 <script lang="ts">
     import { selectOnClick } from "./helpers";
 
-    let choices: string[] = [];
+    export let choices: string[] = [];
+
+    let choiceCount = 1;
+    function addChoice() {
+        choices = [...choices, `Choice ${choiceCount++}`];
+    }
+
+    function removeChoice(index: number) {
+        choices = choices.filter((_, i) => i !== index);
+    }
 
     addChoice();
-
-    function addChoice() {
-        choices = [...choices, `Choice ${choices.length + 1}`];
-    }
 </script>
 
-{#each choices as choice}
+{#each choices as choice, index}
     <nav style="margin-top: 1em;">
         <div class="radio">
             <input disabled type="radio" />
@@ -19,6 +24,13 @@
         <div class="field border small">
             <input type="text" bind:value={choice} on:click={selectOnClick} />
         </div>
+        <button
+            class="square border tertiary-border tertiary-text round"
+            disabled={choices.length === 1}
+            on:click={() => removeChoice(index)}
+        >
+            <i>delete</i>
+        </button>
     </nav>
 {/each}
 

@@ -16,6 +16,7 @@
     export let description: string | null = null;
     export let required: boolean = false;
     export let type: SurveyAnswerType;
+    export let choices: string[];
 
     let addDescription: boolean = false;
     let regexDialogOpen: boolean = false;
@@ -49,6 +50,7 @@
 
     function changeAnswer(event: Event) {
         const target = event.target as HTMLSelectElement;
+        choices = [];
         type = SurveyAnswerType[target.value];
         selectedAnswer = answerTypes[target.value];
     }
@@ -132,7 +134,7 @@
                 </button>
             {/if}
         </div>
-        <svelte:component this={selectedAnswer} />
+        <svelte:component this={selectedAnswer} bind:choices />
         <article class="surface-variant">
             <nav class="right-align">
                 <button
