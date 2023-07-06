@@ -1,79 +1,152 @@
 <script lang="ts">
+    import Checkboxes from "./Checkboxes.svelte";
+    import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
+    import { selectOnClick } from "./helpers";
 
     export let removeQuestion: (index: number) => void;
+    export let duplicateQuestion: (index: number) => void;
     export let startDrag: () => void;
     export let stopDrag: () => void;
     export let surveyId: number;
+    export let question: string;
+    export let regex: string | null = null;
+    export let required: boolean = false;
 
-    const questions = {
+    let regexDialogOpen: boolean = false;
+    const regexPatterns = {
+        Email: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+        Phone: /^\d{10}$/,
+        Number: /^\d+$/,
+        Street: /^\d+\s[A-z]+\s[A-z]+/,
+        Website: /^https?:\/\/[\w-\.]+\.[a-z]{2,4}\/?$/,
+        "Card number": /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/,
+        Cvs: /^\d{3}$/,
+        Date: /^\d{2}\/\d{2}\/\d{4}$/,
+        "Card name": /^[A-z]+\s[A-z]+$/,
+        "Zip code": /^\d{5}$/,
+        None: null,
+    };
+
+    const answerTypes = {
         "Short answer": ShortAnswer,
         Paragraph: Paragraph,
+        "Multiple choice": MultipleChoice,
+        Checkboxes: Checkboxes,
     };
+    const regexAllowed = ["Proxy<ShortAnswer>", "Proxy<Paragraph>"];
     let selectedAnswer = ShortAnswer;
+
+    function setRegex(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        regex = regexPatterns[target.value];
+    }
 
     function changeAnswer(event: Event) {
         const target = event.target as HTMLSelectElement;
-        selectedAnswer = questions[target.value];
+        selectedAnswer = answerTypes[target.value];
     }
 </script>
 
-<article class="extra-large-width">
-    <div
-        class="drag-area"
-        on:mousedown={startDrag}
-        on:touchstart={startDrag}
-        on:mouseup={stopDrag}
-        on:touchend={stopDrag}
-    >
-        <i>drag_handle</i>
-    </div>
-    <div class="grid">
-        <div class="s12 m6 l8">
-            <div class="field large fill">
-                <input type="text" value="Untitled Question" />
+<div>
+    <dialog class:active={regexDialogOpen}>
+        <h5>Input validation</h5>
+        <div>
+            <div class="field label border">
+                <input type="text" bind:value={regex} />
+                <label for="regex">Regex pattern</label>
             </div>
-        </div>
-        <div class="s12 m6 l4">
-            <div class="field suffix large border">
-                <select on:change={changeAnswer}>
-                    {#each Object.keys(questions) as question}
-                        <option>{question}</option>
+            <div class="field suffix border">
+                <select on:change={setRegex}>
+                    <option value="" disabled selected
+                        >Predefined patterns</option
+                    >
+                    {#each Object.keys(regexPatterns) as regexPattern}
+                        <option>{regexPattern}</option>
                     {/each}
                 </select>
                 <i>arrow_drop_down</i>
             </div>
         </div>
-    </div>
-    <svelte:component this={selectedAnswer} />
-    <article class="surface-variant">
         <nav class="right-align">
             <button
-                class="square border tertiary-border tertiary-text round"
-                on:click={() => removeQuestion(surveyId)}
+                class="border"
+                on:click={() => ((regexDialogOpen = false), (regex = null))}
+                >Cancel</button
             >
-                <i>delete</i>
-                <div class="tooltip">Delete question</div>
-            </button>
-
-            <button class="square border round">
-                <i>rule</i>
-                <div class="tooltip">Question validation</div>
-            </button>
-
-            <button class="square border round">
-                <i>content_copy</i>
-                <div class="tooltip">Duplicate question</div>
-            </button>
-
-            <label class="switch">
-                <input type="checkbox" />
-                <span style="padding-left: .3em;">Required</span>
-            </label>
+            <button on:click={() => (regexDialogOpen = false)}>Confirm</button>
         </nav>
+    </dialog>
+
+    <article class="extra-large-width">
+        <div
+            class="drag-area"
+            on:mousedown={startDrag}
+            on:touchstart={startDrag}
+            on:mouseup={stopDrag}
+            on:touchend={stopDrag}
+        >
+            <i>drag_handle</i>
+        </div>
+        <div class="grid">
+            <div class="s12 m6 l8">
+                <div class="field large fill">
+                    <input
+                        type="text"
+                        bind:value={question}
+                        on:click={selectOnClick}
+                    />
+                </div>
+            </div>
+            <div class="s12 m6 l4">
+                <div class="field suffix large border">
+                    <select on:change={changeAnswer}>
+                        {#each Object.keys(answerTypes) as answer}
+                            <option>{answer}</option>
+                        {/each}
+                    </select>
+                    <i>arrow_drop_down</i>
+                </div>
+            </div>
+        </div>
+        <svelte:component this={selectedAnswer} />
+        <article class="surface-variant">
+            <nav class="right-align">
+                <button
+                    class="square border tertiary-border tertiary-text round"
+                    on:click={() => removeQuestion(surveyId)}
+                >
+                    <i>delete</i>
+                    <div class="tooltip">Delete question</div>
+                </button>
+
+                {#if regexAllowed.includes(selectedAnswer.name)}
+                    <button
+                        class="square border round"
+                        on:click={() => (regexDialogOpen = true)}
+                    >
+                        <i>rule</i>
+                        <div class="tooltip">Question validation</div>
+                    </button>
+                {/if}
+
+                <button
+                    class="square border round"
+                    on:click={() => duplicateQuestion(surveyId)}
+                >
+                    <i>content_copy</i>
+                    <div class="tooltip">Duplicate question</div>
+                </button>
+
+                <label class="switch">
+                    <input type="checkbox" bind:checked={required} />
+                    <span style="padding-left: .3em;">Required</span>
+                </label>
+            </nav>
+        </article>
     </article>
-</article>
+</div>
 
 <style>
     .drag-area {

@@ -1,6 +1,10 @@
+<script lang="ts">
+    import { selectOnClick } from "./helpers";
+</script>
+
 <article class="extra-large-width">
     <div class="field fill extra">
-        <input type="text" value="Untitled survey" />
+        <input type="text" value="Untitled survey" on:click={selectOnClick} />
     </div>
     <div class="field fill textarea label large">
         <textarea />

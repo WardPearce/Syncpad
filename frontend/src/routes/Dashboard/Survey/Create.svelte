@@ -6,7 +6,13 @@
     import Title from "../../../components/Survey/Title.svelte";
 
     let surveyId = 0;
-    let surveyQuestions: { id: number; component: ComponentType }[] = [];
+    let surveyQuestions: {
+        id: number;
+        component: ComponentType;
+        regex: string | null;
+        required: boolean;
+        question: string;
+    }[] = [];
     let dragDisabled = true;
 
     addQuestion();
@@ -31,8 +37,32 @@
     function addQuestion() {
         surveyQuestions = [
             ...surveyQuestions,
-            { id: surveyId++, component: Question },
+            {
+                id: surveyId++,
+                component: Question,
+                regex: null,
+                required: false,
+                question: "Untitled Question",
+            },
         ];
+    }
+
+    function duplicateQuestion(index: number) {
+        const question = surveyQuestions.find(
+            (question) => question.id === index
+        );
+        if (question) {
+            surveyQuestions = [
+                ...surveyQuestions,
+                {
+                    id: surveyId++,
+                    component: question.component,
+                    regex: question.regex,
+                    required: question.required,
+                    question: question.question,
+                },
+            ];
+        }
     }
 
     function removeQuestion(index: number) {
@@ -60,6 +90,10 @@
             <svelte:component
                 this={question.component}
                 surveyId={question.id}
+                bind:regex={question.regex}
+                bind:required={question.required}
+                bind:question={question.question}
+                {duplicateQuestion}
                 {removeQuestion}
                 {startDrag}
                 {stopDrag}
