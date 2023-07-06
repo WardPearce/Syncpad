@@ -16,7 +16,7 @@ async def create_survey(
     request: Request[ObjectId, Token, Any], data: SurveyCreateModel, state: "State"
 ) -> SurveyModel:
     insert = {**data.dict(), "created": datetime.utcnow(), "user_id": request.user}
-    await state.mongo.surveys.insert_one(insert)
+    await state.mongo.survey.insert_one(insert)
     return SurveyModel(**insert)
 
 

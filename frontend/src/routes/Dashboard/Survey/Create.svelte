@@ -177,13 +177,13 @@
             );
 
         navigate(
-            `/s/${savedSurvey._id}/${base64Encode(
-                rawKey,
-                true
-            )}/${hash.hashBase64Encode(
+            `/s/${savedSurvey._id}/${hash.hashBase64Encode(
                 rawKeyPair.publicKey,
                 true
-            )}/${hash.hashBase64Encode(rawSignKeyPair.publicKey, true)}`,
+            )}/${hash.hashBase64Encode(
+                rawSignKeyPair.publicKey,
+                true
+            )}#${base64Encode(rawKey, true)}`,
             {
                 replace: true,
             }
