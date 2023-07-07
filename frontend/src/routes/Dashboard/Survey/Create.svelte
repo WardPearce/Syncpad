@@ -7,11 +7,16 @@
     import Title from "../../../components/Survey/Create/Title.svelte";
     import { SurveyAnswerType } from "../../../components/Survey/types";
     import apiClient from "../../../lib/apiClient";
-    import type { SurveyQuestionModel } from "../../../lib/client";
+    import type {
+        SurveyCreateModel,
+        SurveyQuestionModel,
+    } from "../../../lib/client";
     import { base64Encode } from "../../../lib/crypto/codecUtils";
     import hash from "../../../lib/crypto/hash";
     import publicKey from "../../../lib/crypto/publicKey";
-    import secretKey from "../../../lib/crypto/secretKey";
+    import secretKey, {
+        SecretkeyLocation,
+    } from "../../../lib/crypto/secretKey";
     import signatures from "../../../lib/crypto/signatures";
 
     let lastQuestionIdId = 0;
@@ -152,8 +157,25 @@
             rawKey,
             surveyDescription
         );
+        const publicKeypairEncrypted = secretKey.encrypt(
+            rawKey,
+            rawKeyPair.publicKey
+        );
 
-        const surveyPayload = {
+        const signKeypairEncrypted = secretKey.encrypt(
+            SecretkeyLocation.localKeychain,
+            rawSignKeyPair.privateKey
+        );
+        const privateKeypairEncrypted = secretKey.encrypt(
+            SecretkeyLocation.localKeychain,
+            rawKeyPair.privateKey
+        );
+        const secretKeyEncrypted = secretKey.encrypt(
+            SecretkeyLocation.localKeychain,
+            rawKey
+        );
+
+        const surveyPayload: SurveyCreateModel = {
             title: {
                 cipher_text: surveyTitleEncrypted.cipherText,
                 iv: surveyTitleEncrypted.iv,
@@ -163,6 +185,25 @@
                 iv: surveyDescriptionEncrypted.iv,
             },
             questions: questionsEncrypted,
+            secret_key: {
+                cipher_text: secretKeyEncrypted.cipherText,
+                iv: secretKeyEncrypted.iv,
+            },
+            sign_keypair: {
+                cipher_text: signKeypairEncrypted.cipherText,
+                iv: signKeypairEncrypted.iv,
+                public_key: base64Encode(rawSignKeyPair.publicKey),
+            },
+            keypair: {
+                private_key: {
+                    cipher_text: privateKeypairEncrypted.cipherText,
+                    iv: privateKeypairEncrypted.iv,
+                },
+                public_key: {
+                    cipher_text: publicKeypairEncrypted.cipherText,
+                    iv: publicKeypairEncrypted.iv,
+                },
+            },
             signature: "",
         };
 

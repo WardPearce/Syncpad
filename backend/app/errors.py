@@ -26,6 +26,17 @@ class ErrorCodes(Enum):
     too_many_webhooks = 2014
     too_many_files = 2015
     blake2_invalid = 2016
+    survey_not_found = 2017
+
+
+class SurveyNotFoundException(NotFoundException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Survey not found",
+            extra={ERROR_CODE_KEY: ErrorCodes.survey_not_found.value},
+        )
 
 
 class UserNotFoundException(NotFoundException):

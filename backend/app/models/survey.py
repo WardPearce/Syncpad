@@ -8,6 +8,43 @@ from pydantic import BaseModel, Field
 from app.models.customs import CustomJsonEncoder, IvField
 
 
+class SecretKeyModel(IvField):
+    cipher_text: str = Field(
+        ...,
+        max_length=240,
+        description="Xchacha20 secret key, encrypted with keychain, base64 encoded",
+    )
+
+
+class SignPublicKeyModel(BaseModel):
+    public_key: str = Field(
+        ..., max_length=44, description="ed25519 public key, base64 encoded"
+    )
+
+
+class SignKeyPairModel(SignPublicKeyModel, IvField):
+    cipher_text: str = Field(
+        ...,
+        max_length=240,
+        description="ed25519 private key, encrypted with keychain, base64 encoded",
+    )
+
+
+class KeypairCipherModel(IvField):
+    cipher_text: str = Field(
+        ...,
+        max_length=240,
+    )
+
+
+class PublicKeyModel(BaseModel):
+    public_key: KeypairCipherModel
+
+
+class KeypairModel(PublicKeyModel):
+    private_key: KeypairCipherModel
+
+
 class RegexModel(IvField):
     cipher_text: str = Field(
         ...,
@@ -58,7 +95,7 @@ class TitleModel(IvField):
     )
 
 
-class SurveyCreateModel(BaseModel):
+class __SurveySharedModel(BaseModel):
     title: TitleModel
     description: Optional[DescriptionModel] = None
     questions: List[SurveyQuestionModel] = Field(..., max_items=128)
@@ -68,7 +105,21 @@ class SurveyCreateModel(BaseModel):
     allow_multiple_submissions: bool = False
 
 
-class SurveyModel(SurveyCreateModel, CustomJsonEncoder):
+class SurveyCreateModel(__SurveySharedModel):
+    sign_keypair: SignKeyPairModel
+    secret_key: SecretKeyModel
+    keypair: KeypairModel
+
+
+class SurveyPublicModel(__SurveySharedModel, CustomJsonEncoder):
     created: datetime
     id: ObjectId = Field(..., alias="_id")
     user_id: ObjectId
+    sign_keypair: SignPublicKeyModel
+    keypair: PublicKeyModel
+
+
+class SurveyModel(SurveyPublicModel):
+    sign_keypair: SignKeyPairModel
+    secret_key: SecretKeyModel
+    keypair: KeypairModel
