@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type ChoicesModel = {
+export type SurveyKeypairCipherModel = {
     iv: string;
     cipher_text: string;
 };

@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from app.models.customs import CustomJsonEncoder, IvField
 
 
-class SecretKeyModel(IvField):
+class SurveySecretKeyModel(IvField):
     cipher_text: str = Field(
         ...,
         max_length=240,
@@ -16,13 +16,13 @@ class SecretKeyModel(IvField):
     )
 
 
-class SignPublicKeyModel(BaseModel):
+class SurveySignPublicKeyModel(BaseModel):
     public_key: str = Field(
         ..., max_length=44, description="ed25519 public key, base64 encoded"
     )
 
 
-class SignKeyPairModel(SignPublicKeyModel, IvField):
+class SurveySignKeyPairModel(SurveySignPublicKeyModel, IvField):
     cipher_text: str = Field(
         ...,
         max_length=240,
@@ -30,43 +30,43 @@ class SignKeyPairModel(SignPublicKeyModel, IvField):
     )
 
 
-class KeypairCipherModel(IvField):
+class SurveyKeypairCipherModel(IvField):
     cipher_text: str = Field(
         ...,
         max_length=240,
     )
 
 
-class PublicKeyModel(BaseModel):
-    public_key: KeypairCipherModel
+class SurveyPublicKeyModel(BaseModel):
+    public_key: SurveyKeypairCipherModel
 
 
-class KeypairModel(PublicKeyModel):
-    private_key: KeypairCipherModel
+class SurveyKeypairModel(SurveyPublicKeyModel):
+    private_key: SurveyKeypairCipherModel
 
 
-class RegexModel(IvField):
+class SurveyRegexModel(IvField):
     cipher_text: str = Field(
         ...,
         max_length=128,
     )
 
 
-class DescriptionModel(IvField):
+class SurveyDescriptionModel(IvField):
     cipher_text: str = Field(
         ...,
         max_length=1024,
     )
 
 
-class ChoicesModel(IvField):
+class SurveyChoicesModel(IvField):
     cipher_text: str = Field(
         ...,
         max_length=512,
     )
 
 
-class QuestionModel(IvField):
+class SurveyQuestionsModel(IvField):
     cipher_text: str = Field(
         ...,
         max_length=256,
@@ -75,10 +75,10 @@ class QuestionModel(IvField):
 
 class SurveyQuestionModel(BaseModel):
     id: int
-    regex: Optional[RegexModel] = None
-    description: Optional[DescriptionModel] = None
-    question: Optional[QuestionModel] = None
-    choices: Optional[List[ChoicesModel]] = Field(None, max_items=56)
+    regex: Optional[SurveyRegexModel] = None
+    description: Optional[SurveyDescriptionModel] = None
+    question: Optional[SurveyQuestionsModel] = None
+    choices: Optional[List[SurveyChoicesModel]] = Field(None, max_items=56)
     required: bool = False
     type: Union[
         Literal["Short Answer"],
@@ -97,7 +97,7 @@ class TitleModel(IvField):
 
 class __SurveySharedModel(BaseModel):
     title: TitleModel
-    description: Optional[DescriptionModel] = None
+    description: Optional[SurveyDescriptionModel] = None
     questions: List[SurveyQuestionModel] = Field(..., max_items=128)
     signature: str = Field(..., max_length=128)
     requires_login: bool = False
@@ -106,20 +106,18 @@ class __SurveySharedModel(BaseModel):
 
 
 class SurveyCreateModel(__SurveySharedModel):
-    sign_keypair: SignKeyPairModel
-    secret_key: SecretKeyModel
-    keypair: KeypairModel
+    sign_keypair: SurveySignKeyPairModel
+    secret_key: SurveySecretKeyModel
+    keypair: SurveyKeypairModel
 
 
 class SurveyPublicModel(__SurveySharedModel, CustomJsonEncoder):
     created: datetime
     id: ObjectId = Field(..., alias="_id")
     user_id: ObjectId
-    sign_keypair: SignPublicKeyModel
-    keypair: PublicKeyModel
+    sign_keypair: SurveySignPublicKeyModel
+    keypair: SurveyPublicKeyModel
 
 
-class SurveyModel(SurveyPublicModel):
-    sign_keypair: SignKeyPairModel
-    secret_key: SecretKeyModel
-    keypair: KeypairModel
+class SurveyModel(SurveyPublicModel, SurveyCreateModel):
+    pass

@@ -3,13 +3,12 @@
 /* eslint-disable */
 
 import type { SurveyDescriptionModel } from './SurveyDescriptionModel';
-import type { SurveyKeypairModel } from './SurveyKeypairModel';
+import type { SurveyPublicKeyModel } from './SurveyPublicKeyModel';
 import type { SurveyQuestionModel } from './SurveyQuestionModel';
-import type { SurveySecretKeyModel } from './SurveySecretKeyModel';
-import type { SurveySignKeyPairModel } from './SurveySignKeyPairModel';
+import type { SurveySignPublicKeyModel } from './SurveySignPublicKeyModel';
 import type { TitleModel } from './TitleModel';
 
-export type SurveyCreateModel = {
+export type SurveyPublicModel = {
     title: TitleModel;
     description?: (null | SurveyDescriptionModel);
     questions: Array<SurveyQuestionModel>;
@@ -17,8 +16,10 @@ export type SurveyCreateModel = {
     requires_login?: boolean;
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
-    sign_keypair: SurveySignKeyPairModel;
-    secret_key: SurveySecretKeyModel;
-    keypair: SurveyKeypairModel;
+    created: string;
+    _id: any;
+    user_id: any;
+    sign_keypair: SurveySignPublicKeyModel;
+    keypair: SurveyPublicKeyModel;
 };
 

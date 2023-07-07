@@ -3,8 +3,10 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from litestar import Controller, Request, Router, get, post
+from litestar import Request, Router
 from litestar.contrib.jwt import Token
+from litestar.controller import Controller
+from litestar.handlers import get, post
 
 from app.errors import InvalidAccountAuth, SurveyNotFoundException
 
@@ -26,15 +28,11 @@ async def create_survey(
 class SurveyController(Controller):
     path = "/{survey_id:str}"
 
-    @get(
-        "/",
-        description="Get a survey",
-        exclude_from_auth=True,
-    )
-    async def get(
+    @get("/public", description="Get a survey", exclude_from_auth=True)
+    async def public_survey(
         self,
-        request: Request[Optional[ObjectId], Token, Any],
         state: "State",
+        request: Request[Optional[ObjectId], Token, Any],
         survey_id: str,
     ) -> SurveyPublicModel:
         try:
@@ -57,5 +55,5 @@ class SurveyController(Controller):
 router = Router(
     path="/survey",
     tags=["survey"],
-    route_handlers=[create_survey, SurveyController],
+    route_handlers=[SurveyController, create_survey],
 )

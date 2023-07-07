@@ -5,7 +5,10 @@
     import PageLoading from "../../../components/PageLoading.svelte";
     import Question from "../../../components/Survey/Create/Question.svelte";
     import Title from "../../../components/Survey/Create/Title.svelte";
-    import { SurveyAnswerType } from "../../../components/Survey/types";
+    import {
+        SurveyAnswerType,
+        type rawQuestion,
+    } from "../../../components/Survey/types";
     import apiClient from "../../../lib/apiClient";
     import type {
         SurveyCreateModel,
@@ -22,15 +25,7 @@
     let lastQuestionIdId = 0;
     let surveyTitle = "Untitled survey";
     let surveyDescription = "";
-    let surveyQuestions: {
-        id: number;
-        regex: string | null;
-        description: string | null;
-        choices: string[];
-        required: boolean;
-        question: string;
-        type: SurveyAnswerType;
-    }[] = [];
+    let surveyQuestions: rawQuestion[] = [];
     let dragDisabled = true;
     let publishingSurvey = false;
 

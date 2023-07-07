@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type SignPublicKeyModel = {
+export type SurveySignPublicKeyModel = {
     public_key: string;
 };
 

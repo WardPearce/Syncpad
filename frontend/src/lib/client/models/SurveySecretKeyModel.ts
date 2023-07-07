@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type KeypairCipherModel = {
+export type SurveySecretKeyModel = {
     iv: string;
     cipher_text: string;
 };
