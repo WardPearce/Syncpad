@@ -78,7 +78,7 @@ class SurveyQuestionModel(BaseModel):
     id: int
     regex: Optional[SurveyRegexModel] = None
     description: Optional[SurveyDescriptionModel] = None
-    question: Optional[SurveyQuestionsModel] = None
+    question: SurveyQuestionsModel
     choices: Optional[List[SurveyChoicesModel]] = Field(None, max_items=56)
     required: bool = False
     type: Union[

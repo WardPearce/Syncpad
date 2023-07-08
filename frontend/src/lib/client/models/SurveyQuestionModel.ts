@@ -11,7 +11,7 @@ export type SurveyQuestionModel = {
     id: number;
     regex?: (null | SurveyRegexModel);
     description?: (null | SurveyDescriptionModel);
-    question?: (null | SurveyQuestionsModel);
+    question: SurveyQuestionsModel;
     choices?: (null | Array<SurveyChoicesModel>);
     required?: boolean;
     type: string;

@@ -30,10 +30,10 @@ export function normalizeSurveyQuestions(questions: SurveyQuestionModel[]): Surv
         iv: survey.description.iv,
         cipher_text: survey.description.cipher_text
       } : null,
-      question: survey.question ? {
+      question: {
         iv: survey.question.iv,
         cipher_text: survey.question.cipher_text
-      } : null,
+      },
       choices: normalizedChoices ? normalizedChoices : null,
       required: survey.required,
       type: survey.type
