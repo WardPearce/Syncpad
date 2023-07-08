@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { selectOnClick } from "./helpers";
+    import { selectOnClick } from "../helpers";
 
     export let title: string;
     export let description: string;

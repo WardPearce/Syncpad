@@ -1,10 +1,10 @@
 <script lang="ts">
+    import { selectOnClick } from "../helpers";
     import { SurveyAnswerType } from "../types";
     import Checkboxes from "./Checkboxes.svelte";
     import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
-    import { selectOnClick } from "./helpers";
 
     export let removeQuestion: (index: number) => void;
     export let duplicateQuestion: (index: number) => void;

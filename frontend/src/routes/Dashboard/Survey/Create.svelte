@@ -5,7 +5,7 @@
     import PageLoading from "../../../components/PageLoading.svelte";
     import Question from "../../../components/Survey/Create/Question.svelte";
     import Title from "../../../components/Survey/Create/Title.svelte";
-    import { normalizeSurveyQuestions } from "../../../components/Survey/Create/helpers";
+    import { normalizeSurveyQuestions } from "../../../components/Survey/helpers";
     import {
         SurveyAnswerType,
         type rawQuestion,

@@ -1,4 +1,4 @@
-import type { SurveyChoicesModel, SurveyQuestionModel } from "../../../lib/client";
+import type { SurveyChoicesModel, SurveyQuestionModel } from "../../lib/client";
 
 export function selectOnClick(event: Event) {
   const inputElement = event.target as HTMLInputElement;

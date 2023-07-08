@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { normalizeSurveyQuestions } from "../components/Survey/Create/helpers";
+    import { normalizeSurveyQuestions } from "../components/Survey/helpers";
     import type { rawQuestion } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
     import type { SurveyPublicModel } from "../lib/client";
