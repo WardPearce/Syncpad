@@ -5,6 +5,7 @@
     import PageLoading from "../../../components/PageLoading.svelte";
     import Question from "../../../components/Survey/Create/Question.svelte";
     import Title from "../../../components/Survey/Create/Title.svelte";
+    import { normalizeSurveyQuestions } from "../../../components/Survey/Create/helpers";
     import {
         SurveyAnswerType,
         type rawQuestion,
@@ -111,23 +112,24 @@
                 : null;
 
             const payload: SurveyQuestionModel = {
+                choices: null,
                 id: question.id,
                 regex: regexEncrypted
                     ? {
-                          cipher_text: regexEncrypted.cipherText,
                           iv: regexEncrypted.iv,
+                          cipher_text: regexEncrypted.cipherText,
                       }
                     : null,
                 description: descriptionEncrypted
                     ? {
-                          cipher_text: descriptionEncrypted.cipherText,
                           iv: descriptionEncrypted.iv,
+                          cipher_text: descriptionEncrypted.cipherText,
                       }
                     : null,
                 required: question.required,
                 question: {
-                    cipher_text: questionEncrypted.cipherText,
                     iv: questionEncrypted.iv,
+                    cipher_text: questionEncrypted.cipherText,
                 },
                 type: question.type,
             };
@@ -135,11 +137,14 @@
             if (question.choices && question.choices.length > 0) {
                 payload.choices = [];
 
+                let choicesLastId = 0;
+
                 for (const choice of question.choices) {
                     const choiceEncrypted = secretKey.encrypt(rawKey, choice);
                     payload.choices.push({
-                        cipher_text: choiceEncrypted.cipherText,
+                        id: choicesLastId++,
                         iv: choiceEncrypted.iv,
+                        cipher_text: choiceEncrypted.cipherText,
                     });
                 }
             }
@@ -148,10 +153,6 @@
         }
 
         const surveyTitleEncrypted = secretKey.encrypt(rawKey, surveyTitle);
-        const surveyDescriptionEncrypted = secretKey.encrypt(
-            rawKey,
-            surveyDescription
-        );
         const publicKeypairEncrypted = secretKey.encrypt(
             rawKey,
             rawKeyPair.publicKey
@@ -169,15 +170,12 @@
             SecretkeyLocation.localKeychain,
             rawKey
         );
+        const signPublicKeyEncoded = base64Encode(rawSignKeyPair.publicKey);
 
         const surveyPayload: SurveyCreateModel = {
             title: {
                 cipher_text: surveyTitleEncrypted.cipherText,
                 iv: surveyTitleEncrypted.iv,
-            },
-            description: {
-                cipher_text: surveyDescriptionEncrypted.cipherText,
-                iv: surveyDescriptionEncrypted.iv,
             },
             questions: questionsEncrypted,
             secret_key: {
@@ -187,7 +185,7 @@
             sign_keypair: {
                 cipher_text: signKeypairEncrypted.cipherText,
                 iv: signKeypairEncrypted.iv,
-                public_key: base64Encode(rawSignKeyPair.publicKey),
+                public_key: signPublicKeyEncoded,
             },
             keypair: {
                 private_key: {
@@ -202,9 +200,41 @@
             signature: "",
         };
 
+        const toSign: Record<string, any> = {
+            title: {
+                cipher_text: surveyTitleEncrypted.cipherText,
+                iv: surveyTitleEncrypted.iv,
+            },
+            questions: normalizeSurveyQuestions(questionsEncrypted),
+            sign_keypair: {
+                public_key: signPublicKeyEncoded,
+            },
+            keypair: {
+                public_key: {
+                    cipher_text: publicKeypairEncrypted.cipherText,
+                    iv: publicKeypairEncrypted.iv,
+                },
+            },
+        };
+
+        if (surveyDescription) {
+            const surveyDescriptionEncrypted = secretKey.encrypt(
+                rawKey,
+                surveyDescription
+            );
+            surveyPayload.description = {
+                cipher_text: surveyDescriptionEncrypted.cipherText,
+                iv: surveyDescriptionEncrypted.iv,
+            };
+            toSign.description = {
+                cipher_text: surveyDescriptionEncrypted.cipherText,
+                iv: surveyDescriptionEncrypted.iv,
+            };
+        }
+
         surveyPayload.signature = signatures.signHash(
             rawSignKeyPair.privateKey,
-            JSON.stringify(surveyPayload)
+            JSON.stringify(toSign)
         );
 
         const savedSurvey =

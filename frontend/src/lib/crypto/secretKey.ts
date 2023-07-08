@@ -5,7 +5,6 @@ import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils
 
 export enum SecretkeyLocation {
   localKeychain = "localKeychain",
-  generate = "generate"
 }
 
 export type Key = Uint8Array | SecretkeyLocation;
@@ -13,7 +12,6 @@ export type Key = Uint8Array | SecretkeyLocation;
 export interface encryptedData {
   cipherText: string;
   iv: string;
-  rawSecretKey: Uint8Array;
 }
 
 export class KeychainUndefinedError extends Error {
@@ -64,7 +62,6 @@ export function encrypt(
   return {
     cipherText: base64Encode(cipher),
     iv: base64Encode(rawIv),
-    rawSecretKey: rawKey,
   };
 }
 

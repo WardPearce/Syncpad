@@ -60,6 +60,7 @@ class SurveyDescriptionModel(IvField):
 
 
 class SurveyChoicesModel(IvField):
+    id: int
     cipher_text: str = Field(
         ...,
         max_length=512,
