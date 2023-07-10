@@ -10,7 +10,6 @@
     import signatures from "../lib/crypto/signatures";
 
     export let surveyId: string;
-    export let publicKeyHash: string;
     export let signPublicKeyHash: string;
 
     const b64EncodedRawKey: string = location.hash.substring(1);
@@ -42,10 +41,6 @@
             survey.keypair.public_key.cipher_text
         ) as Uint8Array;
 
-        if (hash.hashBase64Encode(rawPublicKey, true) !== publicKeyHash) {
-            return;
-        }
-
         if (
             hash.hashBase64Encode(rawSignPublicKey, true) !== signPublicKeyHash
         ) {
@@ -58,9 +53,6 @@
                 iv: survey.title.iv,
             },
             questions: normalizeSurveyQuestions(survey.questions),
-            sign_keypair: {
-                public_key: survey.sign_keypair.public_key,
-            },
             keypair: {
                 public_key: {
                     cipher_text: survey.keypair.public_key.cipher_text,

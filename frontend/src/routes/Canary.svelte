@@ -20,7 +20,7 @@
   import { advanceModeStore } from "../stores";
 
   export let domainName: string;
-  export let publicKeyHash: string;
+  export let signPublicKeyHash: string;
 
   let advanceMode: boolean;
   advanceModeStore.subscribe((value) => (advanceMode = value));
@@ -64,7 +64,7 @@
 
       serverPublicKeyHash = hashBase64Encode(publicServerKey, true);
 
-      serverKeyHashMatches = serverPublicKeyHash === publicKeyHash;
+      serverKeyHashMatches = serverPublicKeyHash === signPublicKeyHash;
 
       const trustedStoredPublicKeyHash = await getTrustedCanary(domainName);
       if (trustedStoredPublicKeyHash) {
@@ -74,15 +74,16 @@
       if (serverKeyHashMatches) {
         // Validate stored canary.
         if (trustedStoredPublicKeyHash) {
-          serverKeyHashMatches = publicKeyHash === trustedStoredPublicKeyHash;
+          serverKeyHashMatches =
+            signPublicKeyHash === trustedStoredPublicKeyHash;
         } else {
           // Store canary
-          await saveCanaryAsTrusted(domainName, publicKeyHash);
+          await saveCanaryAsTrusted(domainName, signPublicKeyHash);
         }
       } else if (trustedStoredPublicKeyHash === serverPublicKeyHash) {
         // If stored publicKey hash matches serverPublicKeyHash, then incorrect link was given.
         serverKeyHashMatches = true;
-        publicKeyHash = trustedStoredPublicKeyHash;
+        signPublicKeyHash = trustedStoredPublicKeyHash;
 
         navigate(`/c/${domainName}/${trustedStoredPublicKeyHash}`, {
           replace: true,

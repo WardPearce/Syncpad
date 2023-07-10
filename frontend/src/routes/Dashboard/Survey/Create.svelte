@@ -206,9 +206,6 @@
                 iv: surveyTitleEncrypted.iv,
             },
             questions: normalizeSurveyQuestions(questionsEncrypted),
-            sign_keypair: {
-                public_key: signPublicKeyEncoded,
-            },
             keypair: {
                 public_key: {
                     cipher_text: publicKeypairEncrypted.cipherText,
@@ -244,9 +241,6 @@
 
         navigate(
             `/s/${savedSurvey._id}/${hash.hashBase64Encode(
-                rawKeyPair.publicKey,
-                true
-            )}/${hash.hashBase64Encode(
                 rawSignKeyPair.publicKey,
                 true
             )}#${base64Encode(rawKey, true)}`,
