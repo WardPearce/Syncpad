@@ -13,7 +13,6 @@
 
     let isLoading = true;
     let rawTitle: string;
-    let rawDescription: string | null;
     let rawKey: Uint8Array;
 
     onMount(() => {
@@ -30,19 +29,21 @@
             survey.title.cipher_text,
             true
         ) as string;
-        rawDescription = survey.description
-            ? (secretKey.decrypt(
-                  rawKey,
-                  survey.description.iv,
-                  survey.description.cipher_text,
-                  true
-              ) as string)
-            : null;
 
         isLoading = false;
     });
 
     function goToSurvey() {
+        navigate(shareLink());
+    }
+
+    async function copyShareLink() {
+        await navigator.clipboard.writeText(
+            window.location.origin + shareLink()
+        );
+    }
+
+    function shareLink(): string {
         const privateKey = secretKey.decrypt(
             SecretkeyLocation.localKeychain,
             survey.sign_keypair.iv,
@@ -51,12 +52,10 @@
         const publicKey = sodium.crypto_sign_ed25519_sk_to_pk(
             privateKey as Uint8Array
         );
-        navigate(
-            `/s/${survey._id}/${hashBase64Encode(
-                publicKey,
-                true
-            )}#${base64Encode(rawKey, true)}`
-        );
+        return `/s/${survey._id}/${hashBase64Encode(
+            publicKey,
+            true
+        )}#${base64Encode(rawKey, true)}`;
     }
 </script>
 
@@ -69,9 +68,12 @@
                 </button>
                 <p>{relativeDate(survey.created)}</p>
             </nav>
-            {#if rawDescription}
-                <p>{concat(rawDescription, 38)}</p>
-            {/if}
+            <nav class="wrap">
+                <button on:click={copyShareLink}>Copy link</button>
+                <button class="border tertiary-border tertiary-text"
+                    >Delete</button
+                >
+            </nav>
         </article>
     </div>
 {/if}
