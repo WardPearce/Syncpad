@@ -55,4 +55,17 @@ export class SurveyService {
         });
     }
 
+    /**
+     * ListSurveys
+     * List surveys
+     * @returns SurveyModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveyListListSurveys(): CancelablePromise<Array<SurveyModel>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/list',
+        });
+    }
+
 }

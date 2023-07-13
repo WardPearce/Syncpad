@@ -24,7 +24,12 @@
 </script>
 
 <article class="extra-large-width">
-    <h5>{question}</h5>
+    <h5>
+        {question}
+        {#if required}
+            <span class="error-text" style="margin-left: .3em;">*</span>
+        {/if}
+    </h5>
     {#if description}
         <p>{description}</p>
     {/if}

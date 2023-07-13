@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -23,6 +23,16 @@ async def create_survey(
     insert = {**data.dict(), "created": datetime.utcnow(), "user_id": request.user}
     await state.mongo.survey.insert_one(insert)
     return SurveyModel(**insert)
+
+
+@get("/list", description="List surveys")
+async def list_surveys(
+    request: Request[None, Token, Any], state: "State"
+) -> List[SurveyModel]:
+    surveys: List[SurveyModel] = []
+    async for survey in state.mongo.survey.find({"user_id": request.user}):
+        surveys.append(SurveyModel(**survey))
+    return surveys
 
 
 class SurveyController(Controller):
@@ -55,5 +65,5 @@ class SurveyController(Controller):
 router = Router(
     path="/survey",
     tags=["survey"],
-    route_handlers=[SurveyController, create_survey],
+    route_handlers=[SurveyController, create_survey, list_surveys],
 )
