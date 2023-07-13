@@ -25,7 +25,7 @@ export function goToCanary(canary: CanaryModel): void {
   );
 
   const hash = hashBase64Encode(canaryPublicKey, true);
-  navigate(`/c/${canary.domain}/${hash}`, { replace: true });
+  navigate(`/c/${canary.domain}/${hash}`);
 }
 
 export async function getTrustedCanary(domain: string): Promise<string | void> {

@@ -125,4 +125,6 @@ class SurveyPublicModel(__SurveySharedModel, CustomJsonEncoder):
 
 
 class SurveyModel(SurveyPublicModel, SurveyCreateModel):
-    pass
+    sign_keypair: SurveySignKeyPairModel
+    keypair: SurveyKeypairModel
+    secret_key: SurveySecretKeyModel

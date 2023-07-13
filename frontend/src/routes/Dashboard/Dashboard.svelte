@@ -3,29 +3,14 @@
   import { link, navigate } from "svelte-navigator";
 
   import Image from "../../components/Image.svelte";
+  import SurveyCard from "../../components/Survey/SurveyCard.svelte";
   import apiClient from "../../lib/apiClient";
   import { goToCanary } from "../../lib/canary";
   import type { CanaryModel, SurveyModel } from "../../lib/client";
-  import secretKey, { SecretkeyLocation } from "../../lib/crypto/secretKey";
   import { concat } from "../../lib/misc";
 
   let canaries: CanaryModel[] = [];
   let surveys: SurveyModel[] = [];
-
-  function decryptSurveyTitle(survey: SurveyModel): string {
-    const rawKey = secretKey.decrypt(
-      SecretkeyLocation.localKeychain,
-      survey.secret_key.iv,
-      survey.secret_key.cipher_text
-    ) as Uint8Array;
-
-    return secretKey.decrypt(
-      rawKey,
-      survey.title.iv,
-      survey.title.cipher_text,
-      true
-    ) as string;
-  }
 
   onMount(async () => {
     canaries = await apiClient.canary.controllersCanaryListListCanaries();
@@ -37,16 +22,7 @@
 <div class="grid">
   {#if surveys.length > 0}
     {#each surveys as survey}
-      <div class="s12 m6 l4">
-        <article>
-          <button class="link-button">
-            <h6>{decryptSurveyTitle(survey)}</h6>
-          </button>
-          <nav>
-            <button class="border">Edit</button>
-          </nav>
-        </article>
-      </div>
+      <SurveyCard {survey} />
     {/each}
   {/if}
   <div class="s12 m6 l4">

@@ -3,10 +3,10 @@
 /* eslint-disable */
 
 import type { SurveyDescriptionModel } from './SurveyDescriptionModel';
-import type { SurveyPublicKeyModel } from './SurveyPublicKeyModel';
+import type { SurveyKeypairModel } from './SurveyKeypairModel';
 import type { SurveyQuestionModel } from './SurveyQuestionModel';
 import type { SurveySecretKeyModel } from './SurveySecretKeyModel';
-import type { SurveySignPublicKeyModel } from './SurveySignPublicKeyModel';
+import type { SurveySignKeyPairModel } from './SurveySignKeyPairModel';
 import type { TitleModel } from './TitleModel';
 
 export type SurveyModel = {
@@ -18,9 +18,9 @@ export type SurveyModel = {
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
     algorithms?: string;
-    sign_keypair: SurveySignPublicKeyModel;
+    sign_keypair: SurveySignKeyPairModel;
     secret_key: SurveySecretKeyModel;
-    keypair: SurveyPublicKeyModel;
+    keypair: SurveyKeypairModel;
     created: string;
     _id: any;
     user_id: any;

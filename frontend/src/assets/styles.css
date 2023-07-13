@@ -63,6 +63,12 @@ menu {
     }
 }
 
+@media only screen and (max-width: 900px) {
+    .extra-large-width {
+        width: 100% !important;
+    }
+}
+
 @media only screen and (max-width: 600px) {
     .logo img {
         margin-left: 1em;
