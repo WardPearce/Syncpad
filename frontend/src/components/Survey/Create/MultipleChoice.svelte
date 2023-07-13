@@ -17,8 +17,8 @@
 
 {#each choices as choice, index}
     <nav style="margin-top: 1em;">
-        <div class="radio">
-            <input disabled type="radio" />
+        <div class="checkbox">
+            <input disabled type="checkbox" />
             <span />
         </div>
         <div class="field border small">

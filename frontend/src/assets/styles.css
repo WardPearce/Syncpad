@@ -52,6 +52,10 @@ menu {
     border-top: 1em solid var(--primary);
 }
 
+.survey-response {
+    margin-bottom: 0 !important;
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;

@@ -85,7 +85,7 @@ class SurveyQuestionModel(BaseModel):
         Literal["Short Answer"],
         Literal["Paragraph"],
         Literal["Multiple Choice"],
-        Literal["Checkboxes"],
+        Literal["Single Choice"],
     ]
 
 

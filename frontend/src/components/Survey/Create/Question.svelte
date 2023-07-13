@@ -1,10 +1,10 @@
 <script lang="ts">
     import { selectOnClick } from "../helpers";
     import { SurveyAnswerType } from "../types";
-    import Checkboxes from "./Checkboxes.svelte";
     import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
+    import SingleChoice from "./SingleChoice.svelte";
 
     export let removeQuestion: (index: number) => void;
     export let duplicateQuestion: (index: number) => void;
@@ -38,7 +38,7 @@
         "Short Answer": ShortAnswer,
         Paragraph: Paragraph,
         "Multiple Choice": MultipleChoice,
-        Checkboxes: Checkboxes,
+        "Single Choice": SingleChoice,
     };
     const regexAllowed = ["Proxy<ShortAnswer>", "Proxy<Paragraph>"];
     let selectedAnswer = answerTypes[SurveyAnswerType[type]];

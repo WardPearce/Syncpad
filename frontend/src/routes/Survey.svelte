@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
     import { normalizeSurveyQuestions } from "../components/Survey/helpers";
     import {
@@ -139,13 +140,15 @@
         });
 
         surveyLoading = false;
-
-        console.log(rawQuestions);
     });
 </script>
 
 {#if !surveyLoading}
     <div class="center-questions">
         <Title title={rawTitle} description={rawDescription} />
+
+        {#each rawQuestions as question}
+            <Question {...question} />
+        {/each}
     </div>
 {/if}

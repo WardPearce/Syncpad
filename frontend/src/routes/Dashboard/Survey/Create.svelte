@@ -275,7 +275,7 @@
                 </button>
             </nav>
         </article>
-        <Title title={surveyTitle} description={surveyDescription} />
+        <Title bind:title={surveyTitle} bind:description={surveyDescription} />
 
         <div
             use:dndzone={{
