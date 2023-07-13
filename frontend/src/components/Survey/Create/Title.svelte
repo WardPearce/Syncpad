@@ -5,7 +5,7 @@
     export let description: string;
 </script>
 
-<article class="extra-large-width">
+<article class="extra-large-width survey-title">
     <div class="field fill extra">
         <input type="text" bind:value={title} on:click={selectOnClick} />
     </div>
@@ -14,9 +14,3 @@
         <label for="desc">Description</label>
     </div>
 </article>
-
-<style>
-    article {
-        border-top: 1em solid var(--primary);
-    }
-</style>

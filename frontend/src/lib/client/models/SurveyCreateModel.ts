@@ -17,6 +17,7 @@ export type SurveyCreateModel = {
     requires_login?: boolean;
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
+    algorithms?: string;
     sign_keypair: SurveySignKeyPairModel;
     secret_key: SurveySecretKeyModel;
     keypair: SurveyKeypairModel;

@@ -1,7 +1,11 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import Title from "../components/Survey/Submit/Title.svelte";
     import { normalizeSurveyQuestions } from "../components/Survey/helpers";
-    import type { rawQuestion } from "../components/Survey/types";
+    import {
+        SurveyAnswerType,
+        type rawQuestion,
+    } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
     import type { SurveyPublicModel } from "../lib/client";
     import { base64Decode } from "../lib/crypto/codecUtils";
@@ -93,6 +97,55 @@
                 true
             ) as string;
 
+        survey.questions.forEach((question) => {
+            rawQuestions.push({
+                id: question.id,
+                question: secretKey.decrypt(
+                    rawKey,
+                    question.question.iv,
+                    question.question.cipher_text,
+                    true
+                ) as string,
+                description: question.description
+                    ? (secretKey.decrypt(
+                          rawKey,
+                          question.description.iv,
+                          question.description.cipher_text,
+                          true
+                      ) as string)
+                    : null,
+                required: question.required as boolean,
+                type: SurveyAnswerType[question.type],
+                choices: question.choices
+                    ? question.choices.map(
+                          (choice) =>
+                              secretKey.decrypt(
+                                  rawKey,
+                                  choice.iv,
+                                  choice.cipher_text,
+                                  true
+                              ) as string
+                      )
+                    : [],
+                regex: question.regex
+                    ? (secretKey.decrypt(
+                          rawKey,
+                          question.regex.iv,
+                          question.regex.cipher_text,
+                          true
+                      ) as string)
+                    : null,
+            });
+        });
+
         surveyLoading = false;
+
+        console.log(rawQuestions);
     });
 </script>
+
+{#if !surveyLoading}
+    <div class="center-questions">
+        <Title title={rawTitle} description={rawDescription} />
+    </div>
+{/if}

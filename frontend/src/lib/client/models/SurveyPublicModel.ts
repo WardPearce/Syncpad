@@ -16,6 +16,7 @@ export type SurveyPublicModel = {
     requires_login?: boolean;
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
+    algorithms?: string;
     created: string;
     _id: any;
     user_id: any;

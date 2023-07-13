@@ -311,11 +311,3 @@
         </button>
     </div>
 {/if}
-
-<style>
-    .center-questions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-</style>

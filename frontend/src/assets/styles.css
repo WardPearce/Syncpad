@@ -42,6 +42,16 @@ menu {
     width: 45rem !important;
 }
 
+.center-questions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.survey-title {
+    border-top: 1em solid var(--primary);
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;

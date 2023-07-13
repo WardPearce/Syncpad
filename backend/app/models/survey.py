@@ -104,6 +104,10 @@ class __SurveySharedModel(BaseModel):
     requires_login: bool = False
     proxy_block: bool = False
     allow_multiple_submissions: bool = False
+    algorithms: str = Field(
+        "XChaCha20Poly1305+ED25519+X25519_XSalsa20Poly1305+BLAKE2b",
+        description="Encryption algorithms used for survey",
+    )
 
 
 class SurveyCreateModel(__SurveySharedModel):

@@ -106,7 +106,7 @@ class __CreateUserShared(EmailModel, AccountUpdatePassword):
     # Assumed client side algorithms being used, help for future proofing
     # if we need to move away from outdated algorithms.
     algorithms: str = Field(
-        "XCHACHA20_POLY1305+ED25519+ARGON2+X25519_XSalsa20Poly1305+BLAKE2b+IV24+SALT16+KEY32",
+        "XChaCha20Poly1305+ED25519+Argon2+X25519_XSalsa20Poly1305+BLAKE2b+IV24+SALT16+KEY32",
         max_length=120,
         description="Algorithms used by client.",
     )
