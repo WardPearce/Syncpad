@@ -82,7 +82,7 @@ class SurveyQuestionType(int, Enum):
 
 
 class SurveyQuestionModel(BaseModel):
-    id: int
+    id: int = Field(..., ge=0, lt=1024)
     regex: Optional[SurveyRegexModel] = None
     description: Optional[SurveyDescriptionModel] = None
     question: SurveyQuestionsModel

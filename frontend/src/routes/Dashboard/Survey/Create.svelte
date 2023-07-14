@@ -134,12 +134,13 @@
             if (question.choices && question.choices.length > 0) {
                 payload.choices = [];
 
-                let choicesLastId = 0;
-
                 for (const choice of question.choices) {
-                    const choiceEncrypted = secretKey.encrypt(rawKey, choice);
+                    const choiceEncrypted = secretKey.encrypt(
+                        rawKey,
+                        choice.choice
+                    );
                     payload.choices.push({
-                        id: choicesLastId++,
+                        id: choice.id,
                         iv: choiceEncrypted.iv,
                         cipher_text: choiceEncrypted.cipherText,
                     });

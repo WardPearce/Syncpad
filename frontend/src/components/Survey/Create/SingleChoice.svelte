@@ -1,33 +1,41 @@
 <script lang="ts">
     import { selectOnClick } from "../helpers";
+    import type { rawChoice } from "../types";
 
-    export let choices: string[] = [];
+    export let choices: rawChoice[] = [];
 
-    let choiceCount = 1;
+    let choiceCount = 0;
     function addChoice() {
-        choices = [...choices, `Choice ${choiceCount++}`];
+        choices = [
+            ...choices,
+            { id: choiceCount++, choice: `Choice ${choiceCount}` },
+        ];
     }
 
-    function removeChoice(index: number) {
-        choices = choices.filter((_, i) => i !== index);
+    function removeChoice(id: number) {
+        choices = choices.filter((_, i) => i !== id);
     }
 
     addChoice();
 </script>
 
-{#each choices as choice, index}
+{#each choices as choice}
     <nav style="margin-top: 1em;">
         <div class="radio">
             <input disabled type="radio" />
             <span />
         </div>
         <div class="field border small">
-            <input type="text" bind:value={choice} on:click={selectOnClick} />
+            <input
+                type="text"
+                bind:value={choice.choice}
+                on:click={selectOnClick}
+            />
         </div>
         <button
             class="square border tertiary-border tertiary-text round"
             disabled={choices.length === 1}
-            on:click={() => removeChoice(index)}
+            on:click={() => removeChoice(choice.id)}
         >
             <i>delete</i>
         </button>

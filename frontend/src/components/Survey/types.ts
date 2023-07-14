@@ -1,10 +1,15 @@
 import { SurveyQuestionModel } from './../../lib/client/models/SurveyQuestionModel';
 
+export type rawChoice = {
+  id: number;
+  choice: string;
+};
+
 export type rawQuestion = {
   id: number;
   regex: string | null;
   description: string | null;
-  choices: string[];
+  choices: rawChoice[];
   required: boolean;
   question: string;
   type: SurveyQuestionModel.type;

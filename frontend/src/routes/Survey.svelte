@@ -3,7 +3,10 @@
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
     import { normalizeSurveyQuestions } from "../components/Survey/helpers";
-    import { type rawQuestion } from "../components/Survey/types";
+    import {
+        type rawChoice,
+        type rawQuestion,
+    } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
     import type { SurveyPublicModel } from "../lib/client";
     import { base64Decode } from "../lib/crypto/codecUtils";
@@ -96,6 +99,20 @@
             ) as string;
 
         survey.questions.forEach((question) => {
+            let choices: rawChoice[] = [];
+            if (question.choices)
+                question.choices.forEach((choice) => {
+                    choices.push({
+                        id: choice.id,
+                        choice: secretKey.decrypt(
+                            rawKey,
+                            choice.iv,
+                            choice.cipher_text,
+                            true
+                        ) as string,
+                    });
+                });
+
             rawQuestions.push({
                 id: question.id,
                 question: secretKey.decrypt(
@@ -114,17 +131,7 @@
                     : null,
                 required: question.required as boolean,
                 type: question.type,
-                choices: question.choices
-                    ? question.choices.map(
-                          (choice) =>
-                              secretKey.decrypt(
-                                  rawKey,
-                                  choice.iv,
-                                  choice.cipher_text,
-                                  true
-                              ) as string
-                      )
-                    : [],
+                choices: choices,
                 regex: question.regex
                     ? (secretKey.decrypt(
                           rawKey,

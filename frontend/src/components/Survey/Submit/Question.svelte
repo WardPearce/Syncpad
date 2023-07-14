@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { SurveyQuestionModel } from "../../../lib/client";
+    import type { rawChoice } from "../types";
     import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
@@ -8,7 +9,7 @@
     export let question: string;
     export let type: SurveyQuestionModel.type;
     export let required: boolean;
-    export let choices: string[];
+    export let choices: rawChoice[];
     export let id: number;
     export let description: string | null;
     export let regex: string | null;

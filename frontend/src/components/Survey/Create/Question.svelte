@@ -1,6 +1,7 @@
 <script lang="ts">
     import { SurveyQuestionModel } from "../../../lib/client";
     import { selectOnClick } from "../helpers";
+    import type { rawChoice } from "../types";
     import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
@@ -16,7 +17,7 @@
     export let description: string | null = null;
     export let required: boolean = false;
     export let type: SurveyQuestionModel.type;
-    export let choices: string[];
+    export let choices: rawChoice[];
 
     let addDescription: boolean = false;
     let regexDialogOpen: boolean = false;
@@ -35,19 +36,25 @@
     };
 
     const answerTypes = {
-        0: ShortAnswer,
-        1: Paragraph,
-        2: MultipleChoice,
-        3: SingleChoice,
-    };
-    const answerTypeNames = {
-        0: "Short Answer",
-        1: "Paragraph",
-        2: "Multiple Choice",
-        3: "Single Choice",
+        0: {
+            component: ShortAnswer,
+            name: "Short Answer",
+        },
+        1: {
+            component: Paragraph,
+            name: "Paragraph",
+        },
+        2: {
+            component: MultipleChoice,
+            name: "Multiple Choice",
+        },
+        3: {
+            component: SingleChoice,
+            name: "Single Choice",
+        },
     };
     const regexAllowed = ["Proxy<ShortAnswer>", "Proxy<Paragraph>"];
-    let selectedAnswer = answerTypes[type];
+    let selectedAnswer = answerTypes[type].component;
 
     function setRegex(event: Event) {
         const target = event.target as HTMLSelectElement;
@@ -57,7 +64,7 @@
     function changeAnswer(typeTarget: number) {
         choices = [];
         type = typeTarget;
-        selectedAnswer = answerTypes[typeTarget];
+        selectedAnswer = answerTypes[typeTarget].component;
     }
 </script>
 
@@ -118,7 +125,7 @@
                             <option
                                 on:click={() => changeAnswer(Number(answer))}
                                 selected={SurveyQuestionModel.type[answer] ===
-                                    type}>{answerTypeNames[answer]}</option
+                                    type}>{answerTypes[answer].name}</option
                             >
                         {/each}
                     </select>

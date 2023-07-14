@@ -1,8 +1,10 @@
 <script lang="ts">
-    export let choices: string[];
-    export let answer: string;
+    import type { rawChoice } from "../types";
 
-    function onChoiceSelect(choice: string) {
+    export let choices: rawChoice[];
+    export let answer: number;
+
+    function onChoiceSelect(choice: number) {
         answer = choice;
     }
 </script>
@@ -12,11 +14,11 @@
         <label class="radio">
             <input
                 type="radio"
-                on:change={() => onChoiceSelect(choice)}
-                name={answer}
-                checked={answer === choice}
+                on:change={() => onChoiceSelect(choice.id)}
+                name={choice.choice}
+                checked={answer === choice.id}
             />
-            <span>{choice}</span>
+            <span>{choice.choice}</span>
         </label>
     </nav>
 {/each}
