@@ -2,7 +2,7 @@
     import type { rawChoice } from "../types";
 
     export let choices: rawChoice[];
-    export let answer: number;
+    export let answer: number | number[] | string | null = null;
 
     function onChoiceSelect(choice: number) {
         answer = choice;

@@ -62,7 +62,7 @@
 </script>
 
 <Router primary={false}>
-  <header class="mobile-nav">
+  <header class="mobile-nav" class:deep-purple1={!darkMode}>
     <nav>
       <button
         class="circle transparent"

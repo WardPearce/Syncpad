@@ -14,6 +14,10 @@
     import secretKey from "../lib/crypto/secretKey";
     import signatures from "../lib/crypto/signatures";
 
+    interface rawQuestionAnswer extends rawQuestion {
+        answer: number | number[] | string | null;
+    }
+
     export let surveyId: string;
     export let signPublicKeyHash: string;
 
@@ -25,7 +29,7 @@
 
     let rawTitle: string;
     let rawDescription: string | undefined;
-    let rawQuestions: rawQuestion[] = [];
+    let rawQuestions: rawQuestionAnswer[] = [];
     let rawPublicKey: Uint8Array;
     let rawSignPublicKey: Uint8Array;
 
@@ -114,6 +118,7 @@
                 });
 
             rawQuestions.push({
+                answer: null,
                 id: question.id,
                 question: secretKey.decrypt(
                     rawKey,
@@ -145,12 +150,16 @@
 
         surveyLoading = false;
     });
+
+    async function submit() {
+        console.log(rawQuestions);
+    }
 </script>
 
 {#if !surveyLoading}
     <div class="center-questions">
         <article class="extra-large-width secondary-container">
-            <h6>End-to-end Encrypted</h6>
+            <h6>End-to-end encrypted</h6>
 
             <p>
                 All answers are encrypted on your device before being sent to
@@ -159,16 +168,18 @@
             </p>
 
             <nav class="right-align">
-                <button>Complete survey</button>
+                <button on:click={submit}>Complete survey</button>
             </nav>
         </article>
 
         <Title title={rawTitle} description={rawDescription} />
 
         {#each rawQuestions as question}
-            <Question {...question} />
+            <Question {...question} bind:answer={question.answer} />
         {/each}
 
-        <button style="margin-top: 2em;">Complete survey</button>
+        <button style="margin-top: 2em;" on:click={submit}
+            >Complete survey</button
+        >
     </div>
 {/if}

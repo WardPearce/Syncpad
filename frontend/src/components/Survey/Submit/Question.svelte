@@ -14,7 +14,7 @@
     export let description: string | null;
     export let regex: string | null;
 
-    export let answer: string = "";
+    export let answer: number | number[] | string | null;
 
     const answerTypes = {
         0: ShortAnswer,

@@ -17,7 +17,7 @@
     export let description: string | null = null;
     export let required: boolean = false;
     export let type: SurveyQuestionModel.type;
-    export let choices: rawChoice[];
+    export let choices: rawChoice[] = [];
 
     let addDescription: boolean = false;
     let regexDialogOpen: boolean = false;

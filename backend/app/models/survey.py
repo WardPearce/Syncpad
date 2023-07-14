@@ -60,7 +60,7 @@ class SurveyDescriptionModel(IvField):
 
 
 class SurveyChoicesModel(IvField):
-    id: int
+    id: int = Field(..., ge=0, lt=1024)
     cipher_text: str = Field(
         ...,
         max_length=512,
@@ -90,6 +90,18 @@ class SurveyQuestionModel(BaseModel):
     required: bool = False
     type: SurveyQuestionType
 
+    @validator("choices")
+    def choices_validator(
+        cls, v: Optional[List[SurveyChoicesModel]]
+    ) -> Optional[List[SurveyChoicesModel]]:
+        if not v:
+            return v
+
+        ids = [q.id for q in v]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Duplicate choices ids")
+        return v
+
 
 class TitleModel(IvField):
     cipher_text: str = Field(
@@ -112,7 +124,9 @@ class __SurveySharedModel(BaseModel):
     )
 
     @validator("questions")
-    def questions_validator(cls, v: List[SurveyQuestionModel]):
+    def questions_validator(
+        cls, v: List[SurveyQuestionModel]
+    ) -> List[SurveyQuestionModel]:
         ids = [q.id for q in v]
         if len(ids) != len(set(ids)):
             raise ValueError("Duplicate question ids")
