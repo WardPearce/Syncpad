@@ -69,9 +69,9 @@
                 <p>{relativeDate(survey.created)}</p>
             </nav>
             <nav class="wrap">
-                <button on:click={copyShareLink}>Copy link</button>
-                <button class="border tertiary-border tertiary-text"
-                    >Delete</button
+                <button>Results</button>
+                <button class="border" on:click={copyShareLink}
+                    >Copy link</button
                 >
             </nav>
         </article>

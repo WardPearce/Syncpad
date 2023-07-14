@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { SurveyAnswerType } from "../types";
+    import type { SurveyQuestionModel } from "../../../lib/client";
     import MultipleChoice from "./MultipleChoice.svelte";
     import Paragraph from "./Paragraph.svelte";
     import ShortAnswer from "./ShortAnswer.svelte";
     import SingleChoice from "./SingleChoice.svelte";
 
     export let question: string;
-    export let type: SurveyAnswerType;
+    export let type: SurveyQuestionModel.type;
     export let required: boolean;
     export let choices: string[];
     export let id: number;
@@ -16,10 +16,10 @@
     export let answer: string = "";
 
     const answerTypes = {
-        "Short Answer": ShortAnswer,
-        Paragraph: Paragraph,
-        "Multiple Choice": MultipleChoice,
-        "Single Choice": SingleChoice,
+        0: ShortAnswer,
+        1: Paragraph,
+        2: MultipleChoice,
+        3: SingleChoice,
     };
 </script>
 

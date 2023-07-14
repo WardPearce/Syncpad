@@ -40,7 +40,7 @@ export type { SurveyKeypairModel } from './models/SurveyKeypairModel';
 export type { SurveyModel } from './models/SurveyModel';
 export type { SurveyPublicKeyModel } from './models/SurveyPublicKeyModel';
 export type { SurveyPublicModel } from './models/SurveyPublicModel';
-export type { SurveyQuestionModel } from './models/SurveyQuestionModel';
+export { SurveyQuestionModel } from './models/SurveyQuestionModel';
 export type { SurveyQuestionsModel } from './models/SurveyQuestionsModel';
 export type { SurveyRegexModel } from './models/SurveyRegexModel';
 export type { SurveySecretKeyModel } from './models/SurveySecretKeyModel';

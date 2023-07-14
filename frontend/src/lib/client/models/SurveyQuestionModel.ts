@@ -14,6 +14,18 @@ export type SurveyQuestionModel = {
     question: SurveyQuestionsModel;
     choices?: (null | Array<SurveyChoicesModel>);
     required?: boolean;
-    type: string;
+    type: SurveyQuestionModel.type;
 };
+
+export namespace SurveyQuestionModel {
+
+    export enum type {
+        '_0' = 0,
+        '_1' = 1,
+        '_2' = 2,
+        '_3' = 3,
+    }
+
+
+}
 

@@ -1,9 +1,4 @@
-export enum SurveyAnswerType {
-  "Short Answer" = "Short Answer",
-  Paragraph = "Paragraph",
-  "Multiple Choice" = "Multiple Choice",
-  "Single Choice" = "Single Choice",
-}
+import { SurveyQuestionModel } from './../../lib/client/models/SurveyQuestionModel';
 
 export type rawQuestion = {
   id: number;
@@ -12,5 +7,5 @@ export type rawQuestion = {
   choices: string[];
   required: boolean;
   question: string;
-  type: SurveyAnswerType;
+  type: SurveyQuestionModel.type;
 };

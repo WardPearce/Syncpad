@@ -3,10 +3,7 @@
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
     import { normalizeSurveyQuestions } from "../components/Survey/helpers";
-    import {
-        SurveyAnswerType,
-        type rawQuestion,
-    } from "../components/Survey/types";
+    import { type rawQuestion } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
     import type { SurveyPublicModel } from "../lib/client";
     import { base64Decode } from "../lib/crypto/codecUtils";
@@ -116,7 +113,7 @@
                       ) as string)
                     : null,
                 required: question.required as boolean,
-                type: SurveyAnswerType[question.type],
+                type: question.type,
                 choices: question.choices
                     ? question.choices.map(
                           (choice) =>
@@ -145,10 +142,26 @@
 
 {#if !surveyLoading}
     <div class="center-questions">
+        <article class="extra-large-width secondary-container">
+            <h6>End-to-end Encrypted</h6>
+
+            <p>
+                All answers are encrypted on your device before being sent to
+                the server. Only you and the survey creator can see your
+                answers.
+            </p>
+
+            <nav class="right-align">
+                <button>Complete survey</button>
+            </nav>
+        </article>
+
         <Title title={rawTitle} description={rawDescription} />
 
         {#each rawQuestions as question}
             <Question {...question} />
         {/each}
+
+        <button style="margin-top: 2em;">Complete survey</button>
     </div>
 {/if}

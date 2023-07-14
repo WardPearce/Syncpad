@@ -6,14 +6,11 @@
     import Question from "../../../components/Survey/Create/Question.svelte";
     import Title from "../../../components/Survey/Create/Title.svelte";
     import { normalizeSurveyQuestions } from "../../../components/Survey/helpers";
-    import {
-        SurveyAnswerType,
-        type rawQuestion,
-    } from "../../../components/Survey/types";
+    import { type rawQuestion } from "../../../components/Survey/types";
     import apiClient from "../../../lib/apiClient";
-    import type {
-        SurveyCreateModel,
+    import {
         SurveyQuestionModel,
+        type SurveyCreateModel,
     } from "../../../lib/client";
     import { base64Encode } from "../../../lib/crypto/codecUtils";
     import hash from "../../../lib/crypto/hash";
@@ -57,7 +54,7 @@
                 regex: null,
                 required: false,
                 question: "Untitled Question",
-                type: SurveyAnswerType["Short Answer"],
+                type: SurveyQuestionModel.type._0,
                 description: null,
                 choices: [],
             },
@@ -258,7 +255,7 @@
 {:else}
     <div class="center-questions">
         <article class="extra-large-width secondary-container">
-            <h6>Ensuring Secure and Confidential Survey Data</h6>
+            <h6>End-to-end encryption</h6>
 
             <p>
                 All survey questions, answers, and sensitive metadata are

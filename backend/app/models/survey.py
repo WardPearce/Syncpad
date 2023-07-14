@@ -1,6 +1,6 @@
 from datetime import datetime
-from enum import Enum
-from typing import List, Literal, Optional, Union
+from enum import Enum, IntEnum
+from typing import List, Optional
 
 from bson import ObjectId
 from pydantic import BaseModel, Field
@@ -74,6 +74,13 @@ class SurveyQuestionsModel(IvField):
     )
 
 
+class SurveyQuestionType(int, Enum):
+    ShortAnswer = 0
+    Paragraph = 1
+    MultipleChoice = 2
+    SingleChoice = 3
+
+
 class SurveyQuestionModel(BaseModel):
     id: int
     regex: Optional[SurveyRegexModel] = None
@@ -81,12 +88,7 @@ class SurveyQuestionModel(BaseModel):
     question: SurveyQuestionsModel
     choices: Optional[List[SurveyChoicesModel]] = Field(None, max_items=56)
     required: bool = False
-    type: Union[
-        Literal["Short Answer"],
-        Literal["Paragraph"],
-        Literal["Multiple Choice"],
-        Literal["Single Choice"],
-    ]
+    type: SurveyQuestionType
 
 
 class TitleModel(IvField):
