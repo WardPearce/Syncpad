@@ -1,4 +1,5 @@
 <script lang="ts">
+    import safe from "safe-regex";
     import { dndzone } from "svelte-dnd-action";
 
     import { navigate } from "svelte-navigator";
@@ -17,6 +18,7 @@
     import publicKey from "../../../lib/crypto/publicKey";
     import secretKey, {
         SecretkeyLocation,
+        type encryptedData,
     } from "../../../lib/crypto/secretKey";
     import signatures from "../../../lib/crypto/signatures";
 
@@ -97,13 +99,20 @@
         let questionsEncrypted: SurveyQuestionModel[] = [];
 
         for (const question of surveyQuestions) {
+            let regexEncrypted: encryptedData | null = null;
+            if (question.regex) {
+                if (!safe(question.regex)) {
+                    // Display error that Regex won't be loaded
+                    // on survey.
+                }
+
+                regexEncrypted = secretKey.encrypt(rawKey, question.regex);
+            }
+
             const questionEncrypted = secretKey.encrypt(
                 rawKey,
                 question.question
             );
-            const regexEncrypted = question.regex
-                ? secretKey.encrypt(rawKey, question.regex)
-                : null;
             const descriptionEncrypted = question.description
                 ? secretKey.encrypt(rawKey, question.description)
                 : null;

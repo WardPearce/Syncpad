@@ -1,4 +1,5 @@
 <script lang="ts">
+    import safe from "safe-regex";
     import { onMount } from "svelte";
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
@@ -118,6 +119,21 @@
                     });
                 });
 
+            let rawRegex: string | null = null;
+            if (question.regex) {
+                rawRegex = secretKey.decrypt(
+                    rawKey,
+                    question.regex.iv,
+                    question.regex.cipher_text,
+                    true
+                ) as string;
+
+                // If regex not demeed safe, set to null
+                // Not prefect, but worse case someone
+                // freezes someones browser
+                if (!safe(rawRegex)) rawRegex = null;
+            }
+
             rawQuestions.push({
                 answer: null,
                 id: question.id,
@@ -138,14 +154,7 @@
                 required: question.required as boolean,
                 type: question.type,
                 choices: choices,
-                regex: question.regex
-                    ? (secretKey.decrypt(
-                          rawKey,
-                          question.regex.iv,
-                          question.regex.cipher_text,
-                          true
-                      ) as string)
-                    : null,
+                regex: rawRegex,
             });
         });
 
@@ -155,26 +164,24 @@
     async function submit() {
         const encryptedAnswers: {
             id: number;
-            answer: string | string[];
+            answer: string[];
             type: SurveyQuestionModel.type;
         }[] = [];
 
         rawQuestions.forEach((question) => {
             if (!question.answer) return;
 
-            let answer: string | string[];
+            let answer: string[] = [];
             if (question.answer instanceof Array) {
-                answer = [];
                 question.answer.forEach((choiceId) => {
-                    (answer as string[]).push(
+                    answer.push(
                         publicKey.boxSeal(rawPublicKey, choiceId.toString())
                     );
                 });
             } else {
-                answer = publicKey.boxSeal(
-                    rawPublicKey,
-                    question.answer.toString()
-                );
+                answer = [
+                    publicKey.boxSeal(rawPublicKey, question.answer.toString()),
+                ];
             }
 
             encryptedAnswers.push({

@@ -151,3 +151,11 @@ class SurveyModel(SurveyPublicModel, SurveyCreateModel):
     sign_keypair: SurveySignKeyPairModel
     keypair: SurveyKeypairModel
     secret_key: SurveySecretKeyModel
+
+
+class SurveyAnswerModel(BaseModel):
+    id: int = Field(..., ge=0, lt=1024)
+    # For simplicity of data types, every answer is stored
+    # as an array regardless of the question type.
+    answer: List[str] = Field(..., min_items=1, max_items=56)
+    type: SurveyQuestionType
