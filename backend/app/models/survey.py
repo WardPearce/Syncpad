@@ -3,7 +3,7 @@ from enum import Enum, IntEnum
 from typing import List, Optional
 
 from bson import ObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from app.models.customs import CustomJsonEncoder, IvField
 
@@ -110,6 +110,13 @@ class __SurveySharedModel(BaseModel):
         "XChaCha20Poly1305+ED25519+X25519_XSalsa20Poly1305+BLAKE2b",
         description="Encryption algorithms used for survey",
     )
+
+    @validator("questions")
+    def questions_validator(cls, v: List[SurveyQuestionModel]):
+        ids = [q.id for q in v]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Duplicate question ids")
+        return v
 
 
 class SurveyCreateModel(__SurveySharedModel):
