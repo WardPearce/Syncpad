@@ -216,7 +216,7 @@
         <button
             class="large"
             on:click={() =>
-                navigate("/register", {
+                navigate("/login", {
                     state: { redirect: get(useLocation()).pathname },
                 })}>Login</button
         >
@@ -248,7 +248,45 @@
 
     <div class="center-questions">
         <article class="extra-large-width secondary-container">
-            <h6>End-to-end encrypted</h6>
+            <h6 style="margin-bottom: 0;">End-to-end encrypted</h6>
+
+            <nav style="margin: 0;">
+                <div>
+                    <i class:primary-text={survey.requires_login}
+                        >account_circle</i
+                    >
+                    <div class="tooltip bottom">
+                        Login is
+                        {#if !survey.requires_login}
+                            not
+                        {/if}
+                        required
+                    </div>
+                </div>
+                <div>
+                    <i class:primary-text={survey.proxy_block}>travel_explore</i
+                    >
+                    <div class="tooltip bottom">
+                        Proxy/VPN blocking is
+                        {#if !survey.proxy_block}
+                            not
+                        {/if}
+                        enabled
+                    </div>
+                </div>
+                <div>
+                    <i class:primary-text={survey.allow_multiple_submissions}
+                        >dynamic_feed</i
+                    >
+                    <div class="tooltip bottom">
+                        Multiple submissions are
+                        {#if !survey.allow_multiple_submissions}
+                            not
+                        {/if}
+                        allowed
+                    </div>
+                </div>
+            </nav>
 
             <p>
                 All answers are encrypted on your device before being sent to
