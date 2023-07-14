@@ -1,7 +1,7 @@
 import sodium from "libsodium-wrappers-sumo";
 import { get } from "svelte/store";
 import { localSecrets } from "../../stores";
-import { base64Decode, utf8Decode } from "./codecUtils";
+import { base64Decode, base64Encode, utf8Decode, utf8Encode } from "./codecUtils";
 
 export enum PublicKeyLocation {
   localKeypair = "localPublicKeypair"
@@ -61,7 +61,20 @@ export function boxSealOpen(
   return utf8 ? utf8Decode(rawData) : rawData;
 }
 
+export function boxSeal(
+  publicKey: PublicKey,
+  toEncrypt: string | Uint8Array,
+): string {
+  return base64Encode(
+    sodium.crypto_box_seal(
+      toEncrypt instanceof Uint8Array ? toEncrypt : utf8Encode(toEncrypt),
+      determineKeyLocation(publicKey),
+    ),
+  );
+};
+
 export default {
   generateKeypair,
-  boxSealOpen
+  boxSealOpen,
+  boxSeal
 };

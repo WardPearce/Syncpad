@@ -8,9 +8,10 @@
         type rawQuestion,
     } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
-    import type { SurveyPublicModel } from "../lib/client";
+    import type { SurveyPublicModel, SurveyQuestionModel } from "../lib/client";
     import { base64Decode } from "../lib/crypto/codecUtils";
     import hash from "../lib/crypto/hash";
+    import publicKey from "../lib/crypto/publicKey";
     import secretKey from "../lib/crypto/secretKey";
     import signatures from "../lib/crypto/signatures";
 
@@ -152,7 +153,38 @@
     });
 
     async function submit() {
-        console.log(rawQuestions);
+        const encryptedAnswers: {
+            id: number;
+            answer: string | string[];
+            type: SurveyQuestionModel.type;
+        }[] = [];
+
+        rawQuestions.forEach((question) => {
+            if (!question.answer) return;
+
+            let answer: string | string[];
+            if (question.answer instanceof Array) {
+                answer = [];
+                question.answer.forEach((choiceId) => {
+                    (answer as string[]).push(
+                        publicKey.boxSeal(rawPublicKey, choiceId.toString())
+                    );
+                });
+            } else {
+                answer = publicKey.boxSeal(
+                    rawPublicKey,
+                    question.answer.toString()
+                );
+            }
+
+            encryptedAnswers.push({
+                id: question.id,
+                type: question.type,
+                answer: answer,
+            });
+        });
+
+        console.log(encryptedAnswers);
     }
 </script>
 
