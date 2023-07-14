@@ -1,6 +1,9 @@
 <script lang="ts">
     import safe from "safe-regex";
     import { onMount } from "svelte";
+    import { navigate, useLocation } from "svelte-navigator";
+    import { get } from "svelte/store";
+    import PageLoading from "../components/PageLoading.svelte";
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
     import { normalizeSurveyQuestions } from "../components/Survey/helpers";
@@ -15,6 +18,7 @@
     import publicKey from "../lib/crypto/publicKey";
     import secretKey from "../lib/crypto/secretKey";
     import signatures from "../lib/crypto/signatures";
+    import { localSecrets } from "../stores";
 
     interface rawQuestionAnswer extends rawQuestion {
         answer: number | number[] | string | null;
@@ -34,6 +38,8 @@
     let rawQuestions: rawQuestionAnswer[] = [];
     let rawPublicKey: Uint8Array;
     let rawSignPublicKey: Uint8Array;
+
+    let showSubmitDialog = false;
 
     onMount(async () => {
         surveyLoading = true;
@@ -190,12 +196,56 @@
                 answer: answer,
             });
         });
+    }
 
-        console.log(encryptedAnswers);
+    async function determineSubmitPrompt() {
+        if (survey.proxy_block) showSubmitDialog = true;
+        else await submit();
     }
 </script>
 
-{#if !surveyLoading}
+{#if surveyLoading}
+    <PageLoading />
+{:else if survey.requires_login && get(localSecrets) === null}
+    <h4>This survey requires an account</h4>
+    <p>
+        This survey requires an account to ensure that you can only submit once.
+        Please login or register to continue.
+    </p>
+    <nav>
+        <button
+            class="large"
+            on:click={() =>
+                navigate("/register", {
+                    state: { redirect: get(useLocation()).pathname },
+                })}>Login</button
+        >
+        <button
+            class="large border"
+            on:click={() =>
+                navigate("/register", {
+                    state: { redirect: get(useLocation()).pathname },
+                })}>Register</button
+        >
+    </nav>
+{:else}
+    <dialog class:active={showSubmitDialog} class="large-width">
+        <h5>Important privacy note</h5>
+        <p>
+            This survey processes your IP on submission to ensure you aren't
+            using a proxy or VPN regardless of your account IP processing
+            preference. Your IP is not stored after processing by {import.meta
+                .env.VITE_SITE_NAME}. Please contact the survey owner if you
+            wish to disable this.
+        </p>
+        <nav class="right-align">
+            <button on:click={() => (showSubmitDialog = false)} class="border"
+                >Cancel</button
+            >
+            <button on:click={submit}>Yes I'd like to continue</button>
+        </nav>
+    </dialog>
+
     <div class="center-questions">
         <article class="extra-large-width secondary-container">
             <h6>End-to-end encrypted</h6>
@@ -207,7 +257,8 @@
             </p>
 
             <nav class="right-align">
-                <button on:click={submit}>Complete survey</button>
+                <button on:click={determineSubmitPrompt}>Complete survey</button
+                >
             </nav>
         </article>
 
@@ -217,7 +268,7 @@
             <Question {...question} bind:answer={question.answer} />
         {/each}
 
-        <button style="margin-top: 2em;" on:click={submit}
+        <button style="margin-top: 2em;" on:click={determineSubmitPrompt}
             >Complete survey</button
         >
     </div>
