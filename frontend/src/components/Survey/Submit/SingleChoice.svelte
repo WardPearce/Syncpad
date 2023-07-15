@@ -5,7 +5,8 @@
     export let answer: number | number[] | string | null = null;
 
     function onChoiceSelect(choice: number) {
-        answer = choice;
+        if (answer === choice) answer = null;
+        else answer = choice;
     }
 </script>
 
@@ -14,7 +15,7 @@
         <label class="radio">
             <input
                 type="radio"
-                on:change={() => onChoiceSelect(choice.id)}
+                on:click={() => onChoiceSelect(choice.id)}
                 name={choice.choice}
                 checked={answer === choice.id}
             />
