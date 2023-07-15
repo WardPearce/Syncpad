@@ -247,11 +247,15 @@
     </dialog>
 
     <div class="center-questions">
-        <article class="extra-large-width secondary-container">
-            <h6 style="margin-bottom: 0;">End-to-end encrypted</h6>
-
-            <nav style="margin: 0;">
-                <div>
+        <div class="extra-large-width">
+            <nav class="right-align">
+                <div class="chip surface-variant small">
+                    <i class="primary-text">security</i>
+                    <div class="tooltip bottom">
+                        This survey is end-to-end encrypted.
+                    </div>
+                </div>
+                <div class="chip surface-variant small">
                     <i class:primary-text={survey.requires_login}
                         >account_circle</i
                     >
@@ -263,7 +267,7 @@
                         required
                     </div>
                 </div>
-                <div>
+                <div class="chip surface-variant small">
                     <i class:primary-text={survey.proxy_block}>travel_explore</i
                     >
                     <div class="tooltip bottom">
@@ -274,7 +278,7 @@
                         enabled
                     </div>
                 </div>
-                <div>
+                <div class="chip surface-variant small">
                     <i class:primary-text={survey.allow_multiple_submissions}
                         >dynamic_feed</i
                     >
@@ -288,17 +292,11 @@
                 </div>
             </nav>
 
-            <p>
-                All answers are encrypted on your device before being sent to
-                the server. Only you and the survey creator can see your
-                answers.
-            </p>
-
             <nav class="right-align">
                 <button on:click={determineSubmitPrompt}>Complete survey</button
                 >
             </nav>
-        </article>
+        </div>
 
         <Title title={rawTitle} description={rawDescription} />
 
@@ -306,8 +304,11 @@
             <Question {...question} bind:answer={question.answer} />
         {/each}
 
-        <button style="margin-top: 2em;" on:click={determineSubmitPrompt}
-            >Complete survey</button
-        >
+        <div class="extra-large-width" style="margin-top: 1em;">
+            <nav class="right-align">
+                <button on:click={determineSubmitPrompt}>Complete survey</button
+                >
+            </nav>
+        </div>
     </div>
 {/if}

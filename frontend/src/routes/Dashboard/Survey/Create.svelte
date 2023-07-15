@@ -28,6 +28,9 @@
     let surveyQuestions: rawQuestion[] = [];
     let dragDisabled = true;
     let publishingSurvey = false;
+    let requireAccount = false;
+    let proxyBlock = false;
+    let allowMultipleSubmissions = false;
 
     addQuestion();
 
@@ -204,6 +207,9 @@
                     iv: publicKeypairEncrypted.iv,
                 },
             },
+            allow_multiple_submissions: allowMultipleSubmissions,
+            proxy_block: proxyBlock,
+            requires_login: requireAccount,
             signature: "",
         };
 
@@ -265,23 +271,40 @@
 {:else}
     <div class="center-questions">
         <article class="extra-large-width secondary-container">
-            <h6>End-to-end encryption</h6>
-
             <p>
-                All survey questions, answers, and sensitive metadata are
-                protected through end-to-end encryption. This means that only
-                the individuals who you share the link with can view the
-                questions, while the answers remain confidential and accessible
-                only to you.
+                Please note, editing a survey after creation is currently not
+                implemented.
             </p>
 
-            <nav class="right-align">
-                <button on:click={onPublish}>
-                    <i>publish</i>
-                    <span>Publish</span>
-                </button>
+            <ul>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox" bind:checked={requireAccount} />
+                        <span>Require account</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox" bind:checked={proxyBlock} />
+                        <span>Block proxies</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="checkbox">
+                        <input
+                            type="checkbox"
+                            bind:checked={allowMultipleSubmissions}
+                        />
+                        <span>Allow multiple submissions</span>
+                    </label>
+                </li>
+            </ul>
+
+            <nav class="wrap">
+                <button on:click={onPublish}>Create survey</button>
             </nav>
         </article>
+
         <Title bind:title={surveyTitle} bind:description={surveyDescription} />
 
         <div
@@ -318,3 +341,9 @@
         </button>
     </div>
 {/if}
+
+<style>
+    ul {
+        list-style: none;
+    }
+</style>
