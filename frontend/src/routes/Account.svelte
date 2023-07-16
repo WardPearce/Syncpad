@@ -17,6 +17,7 @@
     PublicKeyLocation,
   } from "../lib/crypto/publicKey";
   import { relativeDate } from "../lib/date";
+  import { getCurrentThemePrimary } from "../lib/theme";
   import {
     advanceModeStore,
     localSecrets,
@@ -45,6 +46,25 @@
 
   let webhookUrl = "";
   let currentNotifyTab: WebhookModel.type = WebhookModel.type.CANARY_RENEWALS;
+
+  let themeColor = getCurrentThemePrimary();
+
+  async function changeThemeColor() {
+    await ui("theme", themeColor);
+
+    try {
+      localStorage.setItem("theme", themeColor);
+    } catch {}
+  }
+
+  async function resetThemeToDefault() {
+    await ui("theme", import.meta.env.VITE_THEME);
+    themeColor = import.meta.env.VITE_THEME;
+
+    try {
+      localStorage.removeItem("theme");
+    } catch {}
+  }
 
   async function toggleIpLookupConsent() {
     if (user.ip_lookup_consent) {
@@ -387,6 +407,33 @@
           </ul>
         </div>
       </div>
+    </details>
+  </article>
+
+  <article>
+    <details>
+      <summary class="none">
+        <div class="row">
+          <div class="max">
+            <h4>Theming</h4>
+          </div>
+          <i>arrow_drop_down</i>
+        </div>
+      </summary>
+      <label class="color">
+        <input
+          bind:value={themeColor}
+          on:input={changeThemeColor}
+          type="color"
+        />
+        <span>Custom color</span>
+      </label>
+
+      {#if themeColor !== import.meta.env.VITE_THEME}
+        <button on:click={resetThemeToDefault} style="margin-top: 1em;"
+          >Reset to default</button
+        >
+      {/if}
     </details>
   </article>
 

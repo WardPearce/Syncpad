@@ -6,4 +6,18 @@ export async function getDynamicTheme(mode?: string): Promise<Record<string, str
     themeVars[key] = value;
   });
   return themeVars;
-} 
+}
+
+
+export function getCurrentThemePrimary(): string {
+  let themeColor = import.meta.env.VITE_THEME;
+
+  try {
+    const themeLocalStorage = localStorage.getItem("theme");
+    if (themeLocalStorage) {
+      themeColor = themeLocalStorage;
+    }
+  } catch { }
+
+  return themeColor;
+}

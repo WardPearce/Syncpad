@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { navigate, useLocation } from "svelte-navigator";
   import { get } from "svelte/store";
+  import { getCurrentThemePrimary } from "../lib/theme";
   import { localSecrets } from "../stores";
 
   export let component: any;
@@ -40,8 +41,8 @@
       loadedComponent = module.default;
     });
 
-    // Reset theme of each mounted page.
-    await ui("theme", import.meta.env.VITE_THEME);
+    // Set theme on each page load.
+    await ui("theme", getCurrentThemePrimary());
 
     return () => clearTimeout(timeout);
   });

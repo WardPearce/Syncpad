@@ -12,7 +12,7 @@
         type rawQuestion,
     } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
-    import type { SurveyPublicModel, SurveyQuestionModel } from "../lib/client";
+    import type { SurveyAnswerModel, SurveyPublicModel } from "../lib/client";
     import { base64Decode } from "../lib/crypto/codecUtils";
     import hash from "../lib/crypto/hash";
     import publicKey from "../lib/crypto/publicKey";
@@ -170,11 +170,7 @@
     });
 
     async function submit() {
-        const encryptedAnswers: {
-            id: number;
-            answer: string[] | string;
-            type: SurveyQuestionModel.type;
-        }[] = [];
+        const encryptedAnswers: SurveyAnswerModel[] = [];
 
         rawQuestions.forEach((question) => {
             if (!question.answer) return;

@@ -40,8 +40,8 @@
   }
 
   onMount(async () => {
-    // Default UI color
-    await ui("theme", import.meta.env.VITE_THEME);
+    // Set theme color
+
     document.title = import.meta.env.VITE_SITE_NAME;
 
     await sodium.ready;
