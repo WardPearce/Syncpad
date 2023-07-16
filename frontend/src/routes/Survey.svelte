@@ -172,24 +172,26 @@
     async function submit() {
         const encryptedAnswers: {
             id: number;
-            answer: string[];
+            answer: string[] | string;
             type: SurveyQuestionModel.type;
         }[] = [];
 
         rawQuestions.forEach((question) => {
             if (!question.answer) return;
 
-            let answer: string[] = [];
+            let answer: string[] | string;
             if (question.answer instanceof Array) {
+                answer = [];
                 question.answer.forEach((choiceId) => {
-                    answer.push(
+                    (answer as string[]).push(
                         publicKey.boxSeal(rawPublicKey, choiceId.toString())
                     );
                 });
             } else {
-                answer = [
-                    publicKey.boxSeal(rawPublicKey, question.answer.toString()),
-                ];
+                answer = publicKey.boxSeal(
+                    rawPublicKey,
+                    question.answer.toString()
+                );
             }
 
             encryptedAnswers.push({

@@ -4,7 +4,7 @@
 
 export type SurveyAnswerModel = {
     id: number;
-    answer: Array<string>;
+    answer: (Array<string> | string);
     type: SurveyAnswerModel.type;
 };
 

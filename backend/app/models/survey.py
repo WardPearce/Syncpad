@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, IntEnum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from bson import ObjectId
 from pydantic import BaseModel, Field, validator
@@ -159,8 +159,15 @@ class SurveyAnswerModel(BaseModel):
     id: int = Field(..., ge=0, lt=1024)
     # For simplicity of data types, every answer is stored
     # as an array regardless of the question type.
-    answer: List[str] = Field(..., min_items=1, max_items=56)
+    answer: Union[List[str], str] = Field(..., min_items=1, max_items=56)
     type: SurveyQuestionType
+
+    @validator("answer")
+    def answer_validator(cls, v: List[str]) -> List[str]:
+        if cls.type != SurveyQuestionType.MultipleChoice and len(v) > 1:
+            raise ValueError("Only multiple choice types can have multiple answers")
+
+        return v
 
 
 class SubmitSurveyModel(BaseModel):
