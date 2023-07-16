@@ -114,6 +114,7 @@ class Settings(BaseSettings):
         ...,
         description="It's recommended to simply use a proxy for untrusted requests.",
     )
+    disable_registration: bool = False
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)

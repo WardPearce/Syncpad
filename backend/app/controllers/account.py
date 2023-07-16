@@ -9,7 +9,7 @@ from litestar import Request, Response, Router, delete
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
-from litestar.exceptions import ValidationException
+from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.handlers import get, post
 from litestar.response import RedirectResponse
 from nacl.encoding import Base64Encoder
@@ -295,6 +295,9 @@ async def password_reset(
 async def create_account(
     state: "State", captcha: str, data: CreateUserModel
 ) -> Response:
+    if SETTINGS.disable_registration:
+        raise NotAuthorizedException(detail="Registration is disabled")
+
     try:
         await validate_captcha(state, captcha)
     except InvalidCaptcha:
