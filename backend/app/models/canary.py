@@ -39,7 +39,7 @@ class __CanarySharedModel(CustomJsonEncoder, DomainModel):
         max_length=120,
         description="Algorithms used for canary",
     )
-    hex_color: Optional[str] = Field(None, max_length=6)
+    hex_color: Optional[str] = Field(None, max_length=6, regex=r"^[0-9a-fA-F]{6}$")
 
 
 class CreateCanaryModel(__CanarySharedModel):

@@ -119,7 +119,7 @@ class __SurveySharedModel(BaseModel):
     proxy_block: bool = False
     allow_multiple_submissions: bool = False
     requires_captcha: bool = False
-    hex_color: Optional[str] = Field(None, max_length=6)
+    hex_color: Optional[str] = Field(None, max_length=6, regex=r"^[0-9a-fA-F]{6}$")
     algorithms: str = Field(
         "XChaCha20Poly1305+ED25519+X25519_XSalsa20Poly1305+BLAKE2b",
         description="Encryption algorithms used for survey",
