@@ -164,7 +164,7 @@ class SurveyAnswerModel(BaseModel):
 
     @validator("answer")
     def answer_validator(cls, v: List[str]) -> List[str]:
-        if cls.type != SurveyQuestionType.MultipleChoice and len(v) > 1:
+        if cls.type != SurveyQuestionType.MultipleChoice and isinstance(v, list):
             raise ValueError("Only multiple choice types can have multiple answers")
 
         return v
