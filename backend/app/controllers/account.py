@@ -26,6 +26,7 @@ from app.errors import (
     TooManyWebhooks,
     UserNotFoundException,
 )
+from app.lib.geoip import GeoIp
 from app.lib.jwt import delete_all_user_sessions, delete_session, jwt_cookie_auth
 from app.lib.mCaptcha import validate_captcha
 from app.lib.otp import OneTimePassword
@@ -198,23 +199,18 @@ class LoginController(Controller):
                 and request.client.host
             ):
                 client_ip = request.client.host
+                geoip_lookup = await GeoIp(state, client_ip).get()
 
-                resp = await state.aiohttp.get(
-                    url=f"{SETTINGS.proxy_check.url}/{client_ip}",
-                    params={"key": SETTINGS.proxy_check.api_key, "asn": "1"},
-                )
-                if resp.status == 200:
-                    resp_json = await resp.json()
-                    if resp_json["status"] == "ok":
-                        location = SessionLocationModel(
-                            region=__base64_public_encrypt(
-                                resp_json[client_ip].get("region", "Unknown")
-                            ),
-                            country=__base64_public_encrypt(
-                                resp_json[client_ip].get("country", "Unknown")
-                            ),
-                            ip=__base64_public_encrypt(client_ip),
-                        )
+                if geoip_lookup:
+                    location = SessionLocationModel(
+                        region=__base64_public_encrypt(
+                            geoip_lookup.get("region", "Unknown")
+                        ),
+                        country=__base64_public_encrypt(
+                            geoip_lookup.get("country", "Unknown")
+                        ),
+                        ip=__base64_public_encrypt(client_ip),
+                    )
 
             if "User-Agent" in request.headers:
                 device = __base64_public_encrypt(request.headers["User-Agent"])

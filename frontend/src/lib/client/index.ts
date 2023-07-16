@@ -32,6 +32,8 @@ export { PublishCanaryWarrantModel } from './models/PublishCanaryWarrantModel';
 export { PublishedCanaryWarrantModel } from './models/PublishedCanaryWarrantModel';
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';
+export type { SubmitSurveyModel } from './models/SubmitSurveyModel';
+export { SurveyAnswerModel } from './models/SurveyAnswerModel';
 export type { SurveyChoicesModel } from './models/SurveyChoicesModel';
 export type { SurveyCreateModel } from './models/SurveyCreateModel';
 export type { SurveyDescriptionModel } from './models/SurveyDescriptionModel';

@@ -290,6 +290,17 @@
                         allowed
                     </div>
                 </div>
+                <div class="chip surface-variant small">
+                    <i class:primary-text={survey.requires_captcha}>smart_toy</i
+                    >
+                    <div class="tooltip bottom">
+                        Captcha is
+                        {#if !survey.requires_captcha}
+                            not
+                        {/if}
+                        required
+                    </div>
+                </div>
             </nav>
 
             <nav class="right-align">

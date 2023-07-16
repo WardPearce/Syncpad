@@ -118,6 +118,7 @@ class __SurveySharedModel(BaseModel):
     requires_login: bool = False
     proxy_block: bool = False
     allow_multiple_submissions: bool = False
+    requires_captcha: bool = False
     algorithms: str = Field(
         "XChaCha20Poly1305+ED25519+X25519_XSalsa20Poly1305+BLAKE2b",
         description="Encryption algorithms used for survey",
@@ -159,3 +160,7 @@ class SurveyAnswerModel(BaseModel):
     # as an array regardless of the question type.
     answer: List[str] = Field(..., min_items=1, max_items=56)
     type: SurveyQuestionType
+
+
+class SubmitSurveyModel(BaseModel):
+    answers: List[SurveyAnswerModel] = Field(..., max_items=128)
