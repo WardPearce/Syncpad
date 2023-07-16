@@ -17,6 +17,7 @@ export type SurveyPublicModel = {
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
     requires_captcha?: boolean;
+    hex_color?: (null | string);
     algorithms?: string;
     created: string;
     _id: any;

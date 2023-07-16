@@ -31,8 +31,13 @@
     let requireAccount = false;
     let proxyBlock = false;
     let allowMultipleSubmissions = false;
+    let surveyTheme = import.meta.env.VITE_THEME;
 
     addQuestion();
+
+    async function previewTheme() {
+        await ui("theme", surveyTheme);
+    }
 
     function startDrag() {
         dragDisabled = false;
@@ -210,6 +215,7 @@
             allow_multiple_submissions: allowMultipleSubmissions,
             proxy_block: proxyBlock,
             requires_login: requireAccount,
+            hex_color: surveyTheme.replace("#", ""),
             signature: "",
         };
 
@@ -299,6 +305,15 @@
                     </label>
                 </li>
             </ul>
+
+            <label class="color">
+                <input
+                    bind:value={surveyTheme}
+                    on:change={previewTheme}
+                    type="color"
+                />
+                <span>Theme color</span>
+            </label>
 
             <nav class="wrap">
                 <button on:click={onPublish}>Create survey</button>

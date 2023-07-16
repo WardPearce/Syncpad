@@ -95,6 +95,8 @@
             return;
         }
 
+        if (survey.hex_color) await ui("theme", `#${survey.hex_color}`);
+
         rawTitle = secretKey.decrypt(
             rawKey,
             survey.title.iv,

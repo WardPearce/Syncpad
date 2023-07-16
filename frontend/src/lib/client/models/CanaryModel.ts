@@ -10,6 +10,7 @@ export type CanaryModel = {
     about: string;
     signature: string;
     algorithms?: string;
+    hex_color?: (null | string);
     _id: any;
     logo?: (null | string);
     user_id: any;

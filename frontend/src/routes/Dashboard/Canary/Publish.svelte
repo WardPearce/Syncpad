@@ -8,6 +8,7 @@
         ApiError,
         CreateCanaryWarrantModel,
         PublishCanaryWarrantModel,
+        type CanaryModel,
     } from "../../../lib/client";
     import hash from "../../../lib/crypto/hash";
     import secretKey, {
@@ -46,6 +47,7 @@
     let nextCanary = CreateCanaryWarrantModel.next.FORTNIGHT;
     let canaryConcern = PublishCanaryWarrantModel.concern.NONE;
     let documents: FileList;
+    let canary: CanaryModel;
 
     let customTemplate = false;
     let publishModelActive = false;
@@ -62,6 +64,12 @@
                 ...statementTemplates,
             };
         }
+
+        canary = await apiClient.canary.controllersCanaryDomainGetCanary(
+            domainName
+        );
+
+        if (canary.hex_color) await ui("theme", `#${canary.hex_color}`);
     });
 
     async function onPublish(otpCode: string) {
@@ -71,11 +79,6 @@
         }
 
         try {
-            const canary =
-                await apiClient.canary.controllersCanaryDomainGetCanary(
-                    domainName
-                );
-
             const createdWarrant =
                 await apiClient.warrant.controllersCanaryDomainCreateWarrantCreateWarrant(
                     domainName,

@@ -18,6 +18,7 @@ export type SurveyModel = {
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
     requires_captcha?: boolean;
+    hex_color?: (null | string);
     algorithms?: string;
     sign_keypair: SurveySignKeyPairModel;
     secret_key: SurveySecretKeyModel;

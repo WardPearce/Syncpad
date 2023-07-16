@@ -10,7 +10,7 @@
   export let requiresAuth = false;
 
   let loadedComponent: any = null;
-  let timeout: number;
+  let timeout: NodeJS.Timeout;
   let showFallback = !delayMs;
 
   let props: Record<any, any>;
@@ -39,6 +39,10 @@
     component().then((module) => {
       loadedComponent = module.default;
     });
+
+    // Reset theme of each mounted page.
+    await ui("theme", import.meta.env.VITE_THEME);
+
     return () => clearTimeout(timeout);
   });
 </script>

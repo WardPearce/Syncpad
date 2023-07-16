@@ -40,6 +40,8 @@
       navigate("/dashboard", { replace: true });
     }
 
+    if (canary.hex_color) await ui("theme", `#${canary.hex_color}`);
+
     if (canary.domain_verification.completed) {
       goToCanary(canary);
     }

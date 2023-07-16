@@ -9,6 +9,7 @@ export type CreateCanaryModel = {
     about: string;
     signature: string;
     algorithms?: string;
+    hex_color?: (null | string);
     keypair: CanaryEd25519Model;
 };
 

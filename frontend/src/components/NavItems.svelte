@@ -12,6 +12,7 @@
     themeStore,
     type LocalSecretsModel,
   } from "../stores";
+  import Logo from "./Logo.svelte";
 
   export let isMobile: boolean = false;
 
@@ -77,7 +78,7 @@
 {#if !isMobile}
   <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
     <div class="logo">
-      <img src="/logo.png" alt="logo" />
+      <Logo />
     </div>
   </a>
 {/if}

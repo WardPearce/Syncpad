@@ -110,6 +110,8 @@
         }
       }
 
+      if (canaryBio.hex_color) await ui("theme", `#${canaryBio.hex_color}`);
+
       await getPublishedCanary();
 
       // Load subscription status in the background

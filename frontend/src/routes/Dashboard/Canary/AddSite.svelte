@@ -6,6 +6,7 @@
   import { base64Encode } from "../../../lib/crypto/codecUtils";
   import secretKey, { SecretkeyLocation } from "../../../lib/crypto/secretKey";
   import signatures from "../../../lib/crypto/signatures";
+  import { getDynamicTheme } from "../../../lib/theme";
 
   let siteDomain = "";
   let aboutSite = "";
@@ -13,6 +14,11 @@
 
   let errorMsg = "";
   let isLoading = false;
+
+  async function previewTheme() {
+    // @ts-ignore
+    await ui("theme", logoFiles[0]);
+  }
 
   async function createCanary() {
     isLoading = true;
@@ -43,6 +49,14 @@
       },
     };
 
+    if (logoFiles) {
+      // Gets custom hex color from theme.
+      canaryData.hex_color = (await getDynamicTheme())["--primary"].replace(
+        "#",
+        ""
+      );
+    }
+
     try {
       await apiClient.canary.controllersCanaryCreateCreateCanary(canaryData);
     } catch (error) {
@@ -51,12 +65,15 @@
       return;
     }
 
-    try {
-      await apiClient.canary.controllersCanaryDomainLogoUpdateUpdateLogo(
-        siteDomain,
-        [logoFiles[0]]
-      );
-    } catch (error) {}
+    if (logoFiles) {
+      try {
+        await apiClient.canary.controllersCanaryDomainLogoUpdateUpdateLogo(
+          siteDomain,
+          [logoFiles[0]]
+        );
+      } catch (error) {}
+    }
+
     isLoading = false;
     navigate(`/dashboard/canary/verify-site/${siteDomain}/`, { replace: true });
   }
@@ -100,6 +117,7 @@
           required
           type="file"
           bind:files={logoFiles}
+          on:change={previewTheme}
           multiple={false}
           accept="image/png, image/jpeg, image/jpg"
         />

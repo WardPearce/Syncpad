@@ -11,6 +11,7 @@
   import account from "./lib/account";
   import apiClient from "./lib/apiClient";
 
+  import Logo from "./components/Logo.svelte";
   import {
     emailVerificationRequired,
     isDarkMode,
@@ -82,7 +83,7 @@
       <nav style="display: flex;justify-content: space-between;">
         <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
           <div class="logo">
-            <img src="/logo.png" alt="logo" />
+            <Logo />
           </div>
         </a>
         <button

@@ -23,8 +23,27 @@ menu {
     outline: solid 2px var(--primary) !important;
 }
 
-.logo img {
-    width: 35px;
+input[type="color"] {
+    -webkit-appearance: none !important;
+    border: none !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+label.color {
+    display: flex !important;
+    align-items: center !important;
+    font-size: .875rem;
+}
+
+label.color span {
+    margin-left: .25rem;
+}
+
+.logo svg {
+    fill: var(--primary) !important;
+    width: 55px;
 }
 
 .link-button {
