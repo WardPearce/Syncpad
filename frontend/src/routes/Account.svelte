@@ -420,6 +420,8 @@
           <i>arrow_drop_down</i>
         </div>
       </summary>
+      <p>Only affects current device.</p>
+
       <label class="color">
         <input
           bind:value={themeColor}
@@ -430,9 +432,11 @@
       </label>
 
       {#if themeColor !== import.meta.env.VITE_THEME}
-        <button on:click={resetThemeToDefault} style="margin-top: 1em;"
-          >Reset to default</button
-        >
+        <nav class="wrap">
+          <button on:click={resetThemeToDefault} style="margin-top: 1em;"
+            >Reset to default</button
+          >
+        </nav>
       {/if}
     </details>
   </article>
