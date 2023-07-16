@@ -63,7 +63,7 @@
 </script>
 
 <Router primary={false}>
-  <header class="mobile-nav" class:deep-purple1={!darkMode}>
+  <header class="mobile-nav" class:surface-variant={!darkMode}>
     <nav>
       <button
         class="circle transparent"
@@ -77,7 +77,7 @@
   <dialog
     class="modal left"
     class:active={mobileNavShow}
-    class:deep-purple1={!darkMode}
+    class:surface-variant={!darkMode}
   >
     <header class="fixed">
       <nav style="display: flex;justify-content: space-between;">
@@ -97,7 +97,7 @@
     <NavItems isMobile={true} />
   </dialog>
 
-  <nav class="m l left" class:deep-purple1={!darkMode}>
+  <nav class="m l left" class:surface-variant={!darkMode}>
     <NavItems isMobile={false} />
   </nav>
 
@@ -203,7 +203,7 @@
   </main>
 </Router>
 
-<footer class:deep-purple1={!darkMode}>
+<footer class:surface-variant={!darkMode}>
   <nav class="center-align">
     <a use:link href="/privacy-policy" class="link">
       <i>policy</i>
