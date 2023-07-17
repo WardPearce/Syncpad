@@ -162,12 +162,12 @@ class SurveyAnswerModel(BaseModel):
     answer: Union[List[str], str] = Field(..., min_items=1, max_items=56)
     type: SurveyQuestionType
 
-    @validator("answer")
-    def answer_validator(cls, v: List[str]) -> List[str]:
-        if cls.type != SurveyQuestionType.MultipleChoice and isinstance(v, list):
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.type != SurveyQuestionType.MultipleChoice and isinstance(
+            self.answer, list
+        ):
             raise ValueError("Only multiple choice types can have multiple answers")
-
-        return v
 
 
 class SubmitSurveyModel(BaseModel):

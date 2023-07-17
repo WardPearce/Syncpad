@@ -196,6 +196,13 @@
                 answer: answer,
             });
         });
+
+        await apiClient.survey.controllersSurveySurveyIdSubmitSubmitSurvey(
+            surveyId,
+            {
+                answers: encryptedAnswers,
+            }
+        );
     }
 
     async function determineSubmitPrompt() {

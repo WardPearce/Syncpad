@@ -13,7 +13,7 @@
     }
 
     function removeChoice(id: number) {
-        choices = choices.filter((_, i) => i !== id);
+        choices = choices.filter((choice) => choice.id !== id);
     }
 
     addChoice();
