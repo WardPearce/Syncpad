@@ -31,6 +31,7 @@
     let requireAccount = false;
     let proxyBlock = false;
     let allowMultipleSubmissions = false;
+    let requireCaptcha = false;
     let surveyTheme = import.meta.env.VITE_THEME;
 
     addQuestion();
@@ -215,6 +216,7 @@
             allow_multiple_submissions: allowMultipleSubmissions,
             proxy_block: proxyBlock,
             requires_login: requireAccount,
+            requires_captcha: requireCaptcha,
             hex_color: surveyTheme.replace("#", ""),
             signature: "",
         };
@@ -277,16 +279,17 @@
 {:else}
     <div class="center-questions">
         <article class="extra-large-width secondary-container">
-            <p>
-                Please note, editing a survey after creation is currently not
-                implemented.
-            </p>
-
             <ul>
                 <li>
                     <label class="checkbox">
                         <input type="checkbox" bind:checked={requireAccount} />
                         <span>Require account</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox" bind:checked={requireCaptcha} />
+                        <span>Require captcha</span>
                     </label>
                 </li>
                 <li>

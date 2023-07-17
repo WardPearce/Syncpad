@@ -69,7 +69,7 @@
                 <p>{relativeDate(survey.created)}</p>
             </nav>
             <nav class="wrap">
-                <button>Results</button>
+                <button>Owner panel</button>
                 <button class="border" on:click={copyShareLink}
                     >Copy link</button
                 >

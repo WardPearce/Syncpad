@@ -255,7 +255,7 @@
 
     <div class="center-questions">
         <div class="extra-large-width">
-            <nav class="right-align">
+            <nav class="right-align survey-chips">
                 <div class="chip surface-variant small">
                     <i class="primary-text">security</i>
                     <div class="tooltip bottom">
@@ -330,3 +330,11 @@
         </div>
     </div>
 {/if}
+
+<style>
+    @media only screen and (max-width: 600px) {
+        .survey-chips {
+            flex-wrap: wrap;
+        }
+    }
+</style>
