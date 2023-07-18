@@ -115,10 +115,11 @@ class SurveyController(Controller):
                     jwt_cookie_auth.token_secret,
                     jwt_cookie_auth.algorithm,
                 )
+                user_id = ObjectId(decoded.sub)
             except NotAuthorizedException:
-                raise InvalidAccountAuth()
+                if survey.requires_login:
+                    raise InvalidAccountAuth()
 
-            user_id = ObjectId(decoded.sub)
         elif survey.requires_login:
             raise InvalidAccountAuth()
 
@@ -129,6 +130,15 @@ class SurveyController(Controller):
                 raise SurveyAlreadySubmittedException()
 
             response.set_cookie(survey_id, "true")
+
+            if (
+                user_id
+                and await state.mongo.survey.count_documents(
+                    {"survey_id": id_, "user_id": user_id}
+                )
+                > 0
+            ):
+                raise SurveyAlreadySubmittedException()
 
             if request.client and request.client.host and survey.ip_salt:
                 ip_hash = hashlib.sha256(
@@ -167,7 +177,6 @@ class SurveyController(Controller):
     async def public_survey(
         self,
         state: "State",
-        request: Request[Optional[ObjectId], Token, Any],
         survey_id: str,
     ) -> SurveyPublicModel:
         try:
@@ -182,19 +191,6 @@ class SurveyController(Controller):
                 raise SurveyNotFoundException()
         elif datetime.utcnow() > survey.closed:
             raise SurveyNotFoundException()
-
-        if survey.requires_login:
-            if jwt_cookie_auth.key not in request.cookies:
-                raise InvalidAccountAuth()
-
-            try:
-                Token.decode(
-                    request.cookies[jwt_cookie_auth.key].replace("Bearer ", ""),
-                    jwt_cookie_auth.token_secret,
-                    jwt_cookie_auth.algorithm,
-                )
-            except NotAuthorizedException:
-                raise InvalidAccountAuth()
 
         return survey
 

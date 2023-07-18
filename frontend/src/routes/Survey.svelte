@@ -252,6 +252,8 @@
                 );
             }
 
+            question.error = null;
+
             encryptedAnswers.push({
                 id: question.id,
                 type: question.type,
@@ -283,10 +285,7 @@
     <PageLoading />
 {:else if survey.requires_login && get(localSecrets) === null}
     <h4>This survey requires an account</h4>
-    <p>
-        This survey requires an account to ensure that you can only submit once.
-        Please login or register to continue.
-    </p>
+    <p>Please login or register to continue.</p>
     <nav>
         <button
             class="large"
@@ -313,9 +312,10 @@
             <p>
                 This survey processes your IP on submission to ensure you aren't
                 using a proxy or VPN regardless of your account IP processing
-                preference. Your IP is not stored after processing by {import.meta
-                    .env.VITE_SITE_NAME}. Please contact the survey owner if you
-                wish to disable this.
+                preference. {#if survey.allow_multiple_submissions}Your IP is
+                    not stored after processing by {import.meta.env
+                        .VITE_SITE_NAME}{/if}. Please contact the survey owner
+                if you wish to disable this.
             </p>
         {/if}
         {#if !survey.allow_multiple_submissions}
