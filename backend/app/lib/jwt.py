@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 from bson.objectid import ObjectId
 from litestar.connection import ASGIConnection
 from litestar.contrib.jwt import JWTCookieAuth, Token
-from pydantic import BaseModel
 
 from app.env import SETTINGS
 

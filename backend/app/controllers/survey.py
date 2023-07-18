@@ -6,10 +6,13 @@ from bson.errors import InvalidId
 from litestar import Request, Router
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
+from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import get, post
 
 from app.errors import InvalidAccountAuth, SurveyNotFoundException
 from app.lib.geoip import GeoIp
+from app.lib.jwt import jwt_cookie_auth
+from app.lib.key_bulders import logged_in_user_key_builder
 from app.lib.mCaptcha import validate_captcha
 from app.lib.survey import Survey
 
@@ -33,7 +36,12 @@ async def create_survey(
     return SurveyModel(**insert)
 
 
-@get("/list", description="List surveys")
+@get(
+    "/list",
+    description="List surveys",
+    cache=120,
+    cache_key_builder=logged_in_user_key_builder,
+)
 async def list_surveys(
     request: Request[None, Token, Any], state: "State"
 ) -> List[SurveyModel]:
@@ -66,8 +74,17 @@ class SurveyController(Controller):
             await validate_captcha(state, captcha)
 
         user_id = None
-        if request.user:
-            user_id = request.user
+        if jwt_cookie_auth.key in request.cookies:
+            try:
+                decoded = Token.decode(
+                    request.cookies[jwt_cookie_auth.key].replace("Bearer ", ""),
+                    jwt_cookie_auth.token_secret,
+                    jwt_cookie_auth.algorithm,
+                )
+            except NotAuthorizedException:
+                raise InvalidAccountAuth()
+
+            user_id = ObjectId(decoded.sub)
         elif survey.requires_login:
             raise InvalidAccountAuth()
 
@@ -95,8 +112,18 @@ class SurveyController(Controller):
 
         survey = await Survey(state, id_).public()
 
-        if survey.requires_login and not request.user:
-            raise InvalidAccountAuth()
+        if survey.requires_login:
+            if jwt_cookie_auth.key not in request.cookies:
+                raise InvalidAccountAuth()
+
+            try:
+                Token.decode(
+                    request.cookies[jwt_cookie_auth.key].replace("Bearer ", ""),
+                    jwt_cookie_auth.token_secret,
+                    jwt_cookie_auth.algorithm,
+                )
+            except NotAuthorizedException:
+                raise InvalidAccountAuth()
 
         return survey
 

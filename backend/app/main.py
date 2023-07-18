@@ -120,5 +120,5 @@ app = Litestar(
         BaseModel: lambda m: m.dict(by_alias=True),
         **CustomJsonEncoder.Config.json_encoders,
     },
-    debug=SETTINGS.proxy_urls.frontend == "localhost",
+    debug=SETTINGS.proxy_urls.frontend == "http://localhost",
 )

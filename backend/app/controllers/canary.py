@@ -22,6 +22,7 @@ from app.errors import (
     TooManyFiles,
 )
 from app.lib.canary import Canary
+from app.lib.key_bulders import logged_in_user_key_builder
 from app.lib.otp import OneTimePassword
 from app.lib.s3 import s3_upload_file
 from app.lib.user import User
@@ -78,7 +79,13 @@ async def create_canary(
     return CanaryModel(**to_insert)
 
 
-@get("/list", description="List canaries for user", tags=["canary"])
+@get(
+    "/list",
+    description="List canaries for user",
+    tags=["canary"],
+    cache=120,
+    cache_key_builder=logged_in_user_key_builder,
+)
 async def list_canaries(
     request: Request[ObjectId, Token, Any], state: "State"
 ) -> List[CanaryModel]:
