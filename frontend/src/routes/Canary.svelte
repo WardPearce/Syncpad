@@ -4,20 +4,21 @@
   import { onMount } from "svelte";
   import { navigate } from "svelte-navigator";
 
+  import { get } from "svelte/store";
   import Image from "../components/Image.svelte";
   import PageLoading from "../components/PageLoading.svelte";
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type {
-    DocumentCanaryWarrantModel,
-    PublicCanaryModel,
-    PublishedCanaryWarrantModel,
+      DocumentCanaryWarrantModel,
+      PublicCanaryModel,
+      PublishedCanaryWarrantModel,
   } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
   import signatures from "../lib/crypto/signatures";
   import { relativeDate, utcDate } from "../lib/date";
-  import { advanceModeStore } from "../stores";
+  import { advanceModeStore, localSecrets } from "../stores";
 
   export let domainName: string;
   export let signPublicKeyHash: string;
@@ -114,8 +115,10 @@
 
       await getPublishedCanary();
 
-      // Load subscription status in the background
-      loadSubscribeStatus();
+      if (get(localSecrets) !== null) {
+        // Load subscription status in the background
+        loadSubscribeStatus();
+      }
     } catch (error) {
       canaryApiError = error.body.detail;
     }

@@ -314,10 +314,17 @@
                 </li>
             </ul>
 
-            <div class="field label border" style="margin: 1em 0;">
-                <input bind:value={surveyCloses} type="date" class="active" />
-                <label class="active" for="date">Survey closes</label>
-            </div>
+            <nav class="wrap" style="margin: 1em 0;">
+                <div class="field label border">
+                    <input
+                        bind:value={surveyCloses}
+                        type="date"
+                        class="active"
+                        min={new Date().toISOString().split("T")[0]}
+                    />
+                    <label class="active" for="date">Survey closes</label>
+                </div>
+            </nav>
 
             <label class="color">
                 <input
