@@ -26,8 +26,11 @@ if TYPE_CHECKING:
 
     from app.custom_types import State as StateType
 
-redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db)
-cache_store = RedisStore(redis=redis)
+redis_store = RedisStore(
+    redis=Redis(
+        host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db
+    )
+)
 
 
 async def init_tasks(app_config: "AppConfig") -> None:
@@ -61,8 +64,7 @@ async def close_aiohttp(app_config: "AppConfig") -> None:
 
 
 async def wipe_cache_on_shutdown() -> None:
-    await cache_store.delete_all()
-    await redis.close()
+    await redis_store.delete_all()
 
 
 app = Litestar(
@@ -77,7 +79,7 @@ app = Litestar(
             "mongo": motor_asyncio.AsyncIOMotorClient(
                 SETTINGS.mongo.host, SETTINGS.mongo.port
             )[SETTINGS.mongo.collection],
-            "redis": cache_store.with_namespace("LITESTAR_STATE"),
+            "redis": redis_store,
             "aiohttp": aiohttp.ClientSession(),
             "tasks": None,
         }
