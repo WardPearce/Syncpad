@@ -173,4 +173,4 @@ class SurveyAnswerModel(BaseModel):
 
 
 class SubmitSurveyModel(BaseModel):
-    answers: List[SurveyAnswerModel] = Field(..., max_items=128)
+    answers: List[SurveyAnswerModel] = Field(..., min_items=1, max_items=128)

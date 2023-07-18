@@ -40,27 +40,57 @@
     let rawSignPublicKey: Uint8Array;
 
     let showSubmitDialog = false;
+    let errorMsg = "";
 
     onMount(async () => {
         surveyLoading = true;
 
-        survey =
-            await apiClient.survey.controllersSurveySurveyIdPublicPublicSurvey(
-                surveyId
-            );
+        try {
+            survey =
+                await apiClient.survey.controllersSurveySurveyIdPublicPublicSurvey(
+                    surveyId
+                );
+        } catch (error) {
+            errorMsg = error.body.detail;
+            surveyLoading = false;
+            return;
+        }
 
-        const rawKey = base64Decode(b64EncodedRawKey, true);
+        let rawKey: Uint8Array;
+        try {
+            rawKey = base64Decode(b64EncodedRawKey, true);
+        } catch {
+            errorMsg = "Invalid key format";
+            surveyLoading = false;
+            return;
+        }
 
-        rawSignPublicKey = base64Decode(survey.sign_keypair.public_key);
-        rawPublicKey = secretKey.decrypt(
-            rawKey,
-            survey.keypair.public_key.iv,
-            survey.keypair.public_key.cipher_text
-        ) as Uint8Array;
+        try {
+            rawSignPublicKey = base64Decode(survey.sign_keypair.public_key);
+        } catch {
+            errorMsg = "Invalid sign public key hash format";
+            surveyLoading = false;
+            return;
+        }
+
+        try {
+            rawPublicKey = secretKey.decrypt(
+                rawKey,
+                survey.keypair.public_key.iv,
+                survey.keypair.public_key.cipher_text
+            ) as Uint8Array;
+        } catch {
+            errorMsg = "Invalid key";
+            surveyLoading = false;
+            return;
+        }
 
         if (
             hash.hashBase64Encode(rawSignPublicKey, true) !== signPublicKeyHash
         ) {
+            errorMsg =
+                "Public key hash does not match what the server provided, please make sure you inputted the url correctly.";
+            surveyLoading = false;
             return;
         }
 
@@ -91,80 +121,88 @@
                 survey.signature,
                 JSON.stringify(toValidate)
             );
-        } catch (error) {
+        } catch {
+            errorMsg = "Failed to validate survey signature";
+            surveyLoading = false;
             return;
         }
 
         if (survey.hex_color) await ui("theme", `#${survey.hex_color}`);
 
-        rawTitle = secretKey.decrypt(
-            rawKey,
-            survey.title.iv,
-            survey.title.cipher_text,
-            true
-        ) as string;
-
-        if (survey.description)
-            rawDescription = secretKey.decrypt(
+        try {
+            rawTitle = secretKey.decrypt(
                 rawKey,
-                survey.description.iv,
-                survey.description.cipher_text,
+                survey.title.iv,
+                survey.title.cipher_text,
                 true
             ) as string;
 
-        survey.questions.forEach((question) => {
-            let choices: rawChoice[] = [];
-            if (question.choices)
-                question.choices.forEach((choice) => {
-                    choices.push({
-                        id: choice.id,
-                        choice: secretKey.decrypt(
-                            rawKey,
-                            choice.iv,
-                            choice.cipher_text,
-                            true
-                        ) as string,
-                    });
-                });
-
-            let rawRegex: string | null = null;
-            if (question.regex) {
-                rawRegex = secretKey.decrypt(
+            if (survey.description)
+                rawDescription = secretKey.decrypt(
                     rawKey,
-                    question.regex.iv,
-                    question.regex.cipher_text,
+                    survey.description.iv,
+                    survey.description.cipher_text,
                     true
                 ) as string;
 
-                // If regex not demeed safe, set to null
-                // Not prefect, but worse case someone
-                // freezes someones browser
-                if (!safe(rawRegex)) rawRegex = null;
-            }
+            survey.questions.forEach((question) => {
+                let choices: rawChoice[] = [];
+                if (question.choices)
+                    question.choices.forEach((choice) => {
+                        choices.push({
+                            id: choice.id,
+                            choice: secretKey.decrypt(
+                                rawKey,
+                                choice.iv,
+                                choice.cipher_text,
+                                true
+                            ) as string,
+                        });
+                    });
 
-            rawQuestions.push({
-                answer: null,
-                id: question.id,
-                question: secretKey.decrypt(
-                    rawKey,
-                    question.question.iv,
-                    question.question.cipher_text,
-                    true
-                ) as string,
-                description: question.description
-                    ? (secretKey.decrypt(
-                          rawKey,
-                          question.description.iv,
-                          question.description.cipher_text,
-                          true
-                      ) as string)
-                    : null,
-                required: question.required as boolean,
-                type: question.type,
-                choices: choices,
-                regex: rawRegex,
+                let rawRegex: string | null = null;
+                if (question.regex) {
+                    rawRegex = secretKey.decrypt(
+                        rawKey,
+                        question.regex.iv,
+                        question.regex.cipher_text,
+                        true
+                    ) as string;
+
+                    // If regex not demeed safe, set to null
+                    // Not prefect, but worse case someone
+                    // freezes someones browser
+                    if (!safe(rawRegex)) rawRegex = null;
+                }
+
+                rawQuestions.push({
+                    answer: null,
+                    id: question.id,
+                    question: secretKey.decrypt(
+                        rawKey,
+                        question.question.iv,
+                        question.question.cipher_text,
+                        true
+                    ) as string,
+                    description: question.description
+                        ? (secretKey.decrypt(
+                              rawKey,
+                              question.description.iv,
+                              question.description.cipher_text,
+                              true
+                          ) as string)
+                        : null,
+                    required: question.required as boolean,
+                    type: question.type,
+                    choices: choices,
+                    regex: rawRegex,
+                });
             });
-        });
+        } catch {
+            errorMsg = "Failed to decrypt survey";
+            surveyLoading = false;
+            return;
+        }
 
         surveyLoading = false;
     });
@@ -236,6 +274,9 @@
                 })}>Register</button
         >
     </nav>
+{:else if errorMsg}
+    <h4>Failed to load survey</h4>
+    <p>{errorMsg}</p>
 {:else}
     <dialog class:active={showSubmitDialog} class="large-width">
         <h5>Important privacy note</h5>
