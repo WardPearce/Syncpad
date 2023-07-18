@@ -29,6 +29,8 @@ class ErrorCodes(Enum):
     survey_not_found = 2017
     survey_already_submitted = 2018
     survey_proxy_block = 2019
+    survey_required_questions = 2020
+    survey_invalid_question_id = 2021
 
 
 class SurveyNotFoundException(NotFoundException):
@@ -208,4 +210,24 @@ class SurveyProxyBlockException(ValidationException):
         super().__init__(
             detail="Proxies aren't allowed",
             extra={ERROR_CODE_KEY: ErrorCodes.survey_proxy_block.value},
+        )
+
+
+class SurveyRequiredQuestionsNotAnswered(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Required questions not answered",
+            extra={ERROR_CODE_KEY: ErrorCodes.survey_required_questions.value},
+        )
+
+
+class SurveyInvalidQuestionIds(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Invalid question ids",
+            extra={ERROR_CODE_KEY: ErrorCodes.survey_invalid_question_id.value},
         )

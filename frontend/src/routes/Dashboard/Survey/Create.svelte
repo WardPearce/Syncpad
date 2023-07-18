@@ -322,7 +322,7 @@
                         class="active"
                         min={new Date().toISOString().split("T")[0]}
                     />
-                    <label class="active" for="date">Survey closes</label>
+                    <label class="active" for="date">Submission cutoff</label>
                 </div>
             </nav>
 

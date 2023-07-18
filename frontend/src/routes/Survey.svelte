@@ -22,6 +22,7 @@
 
     interface rawQuestionAnswer extends rawQuestion {
         answer: number | number[] | string | null;
+        error: string | null;
     }
 
     export let surveyId: string;
@@ -41,6 +42,7 @@
 
     let showSubmitDialog = false;
     let errorMsg = "";
+    let submissionError = false;
 
     onMount(async () => {
         surveyLoading = true;
@@ -196,6 +198,7 @@
                     type: question.type,
                     choices: choices,
                     regex: rawRegex,
+                    error: null,
                 });
             });
         } catch {
@@ -209,9 +212,30 @@
 
     async function submit() {
         const encryptedAnswers: SurveyAnswerModel[] = [];
+        submissionError = false;
 
         rawQuestions.forEach((question) => {
-            if (!question.answer) return;
+            if (!question.answer) {
+                if (question.required) {
+                    question.error = "This question is required";
+                    submissionError = true;
+                    return;
+                }
+                return;
+            }
+
+            if (
+                question.regex &&
+                typeof question.answer === "string" &&
+                safe(question.regex)
+            ) {
+                const regex = new RegExp(question.regex);
+                if (!regex.test(question.answer)) {
+                    question.error = "Regex does not match";
+                    submissionError = true;
+                    return;
+                }
+            }
 
             let answer: string[] | string;
             if (question.answer instanceof Array) {
@@ -234,6 +258,11 @@
                 answer: answer,
             });
         });
+
+        if (submissionError) {
+            rawQuestions = [...rawQuestions];
+            return;
+        }
 
         await apiClient.survey.controllersSurveySurveyIdSubmitSubmitSurvey(
             surveyId,
@@ -308,7 +337,7 @@
 
     <div class="center-questions">
         <div class="extra-large-width">
-            <nav class="right-align survey-chips">
+            <nav class="right-align wrap">
                 <div class="chip surface-variant small">
                     <i class="primary-text">security</i>
                     <div class="tooltip bottom">
@@ -369,6 +398,15 @@
             </nav>
         </div>
 
+        {#if submissionError}
+            <div class="extra-large-width" style="margin-top: 1em;">
+                <article class="error middle-align">
+                    <i>error</i>
+                    <span>There was an error with your submission.</span>
+                </article>
+            </div>
+        {/if}
+
         <Title title={rawTitle} description={rawDescription} />
 
         {#each rawQuestions as question}
@@ -383,11 +421,3 @@
         </div>
     </div>
 {/if}
-
-<style>
-    @media only screen and (max-width: 600px) {
-        .survey-chips {
-            flex-wrap: wrap;
-        }
-    }
-</style>

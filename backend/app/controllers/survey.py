@@ -17,6 +17,7 @@ from app.errors import (
     SurveyAlreadySubmittedException,
     SurveyNotFoundException,
     SurveyProxyBlockException,
+    SurveyRequiredQuestionsNotAnswered,
 )
 from app.lib.geoip import GeoIp
 from app.lib.jwt import jwt_cookie_auth
@@ -83,6 +84,19 @@ class SurveyController(Controller):
             raise SurveyNotFoundException()
 
         survey = await Survey(state, id_).get()
+
+        provided_question_ids = [q.id for q in data.answers]
+        valid_question_ids = []
+        for question in survey.questions:
+            if question.required and question.id not in provided_question_ids:
+                raise SurveyRequiredQuestionsNotAnswered()
+
+            valid_question_ids.append(question.id)
+
+        if not all(
+            [question_id in valid_question_ids for question_id in provided_question_ids]
+        ):
+            raise SurveyRequiredQuestionsNotAnswered()
 
         if isinstance(survey.closed, bool):
             if survey.closed:

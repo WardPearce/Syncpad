@@ -13,6 +13,7 @@
     export let id: number;
     export let description: string | null;
     export let regex: string | null;
+    export let error: string | null;
 
     export let answer: number | number[] | string | null;
 
@@ -36,6 +37,10 @@
     {/if}
 
     <svelte:component this={answerTypes[type]} {choices} bind:answer />
+
+    {#if error}
+        <p class="error-text">{error}</p>
+    {/if}
 
     {#if regex}
         <p>Regex: {regex}</p>
