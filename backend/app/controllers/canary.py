@@ -397,7 +397,12 @@ class CanaryController(Controller):
         trusted = {"user_id": request.user, "domain": domain, **data.dict()}
         await state.mongo.trusted_canary.insert_one(trusted)
 
-    @post("/verify", description="Verify domain ownership via DNS", tags=["canary"])
+    @post(
+        "/verify",
+        cache=60,
+        description="Verify domain ownership via DNS",
+        tags=["canary"],
+    )
     async def verify(
         self, domain: str, request: Request[ObjectId, Token, Any], state: "State"
     ) -> Response:
@@ -426,6 +431,7 @@ class CanaryController(Controller):
         description="Get public details about canary",
         tags=["canary"],
         exclude_from_auth=True,
+        cache=120,
     )
     async def public_canary(self, domain: str, state: "State") -> PublicCanaryModel:
         return await Canary(state, domain).get()

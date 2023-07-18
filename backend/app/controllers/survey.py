@@ -81,7 +81,7 @@ class SurveyController(Controller):
 
         await Survey(state, id_).submit_answers(data, user_id=user_id)
 
-    @get("/public", description="Get a survey", exclude_from_auth=True)
+    @get("/public", cache=120, description="Get a survey", exclude_from_auth=True)
     async def public_survey(
         self,
         state: "State",

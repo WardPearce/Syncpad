@@ -5,7 +5,7 @@ from litestar import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.connection.request import Request
+from litestar.datastructures import ImmutableState, State
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import License, Server
@@ -16,72 +16,48 @@ from redis.asyncio import Redis
 
 from app.controllers import routes
 from app.env import SETTINGS
+from app.lib.crontabs import CronTabs
 from app.lib.jwt import jwt_cookie_auth
-from app.lib.tasks import CronTabs
 from app.models.customs import CustomJsonEncoder
 from app.tasks import tasks
 
 if TYPE_CHECKING:
-    from app.custom_types import State
+    from litestar.config.app import AppConfig
+
+    from app.custom_types import State as StateType
 
 redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db)
 cache_store = RedisStore(redis=redis)
 
 
-async def init_tasks(state: "State") -> CronTabs:
-    if not getattr(state, "tasks", None):
-        state.tasks = CronTabs(state, tasks)
-        state.tasks.start()
-
-    return state.tasks
+async def init_tasks(app_config: "AppConfig") -> None:
+    app_config.state.tasks = CronTabs(cast("StateType", app_config.state), tasks)
+    app_config.state.tasks.start()
 
 
-async def close_tasks(state: "State") -> None:
-    state.tasks.stop()
+async def close_tasks(app_config: "AppConfig") -> None:
+    if app_config.state.tasks:
+        app_config.state.tasks.stop()
 
 
-async def init_mongo(state: "State") -> motor_asyncio.AsyncIOMotorCollection:
-    if not getattr(state, "mongo", None):
-        mongo = motor_asyncio.AsyncIOMotorClient(
-            SETTINGS.mongo.host, SETTINGS.mongo.port
-        )
-        await mongo.server_info(None)
-        state.mongo = cast(
-            motor_asyncio.AsyncIOMotorCollection, mongo[SETTINGS.mongo.collection]
-        )
-
-        await state.mongo.old_otp.create_index("expires", expireAfterSeconds=0)
-        await state.mongo.proof.create_index("expires", expireAfterSeconds=0)
-        await state.mongo.session.create_index("record_kept_till", expireAfterSeconds=0)
-        await state.mongo.email_verification.create_index(
-            "expires", expireAfterSeconds=0
-        )
-        await state.mongo.canary_warrant.create_index(
-            "issued",
-            expireAfterSeconds=10800,  # 3 hours
-            partialFilterExpression={"published": False},
-        )
-
-    return state.mongo
+async def init_mongo(app_config: "AppConfig") -> None:
+    await app_config.state.mongo.old_otp.create_index("expires", expireAfterSeconds=0)
+    await app_config.state.mongo.proof.create_index("expires", expireAfterSeconds=0)
+    await app_config.state.mongo.session.create_index(
+        "record_kept_till", expireAfterSeconds=0
+    )
+    await app_config.state.mongo.email_verification.create_index(
+        "expires", expireAfterSeconds=0
+    )
+    await app_config.state.mongo.canary_warrant.create_index(
+        "issued",
+        expireAfterSeconds=10800,  # 3 hours
+        partialFilterExpression={"published": False},
+    )
 
 
-async def init_aiohttp(state: "State") -> aiohttp.ClientSession:
-    if not getattr(state, "aiohttp", None):
-        state.aiohttp = aiohttp.ClientSession()
-
-    return state.aiohttp
-
-
-async def close_aiohttp(state: "State") -> None:
-    await state.aiohttp.close()
-
-
-async def init_redis(state: "State") -> RedisStore:
-    if not getattr(state, "redis", None):
-        state.redis = cache_store
-        await redis.ping()
-
-    return state.redis
+async def close_aiohttp(app_config: "AppConfig") -> None:
+    await app_config.state.aiohttp.close()
 
 
 async def wipe_cache_on_shutdown() -> None:
@@ -91,13 +67,27 @@ async def wipe_cache_on_shutdown() -> None:
 
 app = Litestar(
     route_handlers=[routes],
-    on_startup=[init_mongo, init_redis, init_aiohttp, init_tasks],
-    on_shutdown=[close_aiohttp, wipe_cache_on_shutdown, close_tasks],
+    on_startup=[init_mongo, init_tasks],  # type: ignore
+    on_shutdown=[close_aiohttp, wipe_cache_on_shutdown, close_tasks],  # type: ignore
     csrf_config=CSRFConfig(
         secret=SETTINGS.csrf_secret, cookie_httponly=False, cookie_samesite="strict"
     ),
+    state=State(
+        {
+            "mongo": motor_asyncio.AsyncIOMotorClient(
+                SETTINGS.mongo.host, SETTINGS.mongo.port
+            )[SETTINGS.mongo.collection],
+            "redis": cache_store.with_namespace("LITESTAR_STATE"),
+            "aiohttp": aiohttp.ClientSession(),
+            "tasks": None,
+        }
+    ),
     middleware=[
-        RateLimitConfig(rate_limit=("minute", 60), exclude=["/schema"]).middleware
+        RateLimitConfig(
+            rate_limit=("minute", 60),
+            exclude=["/schema"],
+            store="redis",
+        ).middleware
     ],
     cors_config=CORSConfig(
         allow_origins=[
@@ -121,7 +111,8 @@ app = Litestar(
         version=SETTINGS.open_api.version,
         servers=[Server(url=SETTINGS.proxy_urls.backend, description="Production API")],
     ),
-    response_cache_config=ResponseCacheConfig(store=cache_store),
+    stores={"redis": RedisStore.with_client()},
+    response_cache_config=ResponseCacheConfig(store="redis"),
     on_app_init=[jwt_cookie_auth.on_app_init],
     type_encoders={
         BaseModel: lambda m: m.dict(by_alias=True),

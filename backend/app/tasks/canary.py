@@ -7,8 +7,8 @@ import humanize
 from app.env import SETTINGS
 from app.errors import DomainValidationError, UserNotFoundException
 from app.lib.canary import Canary
+from app.lib.crontabs import Tab
 from app.lib.smtp import send_email
-from app.lib.tasks import Tab
 from app.lib.url import untrusted_http_request
 from app.lib.user import User
 from app.models.canary import CanaryModel, PublishedCanaryWarrantModel

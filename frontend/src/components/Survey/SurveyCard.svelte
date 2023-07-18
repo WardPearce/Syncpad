@@ -37,12 +37,6 @@
         navigate(shareLink());
     }
 
-    async function copyShareLink() {
-        await navigator.clipboard.writeText(
-            window.location.origin + shareLink()
-        );
-    }
-
     function shareLink(): string {
         const privateKey = secretKey.decrypt(
             SecretkeyLocation.localKeychain,
@@ -69,10 +63,8 @@
                 <p>{relativeDate(survey.created)}</p>
             </nav>
             <nav class="wrap">
-                <button>Owner panel</button>
-                <button class="border" on:click={copyShareLink}
-                    >Copy link</button
-                >
+                <button>Results</button>
+                <button class="border">Edit</button>
             </nav>
         </article>
     </div>

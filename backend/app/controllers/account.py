@@ -11,7 +11,7 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.handlers import get, post
-from litestar.response import RedirectResponse
+from litestar.response import Redirect
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
 from nacl.public import PublicKey, SealedBox
@@ -58,6 +58,7 @@ class LoginController(Controller):
         description="Public KDF details",
         tags=["account"],
         exclude_from_auth=True,
+        cache=120,
     )
     async def public(self, state: "State", email: str) -> PublicUserModel:
         user = await User(state, email).get()
@@ -72,7 +73,7 @@ class LoginController(Controller):
     )
     async def verify_email(
         self, state: "State", email: str, email_secret: str
-    ) -> RedirectResponse:
+    ) -> Redirect:
         user = await User(state, email).get()
 
         email_search = {"email": user.email, "secret": email_secret}
@@ -88,9 +89,9 @@ class LoginController(Controller):
 
             await state.mongo.email_verification.delete_one(email_search)
 
-            return RedirectResponse(SETTINGS.proxy_urls.frontend + "/email-verified")
+            return Redirect(SETTINGS.proxy_urls.frontend + "/email-verified")
 
-        return RedirectResponse(SETTINGS.proxy_urls.frontend)
+        return Redirect(SETTINGS.proxy_urls.frontend)
 
     @get(
         path="/to-sign",

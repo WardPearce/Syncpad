@@ -1344,14 +1344,14 @@ six = ">=1.13.0"
 
 [[package]]
 name = "litestar"
-version = "2.0.0a5"
-description = "Performant, light and flexible ASGI API Framework"
+version = "2.0.0b2"
+description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litestar-2.0.0a5-py3-none-any.whl", hash = "sha256:ee3d332135cb0398c8b01aad64e7c149d3122938e341f76997b3cd7a7f11bad0"},
-    {file = "litestar-2.0.0a5.tar.gz", hash = "sha256:1e22b72219e468d3cabd9b5800461fa3e4c2b5c5a1b515616f4cfd81ad186f1b"},
+    {file = "litestar-2.0.0b2-py3-none-any.whl", hash = "sha256:a041c27a1f8ea2081a67fa94ac88f8e74a0e5a2cd33031c3bc10e88f4f47ef88"},
+    {file = "litestar-2.0.0b2.tar.gz", hash = "sha256:874162d8d26963c3a8c4b7405b8facde45c599c472487929bb7e70b96fcec5e0"},
 ]
 
 [package.dependencies]
@@ -1367,35 +1367,40 @@ httpx = ">=0.22"
 jinja2 = {version = ">=3.1.2", optional = true, markers = "extra == \"jinja\" or extra == \"standard\" or extra == \"full\""}
 jsbeautifier = {version = "*", optional = true, markers = "extra == \"cli\" or extra == \"standard\" or extra == \"full\""}
 mako = ">=1.2.4"
-msgspec = "*"
+msgspec = ">=0.16.0"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = {version = "*", optional = true, markers = "extra == \"opentelemetry\" or extra == \"full\""}
-polyfactory = ">=2"
+polyfactory = ">=2.3.2"
+prometheus-client = {version = "*", optional = true, markers = "extra == \"prometheus\" or extra == \"full\""}
 pydantic = "<2"
+python-dateutil = {version = "*", optional = true, markers = "extra == \"attrs\" or extra == \"full\""}
 python-jose = {version = "*", optional = true, markers = "extra == \"jwt\" or extra == \"full\""}
 pytimeparse = {version = "*", optional = true, markers = "extra == \"attrs\" or extra == \"full\""}
 pyyaml = "*"
-redis = {version = ">=4.4.4,<4.5.0 || >4.5.0,<4.5.1 || >4.5.1,<4.5.2 || >4.5.2,<4.5.3 || >4.5.3", extras = ["hiredis"], optional = true, markers = "extra == \"redis\" or extra == \"full\""}
+redis = {version = ">=4.4.4,<4.5.0 || >4.5.0,<4.5.1 || >4.5.1,<4.5.2 || >4.5.2,<4.5.3 || >4.5.3,<4.5.5 || >4.5.5", extras = ["hiredis"], optional = true, markers = "extra == \"redis\" or extra == \"full\""}
 rich = {version = ">=13.0.0", optional = true, markers = "extra == \"cli\" or extra == \"standard\" or extra == \"full\""}
-sqlalchemy = {version = ">=2.0.4", optional = true, markers = "extra == \"sqlalchemy\" or extra == \"full\""}
+sqlalchemy = {version = ">=2.0.12", optional = true, markers = "extra == \"sqlalchemy\" or extra == \"full\""}
 structlog = {version = "*", optional = true, markers = "extra == \"structlog\" or extra == \"full\""}
 typing-extensions = "*"
-uvicorn = {version = ">=0.21.1,<0.22.0", extras = ["standard"], optional = true, markers = "extra == \"cli\" or extra == \"standard\" or extra == \"full\""}
+uvicorn = {version = ">=0.22.0", extras = ["standard"], optional = true, markers = "extra == \"cli\" or extra == \"standard\" or extra == \"full\""}
 
 [package.extras]
+annotated-types = ["annotated-types"]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "jsbeautifier", "rich (>=13.0.0)", "uvicorn[standard] (>=0.21.1,<0.22.0)"]
+cli = ["click", "jsbeautifier", "rich (>=13.0.0)", "rich-click", "uvicorn[standard] (>=0.22.0)"]
 cryptography = ["cryptography"]
-full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2 (>=3.1.2)", "jsbeautifier", "opentelemetry-instrumentation-asgi", "python-jose", "pytimeparse", "redis[hiredis] (>=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3)", "rich (>=13.0.0)", "sqlalchemy (>=2.0.4)", "structlog", "uvicorn[standard] (>=0.21.1,<0.22.0)"]
+full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2 (>=3.1.2)", "jsbeautifier", "opentelemetry-instrumentation-asgi", "prometheus-client", "python-dateutil", "python-jose", "pytimeparse", "redis[hiredis] (>=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5)", "rich (>=13.0.0)", "sqlalchemy (>=2.0.12)", "structlog", "uvicorn[standard] (>=0.22.0)"]
 jinja = ["jinja2 (>=3.1.2)"]
 jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
-redis = ["redis[hiredis] (>=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3)"]
-sqlalchemy = ["alembic", "sqlalchemy (>=2.0.4)"]
-standard = ["click", "jinja2 (>=3.1.2)", "jsbeautifier", "rich (>=13.0.0)", "uvicorn[standard] (>=0.21.1,<0.22.0)"]
+prometheus = ["prometheus-client"]
+redis = ["redis[hiredis] (>=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5)"]
+sqlalchemy = ["alembic", "sqlalchemy (>=2.0.12)"]
+standard = ["click", "jinja2 (>=3.1.2)", "jsbeautifier", "rich (>=13.0.0)", "rich-click", "uvicorn[standard] (>=0.22.0)"]
 structlog = ["structlog"]
+tortoise-orm = ["tortoise-orm (>=0.17.0)"]
 
 [[package]]
 name = "mako"
@@ -1559,41 +1564,41 @@ motor = ["dnspython (>=2.3.0)", "motor (>=3.0.0)"]
 
 [[package]]
 name = "msgspec"
-version = "0.14.2"
+version = "0.17.0"
 description = "A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "msgspec-0.14.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8ed61cad6b20f0218a8d239294c4b30b4e82854871ba0434cf0d54497043bffe"},
-    {file = "msgspec-0.14.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a12e704786256431d559c2027d6135a64f2339f009118d97906709cd8409e7ac"},
-    {file = "msgspec-0.14.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2039451b22813af2fd5cbe99eaecfc318d64fcee5af0ce5b3d5cce12427d24cd"},
-    {file = "msgspec-0.14.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:57a79cfa306fda2c66f4fc7eb72836c0f78fd9a6d748d028960b387797f0381b"},
-    {file = "msgspec-0.14.2-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:87c4cd1bb197be11f89ad779038c8989d6ffcb8b360705107f034e4d2783c0a6"},
-    {file = "msgspec-0.14.2-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:b965c14851f146537f1b732cd2ed16c38e0c59662f23b72d396aee21e81aed4f"},
-    {file = "msgspec-0.14.2-cp310-cp310-win_amd64.whl", hash = "sha256:4f13e47803aedbb32c9375317fedbd20af3397dc024d311eebdc635c07f6f908"},
-    {file = "msgspec-0.14.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:a0a3908309581e4e632457fac1938fec7fd84121396ddab6ddca37784e6db068"},
-    {file = "msgspec-0.14.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:d03861f0d271b696faefb1a885ea0c7dc7db70baaa05c7f18086f2b9085d1cb8"},
-    {file = "msgspec-0.14.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8b8a766b9f3e7f87946965a8ffc6e72f7a3ec8d031b3168df16762bfd3d03205"},
-    {file = "msgspec-0.14.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:580464c7ca5c47a1422973c853301bbfd3d1a4184bdb6bddb73b5df094d8fc55"},
-    {file = "msgspec-0.14.2-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:26bcb3a69b348be2757ab19e86038e586920522a99d49d358c12890fbcfb6aa8"},
-    {file = "msgspec-0.14.2-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:59491de3566c7789bdb0a152f305e150a6ba3e825af471680b05a029a664a89a"},
-    {file = "msgspec-0.14.2-cp311-cp311-win_amd64.whl", hash = "sha256:3288b65ee7c78d08f32003a8b5ca72fff12c6a7400bd35f9d65630c9d58efce2"},
-    {file = "msgspec-0.14.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:1fc99f0929fa91cc53fa35f59be366d67f116c2b7f0f3b29dc60e3179f6fb205"},
-    {file = "msgspec-0.14.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:587371a65798a0f0182d0a7a4b7c4b87a5f46e25e8821c6474b3f717dcfcad14"},
-    {file = "msgspec-0.14.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:03ddc8c518afbea4fb89afb587d77f11d00909f003966d437f31fb8fffdfac28"},
-    {file = "msgspec-0.14.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f97006b9c9e24e9677fb84f43586fb4d03a72eb426199656a1c24775c62b9fe4"},
-    {file = "msgspec-0.14.2-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:d469aede5d986223d6ec9a8d0713156f96fd6b427b12e14f81d26627a47687b9"},
-    {file = "msgspec-0.14.2-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:d85e9bfd1441216010c084626d968e96a3d88d762959c5eb430de62076cd7fe9"},
-    {file = "msgspec-0.14.2-cp38-cp38-win_amd64.whl", hash = "sha256:78361dadef4b993b8c4a887d3d267b89b0ea0846259eadf2fe993659e4dbf9c8"},
-    {file = "msgspec-0.14.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:94fc3d9a8835f18c18b48fdf49f7d445184061bfbc457a6623a4eb1f74ebe806"},
-    {file = "msgspec-0.14.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:1c8f7e631fad9d5a33fcfb0f2a27eb86dc0390e91d6b51c95a604b7ccbc264f1"},
-    {file = "msgspec-0.14.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7e50885274e2041e49ec5d7cce8e59768f599c27dfb4c046edaf9ab25b1fddc2"},
-    {file = "msgspec-0.14.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eee59e73982ca0d730f8d4e8fb5f01da9fa466490dea43ea1bcfa23b8a8bbc0d"},
-    {file = "msgspec-0.14.2-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:ff7c987330e2be62eb8811bc2da33507e8edeb761f4fd343f2fa5fdafce4f989"},
-    {file = "msgspec-0.14.2-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:decd1d2015d340ebfd58f29ed2916e118ca255b6a94fc1787a236a2654dfd8ff"},
-    {file = "msgspec-0.14.2-cp39-cp39-win_amd64.whl", hash = "sha256:8927efaf506e5a8f9ffe76602e08d30a80c19b38d50a7e783887c317573ecd80"},
-    {file = "msgspec-0.14.2.tar.gz", hash = "sha256:907ed4305a97b50248e6b86e79ddc8edcf9b718eab0c93a6b46d673c5edbe3a4"},
+    {file = "msgspec-0.17.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c7bb4fa0021198cc87ece9fd4cbaa7241782f6c1d7b4fab71bb59c30e83c95c8"},
+    {file = "msgspec-0.17.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:7ab367dd0b8a8c989d295e8ef086305e41a3c73fa3208322da4826f04e24b3c5"},
+    {file = "msgspec-0.17.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cccef9b4216c28f470855540d2649cbcf9eefd74c17984259ed3cbbaaa818c5d"},
+    {file = "msgspec-0.17.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9fb9f68ae2068a96b29d92cc4d142440e616b0a077b53a68b3445c62a2f31edc"},
+    {file = "msgspec-0.17.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:3adc3f4016aa5ea1bd51c8d5c2a38172f1965dd231e03defed04ff2a0effb361"},
+    {file = "msgspec-0.17.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:98995159d95b4ed65c8cc185bd877fec67f41cb23925237a82efb066ef778fa8"},
+    {file = "msgspec-0.17.0-cp310-cp310-win_amd64.whl", hash = "sha256:7e7e016cd79dc12935b6f5e8ff358ea5908cb84756c84a9fa2f3d8e5405740f3"},
+    {file = "msgspec-0.17.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:c1a0c8390014ee2b65d0d36d9cc28e74092166e8f44adf3dcb85e1ef25933787"},
+    {file = "msgspec-0.17.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:f8096ca82e9a3e6fa09106bfac27eb8296c4cead02fdd297bb8af87254e58bad"},
+    {file = "msgspec-0.17.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:025986a5b1fd81c3dd1bb591bbc01ac03844b57685fcf4a14ed07ae1967b6d03"},
+    {file = "msgspec-0.17.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4b0c52118aec347d15f75354b2fa27f1c9cd29b6ec12b74ef2ef988a0d702f5d"},
+    {file = "msgspec-0.17.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:86ca5710174970d9aeefc2ced4fcc4a27f5ff065840356cf1c747399aa4ad5a8"},
+    {file = "msgspec-0.17.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:3d39dc3a44a479f35afcc21d97c4ea90a385afee0b766c7780ca2bda99480e3c"},
+    {file = "msgspec-0.17.0-cp311-cp311-win_amd64.whl", hash = "sha256:79c3ab0bac7dd6492f6c03e347f0e9e5187d9658b8e7c85fdc96dd4820de970b"},
+    {file = "msgspec-0.17.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:832e841d17bc2b4d74eee6aa16c818074cc9104c9a79466dbd49162600af8e9b"},
+    {file = "msgspec-0.17.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:80021321fea9be9e03c7675f6bdce06d9c91dbfb4aec78044cd243491ed49fa9"},
+    {file = "msgspec-0.17.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:51aec8ae03348525749f4eff4ed59fc7369383877ad65e0f00de3e357c4ecfa6"},
+    {file = "msgspec-0.17.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:93fcff4e7923050cbfb3be8b4763a95862c3bf35d198684f3ebc3c486a1f66a5"},
+    {file = "msgspec-0.17.0-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:396908a124f633c3e267ec01b5bffdbefd592b15ddfda63c1af798e0102c35c8"},
+    {file = "msgspec-0.17.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:23581f8c1ffa488c2c3c78359868ee408528dad5e02af94e87e8d4773d118399"},
+    {file = "msgspec-0.17.0-cp38-cp38-win_amd64.whl", hash = "sha256:bc3f9fbb3d127a0c9734d43870b565a809c1fe2a0913d04170fa1222dfb131dc"},
+    {file = "msgspec-0.17.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:556413e59a8017c12a177218b3d3c16bb7217dc0371853b61e4c98df19515088"},
+    {file = "msgspec-0.17.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:de90a979e48e95ab6175a59f3f256a88984ff599edd5d3948993dfd6ecff83d0"},
+    {file = "msgspec-0.17.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ce2a7da8669887b17bed92d3143aa0cc936fabdadcdd43c9ed09cfaca71a2fc5"},
+    {file = "msgspec-0.17.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0aded9cd083d3a966610b6b01787106fa6aab495486420163a7b872704767da0"},
+    {file = "msgspec-0.17.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:b5e49b9a302acee0808466b1af31c675d7cf8fd5ee78874109b5a44cb40c67e8"},
+    {file = "msgspec-0.17.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:59ab1e250a84516413dee3542ff2b43f46fe521adfdc01e628198ce94553ff1e"},
+    {file = "msgspec-0.17.0-cp39-cp39-win_amd64.whl", hash = "sha256:5f1b7c9d9f41b8c7724dc206aadbbe84d1641d20a1ff6dab04f0caf2a5bfd438"},
+    {file = "msgspec-0.17.0.tar.gz", hash = "sha256:4e2f2faeeb7aef5c2e4c78e375443134238ee966e54bba75cdb1936939673da7"},
 ]
 
 [package.extras]
@@ -1770,14 +1775,14 @@ files = [
 
 [[package]]
 name = "polyfactory"
-version = "2.1.0"
+version = "2.6.2"
 description = "Mock data generation factories"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "polyfactory-2.1.0-py3-none-any.whl", hash = "sha256:fba3112f9e159cf9ce8e100f780e04ca9d6093d0c0ffd375531676d7fbb098be"},
-    {file = "polyfactory-2.1.0.tar.gz", hash = "sha256:cfb25eeba1e841d642ffe5eb9471ce8cdd87603478884f50fd6864098a2103d8"},
+    {file = "polyfactory-2.6.2-py3-none-any.whl", hash = "sha256:becdae6720a6df87fb1aa738ba8fa5c26982d72040eb73bf7d938be2637c35b3"},
+    {file = "polyfactory-2.6.2.tar.gz", hash = "sha256:a71016770b643c3bbc26c439cffea13b8510827d6e9e40a857783f8242cb1d8f"},
 ]
 
 [package.dependencies]
@@ -1785,9 +1790,25 @@ faker = "*"
 typing-extensions = "*"
 
 [package.extras]
-beanie = ["beanie[beanie]", "pydantic[beanie,odmantic,pydantic]"]
-odmantic = ["odmantic[odmantic]", "pydantic[beanie,odmantic,pydantic]"]
-pydantic = ["pydantic[beanie,odmantic,pydantic]"]
+beanie = ["beanie", "pydantic"]
+msgspec = ["msgspec"]
+odmantic = ["odmantic", "pydantic"]
+pydantic = ["pydantic"]
+
+[[package]]
+name = "prometheus-client"
+version = "0.17.1"
+description = "Python client for the Prometheus monitoring system."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "prometheus_client-0.17.1-py3-none-any.whl", hash = "sha256:e537f37160f6807b8202a6fc4764cdd19bac5480ddd3e0d463c3002b34462101"},
+    {file = "prometheus_client-0.17.1.tar.gz", hash = "sha256:21e674f39831ae3f8acde238afd9a27a37d0d2fb5a28ea094f0ce25d2cbf2091"},
+]
+
+[package.extras]
+twisted = ["twisted"]
 
 [[package]]
 name = "pyasn1"
@@ -2131,14 +2152,14 @@ files = [
 
 [[package]]
 name = "redis"
-version = "4.5.5"
+version = "4.6.0"
 description = "Python client for Redis database and key-value store"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "redis-4.5.5-py3-none-any.whl", hash = "sha256:77929bc7f5dab9adf3acba2d3bb7d7658f1e0c2f1cafe7eb36434e751c471119"},
-    {file = "redis-4.5.5.tar.gz", hash = "sha256:dc87a0bdef6c8bfe1ef1e1c40be7034390c2ae02d92dcd0c7ca1729443899880"},
+    {file = "redis-4.6.0-py3-none-any.whl", hash = "sha256:e2b03db868160ee4591de3cb90d40ebb50a90dd302138775937f6a42b7ed183c"},
+    {file = "redis-4.6.0.tar.gz", hash = "sha256:585dc516b9eb042a619ef0a39c3d7d55fe81bdb4df09a52c9cdde0d07bf1aa7d"},
 ]
 
 [package.dependencies]
@@ -2865,14 +2886,14 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.21.1"
+version = "0.23.0"
 description = "The lightning-fast ASGI server."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "uvicorn-0.21.1-py3-none-any.whl", hash = "sha256:e47cac98a6da10cd41e6fd036d472c6f58ede6c5dbee3dbee3ef7a100ed97742"},
-    {file = "uvicorn-0.21.1.tar.gz", hash = "sha256:0fac9cb342ba099e0d582966005f3fdba5b0290579fed4a6266dc702ca7bb032"},
+    {file = "uvicorn-0.23.0-py3-none-any.whl", hash = "sha256:479599b2c0bb1b9b394c6d43901a1eb0c1ec72c7d237b5bafea23c5b2d4cdf10"},
+    {file = "uvicorn-0.23.0.tar.gz", hash = "sha256:d38ab90c0e2c6fe3a054cddeb962cfd5d0e0e6608eaaff4a01d5c36a67f3168c"},
 ]
 
 [package.dependencies]
