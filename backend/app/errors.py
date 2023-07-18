@@ -27,6 +27,8 @@ class ErrorCodes(Enum):
     too_many_files = 2015
     blake2_invalid = 2016
     survey_not_found = 2017
+    survey_already_submitted = 2018
+    survey_proxy_block = 2019
 
 
 class SurveyNotFoundException(NotFoundException):
@@ -186,4 +188,24 @@ class PublishedWarrantNotFoundException(NotFoundException):
         super().__init__(
             detail="Published warrant not found",
             extra={ERROR_CODE_KEY: ErrorCodes.warrant_not_found.value},
+        )
+
+
+class SurveyAlreadySubmittedException(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Survey has already been submitted",
+            extra={ERROR_CODE_KEY: ErrorCodes.survey_already_submitted.value},
+        )
+
+
+class SurveyProxyBlockException(ValidationException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Proxies aren't allowed",
+            extra={ERROR_CODE_KEY: ErrorCodes.survey_proxy_block.value},
         )

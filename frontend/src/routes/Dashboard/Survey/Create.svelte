@@ -21,6 +21,7 @@
         type encryptedData,
     } from "../../../lib/crypto/secretKey";
     import signatures from "../../../lib/crypto/signatures";
+    import { localToUtc } from "../../../lib/date";
 
     let lastQuestionIdId = 0;
     let surveyTitle = "Untitled survey";
@@ -30,8 +31,9 @@
     let publishingSurvey = false;
     let requireAccount = false;
     let proxyBlock = false;
-    let allowMultipleSubmissions = false;
+    let allowMultipleSubmissions = true;
     let requireCaptcha = false;
+    let surveyCloses: Date | null = null;
     let surveyTheme = import.meta.env.VITE_THEME;
 
     addQuestion();
@@ -218,6 +220,9 @@
             requires_login: requireAccount,
             requires_captcha: requireCaptcha,
             hex_color: surveyTheme.replace("#", ""),
+            closed: surveyCloses
+                ? localToUtc(surveyCloses).format()
+                : undefined,
             signature: "",
         };
 
@@ -308,6 +313,11 @@
                     </label>
                 </li>
             </ul>
+
+            <div class="field label border" style="margin: 1em 0;">
+                <input bind:value={surveyCloses} type="date" class="active" />
+                <label class="active" for="date">Survey closes</label>
+            </div>
 
             <label class="color">
                 <input

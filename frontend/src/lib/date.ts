@@ -16,3 +16,7 @@ export function relativeDate(date: string | number | Date | dayjs.Dayjs): string
   }
   return localDate.fromNow();
 }
+
+export function localToUtc(date: string | number | Date | dayjs.Dayjs): dayjs.Dayjs {
+  return dayjs(date).utc();
+}

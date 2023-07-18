@@ -5,9 +5,12 @@
 import type { DocumentCanaryWarrantModel } from './DocumentCanaryWarrantModel';
 
 export type PublishedCanaryWarrantModel = {
-    _id: any;
+    id: any;
     next_canary: string;
     issued: string;
+    /**
+     * Hash signature, base64 encoded
+     */
     signature: string;
     btc_latest_block: string;
     statement?: string;

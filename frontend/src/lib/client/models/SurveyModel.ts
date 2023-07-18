@@ -17,14 +17,19 @@ export type SurveyModel = {
     requires_login?: boolean;
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
+    closed?: (boolean | string);
     requires_captcha?: boolean;
     hex_color?: (null | string);
+    /**
+     * Encryption algorithms used for survey
+     */
     algorithms?: string;
     sign_keypair: SurveySignKeyPairModel;
     secret_key: SurveySecretKeyModel;
     keypair: SurveyKeypairModel;
     created: string;
-    _id: any;
+    id: any;
     user_id: any;
+    ip_salt?: (null | string);
 };
 

@@ -9,6 +9,7 @@ from litestar import Controller, Request, Response, Router, delete, get, post, p
 from litestar.contrib.jwt import Token
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
+from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.params import Body
 
 from app.env import SETTINGS
@@ -42,7 +43,12 @@ if TYPE_CHECKING:
     from custom_types import State
 
 
-@post(path="/create", description="Create a canary for a given domain", tags=["canary"])
+@post(
+    path="/create",
+    description="Create a canary for a given domain",
+    tags=["canary"],
+    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
+)
 async def create_canary(
     data: CreateCanaryModel, state: "State", request: Request[ObjectId, Token, Any]
 ) -> CanaryModel:
@@ -83,7 +89,6 @@ async def create_canary(
     "/list",
     description="List canaries for user",
     tags=["canary"],
-    cache=120,
     cache_key_builder=logged_in_user_key_builder,
 )
 async def list_canaries(
@@ -113,6 +118,7 @@ async def list_trusted_canaries(
     description="Get a canary warrant",
     tags=["canary", "warrant"],
     exclude_from_auth=True,
+    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
 )
 async def published_warrant(
     state: "State", canary_id: str, page: int = 0
@@ -140,6 +146,7 @@ class PublishCanary(Controller):
         "/document/{hash_:str}",
         description="Upload a canary warrant document",
         tags=["canary", "warrant", "document"],
+        middleware=[RateLimitConfig(rate_limit=("minute", 30)).middleware],
     )
     async def upload_document(
         self,
@@ -409,6 +416,7 @@ class CanaryController(Controller):
         cache=60,
         description="Verify domain ownership via DNS",
         tags=["canary"],
+        middleware=[RateLimitConfig(rate_limit=("minute", 4)).middleware],
     )
     async def verify(
         self, domain: str, request: Request[ObjectId, Token, Any], state: "State"

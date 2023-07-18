@@ -11,6 +11,6 @@ export type SessionModel = {
     location: SessionLocationModel;
     device?: (null | string);
     user_id: any;
-    _id: any;
+    id: any;
 };
 

@@ -14,9 +14,15 @@ export type CreateUserModel = {
     sign_keypair: AccountEd25199Modal;
     keychain: AccountKeychainModal;
     kdf: Argon2Modal;
+    /**
+     * Locally signed with ed25519 private key to validate account data hasn't been changed. Base64 encoded
+     */
     signature: string;
     email: string;
     ip_lookup_consent?: boolean;
+    /**
+     * Algorithms used by client.
+     */
     algorithms?: string;
 };
 

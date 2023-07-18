@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type CreatedCanaryWarrantModel = {
-    _id: any;
+    id: any;
     next_canary: string;
     issued: string;
 };

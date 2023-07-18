@@ -117,7 +117,8 @@ class __SurveySharedModel(BaseModel):
     signature: str = Field(..., max_length=128)
     requires_login: bool = False
     proxy_block: bool = False
-    allow_multiple_submissions: bool = False
+    allow_multiple_submissions: bool = True
+    closed: Union[bool, datetime] = False
     requires_captcha: bool = False
     hex_color: Optional[str] = Field(None, max_length=6, regex=r"^[0-9a-fA-F]{6}$")
     algorithms: str = Field(
@@ -153,6 +154,7 @@ class SurveyModel(SurveyPublicModel, SurveyCreateModel):
     sign_keypair: SurveySignKeyPairModel
     keypair: SurveyKeypairModel
     secret_key: SurveySecretKeyModel
+    ip_salt: Optional[str] = Field(None, max_length=256)
 
 
 class SurveyAnswerModel(BaseModel):

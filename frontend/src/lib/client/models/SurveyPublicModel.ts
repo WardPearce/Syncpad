@@ -16,11 +16,15 @@ export type SurveyPublicModel = {
     requires_login?: boolean;
     proxy_block?: boolean;
     allow_multiple_submissions?: boolean;
+    closed?: (boolean | string);
     requires_captcha?: boolean;
     hex_color?: (null | string);
+    /**
+     * Encryption algorithms used for survey
+     */
     algorithms?: string;
     created: string;
-    _id: any;
+    id: any;
     user_id: any;
     sign_keypair: SurveySignPublicKeyModel;
     keypair: SurveyPublicKeyModel;

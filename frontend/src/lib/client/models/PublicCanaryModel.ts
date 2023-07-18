@@ -8,9 +8,12 @@ export type PublicCanaryModel = {
     domain: string;
     about: string;
     signature: string;
+    /**
+     * Algorithms used for canary
+     */
     algorithms?: string;
     hex_color?: (null | string);
-    _id: any;
+    id: any;
     logo?: (null | string);
     user_id: any;
     created: string;

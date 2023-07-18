@@ -8,6 +8,9 @@ export type CreateCanaryModel = {
     domain: string;
     about: string;
     signature: string;
+    /**
+     * Algorithms used for canary
+     */
     algorithms?: string;
     hex_color?: (null | string);
     keypair: CanaryEd25519Model;

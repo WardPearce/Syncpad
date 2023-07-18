@@ -35,6 +35,7 @@ label.color {
     display: flex !important;
     align-items: center !important;
     font-size: .875rem;
+    margin-top: .4em;
 }
 
 label.color span {

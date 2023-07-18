@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type DocumentCanaryWarrantModel = {
-    hash: string;
+    hash_: string;
     filename: string;
     download_url?: string;
     file_id: string;

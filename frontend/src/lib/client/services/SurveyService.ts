@@ -14,28 +14,6 @@ export class SurveyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * PublicSurvey
-     * Get a survey
-     * @param surveyId
-     * @returns SurveyPublicModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersSurveySurveyIdPublicPublicSurvey(
-        surveyId: string,
-    ): CancelablePromise<SurveyPublicModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/survey/{survey_id}/public',
-            path: {
-                'survey_id': surveyId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * SubmitSurvey
      * Submit answers to a survey
      * @param surveyId
@@ -60,6 +38,28 @@ export class SurveyService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicSurvey
+     * Get a survey
+     * @param surveyId
+     * @returns SurveyPublicModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdPublicPublicSurvey(
+        surveyId: string,
+    ): CancelablePromise<SurveyPublicModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}/public',
+            path: {
+                'survey_id': surveyId,
+            },
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

@@ -206,7 +206,8 @@
     }
 
     async function determineSubmitPrompt() {
-        if (survey.proxy_block) showSubmitDialog = true;
+        if (survey.proxy_block || !survey.allow_multiple_submissions)
+            showSubmitDialog = true;
         else await submit();
     }
 </script>
@@ -238,13 +239,24 @@
 {:else}
     <dialog class:active={showSubmitDialog} class="large-width">
         <h5>Important privacy note</h5>
-        <p>
-            This survey processes your IP on submission to ensure you aren't
-            using a proxy or VPN regardless of your account IP processing
-            preference. Your IP is not stored after processing by {import.meta
-                .env.VITE_SITE_NAME}. Please contact the survey owner if you
-            wish to disable this.
-        </p>
+        {#if survey.proxy_block}
+            <p>
+                This survey processes your IP on submission to ensure you aren't
+                using a proxy or VPN regardless of your account IP processing
+                preference. Your IP is not stored after processing by {import.meta
+                    .env.VITE_SITE_NAME}. Please contact the survey owner if you
+                wish to disable this.
+            </p>
+        {/if}
+        {#if !survey.allow_multiple_submissions}
+            <p>
+                This survey only allows one submission per account. A salted
+                hash of your IP address will be stored in {import.meta.env
+                    .VITE_SITE_NAME} for 24 hours to ensure you can't submit the
+                survey again. Please contact the survey owner if you wish to disable
+                this.
+            </p>
+        {/if}
         <nav class="right-align">
             <button on:click={() => (showSubmitDialog = false)} class="border"
                 >Cancel</button

@@ -1,15 +1,23 @@
-from datetime import datetime
+import hashlib
+from datetime import date, datetime, timedelta
+from secrets import token_urlsafe
 from typing import TYPE_CHECKING, Any, List, Optional
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from litestar import Request, Router
+from litestar import Request, Response, Router
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import get, post
+from litestar.middleware.rate_limit import RateLimitConfig
 
-from app.errors import InvalidAccountAuth, SurveyNotFoundException
+from app.errors import (
+    InvalidAccountAuth,
+    SurveyAlreadySubmittedException,
+    SurveyNotFoundException,
+    SurveyProxyBlockException,
+)
 from app.lib.geoip import GeoIp
 from app.lib.jwt import jwt_cookie_auth
 from app.lib.key_bulders import logged_in_user_key_builder
@@ -27,11 +35,18 @@ from app.models.survey import (
 )
 
 
-@post("/create", description="Create a survey")
+@post(
+    "/create",
+    description="Create a survey",
+    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
+)
 async def create_survey(
     request: Request[ObjectId, Token, Any], data: SurveyCreateModel, state: "State"
 ) -> SurveyModel:
     insert = {**data.dict(), "created": datetime.utcnow(), "user_id": request.user}
+    if not data.allow_multiple_submissions:
+        insert["ip_salt"] = token_urlsafe(16)
+
     await state.mongo.survey.insert_one(insert)
     return SurveyModel(**insert)
 
@@ -39,7 +54,6 @@ async def create_survey(
 @get(
     "/list",
     description="List surveys",
-    cache=120,
     cache_key_builder=logged_in_user_key_builder,
 )
 async def list_surveys(
@@ -62,13 +76,19 @@ class SurveyController(Controller):
         survey_id: str,
         data: SubmitSurveyModel,
         captcha: Optional[str] = None,
-    ) -> None:
+    ) -> Response:
         try:
             id_ = ObjectId(survey_id)
         except InvalidId:
             raise SurveyNotFoundException()
 
         survey = await Survey(state, id_).get()
+
+        if isinstance(survey.closed, bool):
+            if survey.closed:
+                raise SurveyNotFoundException()
+        elif datetime.utcnow() > survey.closed:
+            raise SurveyNotFoundException()
 
         if survey.requires_captcha:
             await validate_captcha(state, captcha)
@@ -88,17 +108,48 @@ class SurveyController(Controller):
         elif survey.requires_login:
             raise InvalidAccountAuth()
 
+        response = Response(None)
+
         if not survey.allow_multiple_submissions:
-            pass
+            if request.cookies.get(survey_id) is not None:
+                raise SurveyAlreadySubmittedException()
+
+            response.set_cookie(survey_id, "true")
+
+            if request.client and request.client.host and survey.ip_salt:
+                ip_hash = hashlib.sha256(
+                    (request.client.host + survey.ip_salt).encode()
+                ).hexdigest()
+
+                if (
+                    await state.mongo.survey_blocker.count_documents(
+                        {
+                            "survey_id": id_,
+                            "ip_hash": ip_hash,
+                        }
+                    )
+                    > 0
+                ):
+                    raise SurveyAlreadySubmittedException()
+
+                await state.mongo.survey_blocker.insert_one(
+                    {
+                        "survey_id": id_,
+                        "ip_hash": ip_hash,
+                        "expires": datetime.utcnow() + timedelta(hours=24),
+                    }
+                )
 
         if survey.proxy_block and request.client and request.client.host:
             geoip_lookup = await GeoIp(state, request.client.host).get()
             if geoip_lookup and geoip_lookup["proxy"] == "yes":
-                pass
+                raise SurveyProxyBlockException()
 
         await Survey(state, id_).submit_answers(data, user_id=user_id)
 
-    @get("/public", cache=120, description="Get a survey", exclude_from_auth=True)
+        return response
+
+    @get("/public", description="Get a survey", exclude_from_auth=True)
     async def public_survey(
         self,
         state: "State",
@@ -111,6 +162,12 @@ class SurveyController(Controller):
             raise SurveyNotFoundException()
 
         survey = await Survey(state, id_).public()
+
+        if isinstance(survey.closed, bool):
+            if survey.closed:
+                raise SurveyNotFoundException()
+        elif datetime.utcnow() > survey.closed:
+            raise SurveyNotFoundException()
 
         if survey.requires_login:
             if jwt_cookie_auth.key not in request.cookies:

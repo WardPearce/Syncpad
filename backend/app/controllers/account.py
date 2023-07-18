@@ -11,6 +11,7 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.handlers import get, post
+from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.response import Redirect
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
@@ -122,6 +123,7 @@ class LoginController(Controller):
         tags=["account"],
         raises=[InvalidCaptcha, InvalidAccountAuth],
         exclude_from_auth=True,
+        middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
     )
     async def login(
         self,
@@ -292,6 +294,7 @@ async def password_reset(
     tags=["account"],
     status_code=201,
     exclude_from_auth=True,
+    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
 )
 async def create_account(
     state: "State", captcha: str, data: CreateUserModel

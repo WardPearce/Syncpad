@@ -3,6 +3,9 @@
 /* eslint-disable */
 
 export type PublishCanaryWarrantModel = {
+    /**
+     * Hash signature, base64 encoded
+     */
     signature: string;
     btc_latest_block: string;
     statement?: string;

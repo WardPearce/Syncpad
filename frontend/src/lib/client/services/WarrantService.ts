@@ -76,7 +76,7 @@ export class WarrantService {
     public controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
         warrantId: string,
         hash: string,
-        formData: Array<Blob>,
+        formData: Array<string>,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',

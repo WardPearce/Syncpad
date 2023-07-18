@@ -52,6 +52,9 @@ async def init_mongo(app_config: "AppConfig") -> None:
     await app_config.state.mongo.email_verification.create_index(
         "expires", expireAfterSeconds=0
     )
+    await app_config.state.mongo.survey_blocker.create_index(
+        "expires", expireAfterSeconds=0
+    )
     await app_config.state.mongo.canary_warrant.create_index(
         "issued",
         expireAfterSeconds=10800,  # 3 hours
