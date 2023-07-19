@@ -1,7 +1,7 @@
 import hashlib
 from datetime import date, datetime, timedelta
 from secrets import token_urlsafe
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any, AsyncGenerator, List, Optional
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -11,6 +11,7 @@ from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import get, post
 from litestar.middleware.rate_limit import RateLimitConfig
+from litestar.response import Stream
 
 from app.errors import (
     InvalidAccountAuth,
@@ -68,6 +69,28 @@ async def list_surveys(
 
 class SurveyController(Controller):
     path = "/{survey_id:str}"
+
+    @get("/responses/stream", description="Stream survey responses")
+    async def stream_responses(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        survey_id: str,
+    ) -> Stream:
+        try:
+            id_ = ObjectId(survey_id)
+        except InvalidId:
+            raise SurveyNotFoundException()
+
+        survey = Survey(state, id_)
+
+        await survey.user(request.user).exists()
+
+        async def stream() -> AsyncGenerator[bytes, None]:
+            async for answer in survey.stream_answers():
+                yield (answer.json(by_alias=True) + "\n").encode()
+
+        return Stream(stream)
 
     @post("/submit", description="Submit answers to a survey", exclude_from_auth=True)
     async def submit_survey(
@@ -169,7 +192,7 @@ class SurveyController(Controller):
             if geoip_lookup and geoip_lookup["proxy"] == "yes":
                 raise SurveyProxyBlockException()
 
-        await Survey(state, id_).submit_answers(data, user_id=user_id)
+        await Survey(state, id_).submit(data, user_id=user_id)
 
         return response
 

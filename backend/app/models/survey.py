@@ -174,3 +174,9 @@ class SurveyAnswerModel(BaseModel):
 
 class SubmitSurveyModel(BaseModel):
     answers: List[SurveyAnswerModel] = Field(..., min_items=1, max_items=128)
+
+
+class SurveyResultModel(SurveyAnswerModel):
+    survey_id: ObjectId
+    user_id: ObjectId
+    created: datetime
