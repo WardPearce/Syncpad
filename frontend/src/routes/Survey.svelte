@@ -6,24 +6,18 @@
     import PageLoading from "../components/PageLoading.svelte";
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
-    import { normalizeSurveyQuestions } from "../components/Survey/helpers";
-    import {
-        type rawChoice,
-        type rawQuestion,
-    } from "../components/Survey/types";
     import apiClient from "../lib/apiClient";
     import type { SurveyAnswerModel, SurveyPublicModel } from "../lib/client";
     import { base64Decode } from "../lib/crypto/codecUtils";
     import hash from "../lib/crypto/hash";
     import publicKey from "../lib/crypto/publicKey";
     import secretKey from "../lib/crypto/secretKey";
-    import signatures from "../lib/crypto/signatures";
+    import {
+        decryptSurveyQuestions,
+        validateSurvey,
+        type RawSurvey,
+    } from "../lib/survey";
     import { localSecrets } from "../stores";
-
-    interface rawQuestionAnswer extends rawQuestion {
-        answer: number | number[] | string | null;
-        error: string | null;
-    }
 
     export let surveyId: string;
     export let signPublicKeyHash: string;
@@ -33,10 +27,8 @@
     let surveyLoading = true;
 
     let survey: SurveyPublicModel;
+    let rawSurvey: RawSurvey;
 
-    let rawTitle: string;
-    let rawDescription: string | undefined;
-    let rawQuestions: rawQuestionAnswer[] = [];
     let rawPublicKey: Uint8Array;
     let rawSignPublicKey: Uint8Array;
 
@@ -96,33 +88,8 @@
             return;
         }
 
-        const toValidate: Record<string, any> = {
-            title: {
-                cipher_text: survey.title.cipher_text,
-                iv: survey.title.iv,
-            },
-            questions: normalizeSurveyQuestions(survey.questions),
-            keypair: {
-                public_key: {
-                    cipher_text: survey.keypair.public_key.cipher_text,
-                    iv: survey.keypair.public_key.iv,
-                },
-            },
-        };
-
-        if (survey.description) {
-            toValidate.description = {
-                cipher_text: survey.description.cipher_text,
-                iv: survey.description.iv,
-            };
-        }
-
         try {
-            signatures.validateHash(
-                rawSignPublicKey,
-                survey.signature,
-                JSON.stringify(toValidate)
-            );
+            validateSurvey(rawSignPublicKey, survey);
         } catch {
             errorMsg = "Failed to validate survey signature";
             surveyLoading = false;
@@ -132,70 +99,7 @@
         if (survey.hex_color) await ui("theme", `#${survey.hex_color}`);
 
         try {
-            rawTitle = secretKey.decrypt(
-                rawKey,
-                survey.title.iv,
-                survey.title.cipher_text,
-                true
-            ) as string;
-
-            if (survey.description)
-                rawDescription = secretKey.decrypt(
-                    rawKey,
-                    survey.description.iv,
-                    survey.description.cipher_text,
-                    true
-                ) as string;
-
-            survey.questions.forEach((question) => {
-                let choices: rawChoice[] = [];
-                if (question.choices)
-                    question.choices.forEach((choice) => {
-                        choices.push({
-                            id: choice.id,
-                            choice: secretKey.decrypt(
-                                rawKey,
-                                choice.iv,
-                                choice.cipher_text,
-                                true
-                            ) as string,
-                        });
-                    });
-
-                let rawRegex: string | null = null;
-                if (question.regex) {
-                    rawRegex = secretKey.decrypt(
-                        rawKey,
-                        question.regex.iv,
-                        question.regex.cipher_text,
-                        true
-                    ) as string;
-                }
-
-                rawQuestions.push({
-                    answer: null,
-                    id: question.id,
-                    question: secretKey.decrypt(
-                        rawKey,
-                        question.question.iv,
-                        question.question.cipher_text,
-                        true
-                    ) as string,
-                    description: question.description
-                        ? (secretKey.decrypt(
-                              rawKey,
-                              question.description.iv,
-                              question.description.cipher_text,
-                              true
-                          ) as string)
-                        : null,
-                    required: question.required as boolean,
-                    type: question.type,
-                    choices: choices,
-                    regex: rawRegex,
-                    error: null,
-                });
-            });
+            rawSurvey = decryptSurveyQuestions(rawKey, survey);
         } catch {
             errorMsg = "Failed to decrypt survey";
             surveyLoading = false;
@@ -209,7 +113,7 @@
         const encryptedAnswers: SurveyAnswerModel[] = [];
         submissionError = false;
 
-        rawQuestions.forEach((question) => {
+        rawSurvey.questions.forEach((question) => {
             if (!question.answer) {
                 if (question.required) {
                     question.error = "This question is required";
@@ -257,7 +161,7 @@
         });
 
         if (submissionError) {
-            rawQuestions = [...rawQuestions];
+            rawSurvey.questions = [...rawSurvey.questions];
             return;
         }
 
@@ -402,9 +306,9 @@
             </div>
         {/if}
 
-        <Title title={rawTitle} description={rawDescription} />
+        <Title title={rawSurvey.title} description={rawSurvey.description} />
 
-        {#each rawQuestions as question}
+        {#each rawSurvey.questions as question}
             <Question {...question} bind:answer={question.answer} />
         {/each}
 

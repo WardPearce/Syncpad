@@ -1,5 +1,9 @@
 <script lang="ts">
+    import sodium from "libsodium-wrappers-sumo";
     import { onDestroy, onMount } from "svelte";
+
+    import PageLoading from "../../../components/PageLoading.svelte";
+    import Title from "../../../components/Survey/Submit/Title.svelte";
     import apiClient from "../../../lib/apiClient";
     import type {
         SurveyModel,
@@ -10,6 +14,11 @@
     import secretKey, {
         SecretkeyLocation,
     } from "../../../lib/crypto/secretKey";
+    import {
+        decryptSurveyQuestions,
+        validateSurvey,
+        type RawSurvey,
+    } from "../../../lib/survey";
 
     export let surveyId: string;
 
@@ -20,7 +29,10 @@
     }
 
     let survey: SurveyModel;
+    let rawSurvey: RawSurvey;
     let rawAnswers: RawAnswer[][][] = [];
+
+    let isLoading = true;
 
     let ws: WebSocket;
     let wsReconnect = true;
@@ -38,6 +50,8 @@
     }
 
     onMount(async () => {
+        isLoading = true;
+
         survey = await apiClient.survey.controllersSurveySurveyIdGetSurvey(
             surveyId
         );
@@ -62,6 +76,19 @@
             survey.keypair.private_key.cipher_text,
             false
         ) as Uint8Array;
+
+        const rawSignPrivateKey = secretKey.decrypt(
+            SecretkeyLocation.localKeychain,
+            survey.sign_keypair.iv,
+            survey.sign_keypair.cipher_text,
+            false
+        ) as Uint8Array;
+        const rawSignPublicKey =
+            sodium.crypto_sign_ed25519_sk_to_pk(rawSignPrivateKey);
+
+        validateSurvey(rawSignPublicKey, survey);
+
+        rawSurvey = decryptSurveyQuestions(rawSharedKey, survey);
 
         ws = createWs(true);
 
@@ -113,6 +140,8 @@
 
             rawAnswers.push([answers]);
         });
+
+        isLoading = false;
     });
 
     onDestroy(() => {
@@ -120,3 +149,11 @@
         ws.close();
     });
 </script>
+
+{#if isLoading}
+    <PageLoading />
+{:else}
+    <div class="center-questions">
+        <Title title={rawSurvey.title} description={rawSurvey.description} />
+    </div>
+{/if}
