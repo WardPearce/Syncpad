@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Mapping, Optional
 
 from bson import ObjectId
 
-from app.errors import SurveyNotFoundException
+from app.errors import SurveyNotFoundException, SurveyResultNotFoundException
 from app.models.survey import (
     SubmitSurveyModel,
     SurveyModel,
@@ -31,7 +31,19 @@ class SurveyUser:
 
         return survey
 
-    async def stream_answers(self) -> AsyncGenerator[SurveyResultModel, None]:
+    async def answer(self, page: int) -> SurveyResultModel:
+        result = await self._upper._state.mongo.survey_answer.find_one(
+            {"survey_id": self._upper._survey_id, "user_id": self._user_id},
+            sort=[("created", -1)],
+            skip=page,
+        )
+
+        if not result:
+            raise SurveyResultNotFoundException()
+
+        return SurveyResultModel(**result)
+
+    async def answers(self) -> AsyncGenerator[SurveyResultModel, None]:
         await self.exists()
 
         async for answer in self._upper._state.mongo.survey_answer.find(

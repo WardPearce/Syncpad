@@ -31,6 +31,7 @@ class ErrorCodes(Enum):
     survey_proxy_block = 2019
     survey_required_questions = 2020
     survey_invalid_question_id = 2021
+    survey_result_not_found = 2022
 
 
 class SurveyNotFoundException(NotFoundException):
@@ -230,4 +231,14 @@ class SurveyInvalidQuestionIds(ValidationException):
         super().__init__(
             detail="Invalid question ids",
             extra={ERROR_CODE_KEY: ErrorCodes.survey_invalid_question_id.value},
+        )
+
+
+class SurveyResultNotFoundException(NotFoundException):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__(
+            detail="Survey result not found",
+            extra={ERROR_CODE_KEY: ErrorCodes.survey_result_not_found.value},
         )

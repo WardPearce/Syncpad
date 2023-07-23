@@ -1,7 +1,11 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import apiClient from "../../../lib/apiClient";
-    import type { SurveyModel, SurveyQuestionModel } from "../../../lib/client";
+    import type {
+        SurveyModel,
+        SurveyQuestionModel,
+        SurveyResultModel,
+    } from "../../../lib/client";
     import publicKey from "../../../lib/crypto/publicKey";
     import secretKey, {
         SecretkeyLocation,
@@ -27,7 +31,7 @@
                 "http://",
                 ""
             ).replace(
-                "http://",
+                "https://",
                 ""
             )}/controllers/survey/64b891ac33bdfe6a9d418eb6/responses/realtime?pull_history=${pullHistory}`
         );
@@ -68,7 +72,9 @@
         });
 
         ws.addEventListener("message", (event) => {
-            const data = JSON.parse(JSON.parse(event.data));
+            const data = JSON.parse(
+                JSON.parse(event.data)
+            ) as SurveyResultModel;
 
             const answers: RawAnswer[] = [];
 

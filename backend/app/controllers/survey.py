@@ -37,6 +37,7 @@ from app.models.survey import (
     SurveyCreateModel,
     SurveyModel,
     SurveyPublicModel,
+    SurveyResultModel,
 )
 
 
@@ -88,6 +89,7 @@ class SurveyController(Controller):
         try:
             id_ = ObjectId(survey_id)
         except InvalidId:
+            await socket.close()
             raise SurveyNotFoundException()
 
         user = Survey(state, id_).user(socket.user)
@@ -104,7 +106,7 @@ class SurveyController(Controller):
             [f"survey.results.{survey_id}"]
         ) as subscriber:
             if pull_history.lower() == "true":
-                async for answer in user.stream_answers():
+                async for answer in user.answers():
                     await socket.send_json(answer.json(by_alias=True))
 
             async for message in subscriber.iter_events():
@@ -113,7 +115,7 @@ class SurveyController(Controller):
     async def __stream_responses(
         self, survey: SurveyUser
     ) -> AsyncGenerator[bytes, None]:
-        async for answer in survey.stream_answers():
+        async for answer in survey.answers():
             yield (answer.json(by_alias=True) + "\n").encode()
 
     @get(
@@ -133,6 +135,23 @@ class SurveyController(Controller):
         survey = Survey(state, id_).user(request.user)
 
         return Stream(self.__stream_responses(survey))
+
+    @get("/responses/{page:int}", description="Get a survey response")
+    async def get_response(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        survey_id: str,
+        page: int,
+    ) -> SurveyResultModel:
+        try:
+            id_ = ObjectId(survey_id)
+        except InvalidId:
+            raise SurveyNotFoundException()
+
+        survey = Survey(state, id_).user(request.user)
+
+        return await survey.answer(page)
 
     @post("/submit", description="Submit answers to a survey", exclude_from_auth=True)
     async def submit_survey(

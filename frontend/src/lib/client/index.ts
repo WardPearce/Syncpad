@@ -45,6 +45,7 @@ export type { SurveyPublicModel } from './models/SurveyPublicModel';
 export { SurveyQuestionModel } from './models/SurveyQuestionModel';
 export type { SurveyQuestionsModel } from './models/SurveyQuestionsModel';
 export type { SurveyRegexModel } from './models/SurveyRegexModel';
+export type { SurveyResultModel } from './models/SurveyResultModel';
 export type { SurveySecretKeyModel } from './models/SurveySecretKeyModel';
 export type { SurveySignKeyPairModel } from './models/SurveySignKeyPairModel';
 export type { SurveySignPublicKeyModel } from './models/SurveySignPublicKeyModel';
