@@ -83,6 +83,7 @@ class SurveyController(Controller):
         channels: ChannelsPlugin,
         state: "State",
         survey_id: str,
+        pull_history: str = "true",
     ) -> None:
         try:
             id_ = ObjectId(survey_id)
@@ -102,8 +103,9 @@ class SurveyController(Controller):
         async with channels.start_subscription(
             [f"survey.results.{survey_id}"]
         ) as subscriber:
-            async for answer in user.stream_answers():
-                await socket.send_json(answer.json(by_alias=True))
+            if pull_history.lower() == "true":
+                async for answer in user.stream_answers():
+                    await socket.send_json(answer.json(by_alias=True))
 
             async for message in subscriber.iter_events():
                 await socket.send_json(message.decode())
