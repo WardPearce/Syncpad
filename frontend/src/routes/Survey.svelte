@@ -170,11 +170,6 @@
                         question.regex.cipher_text,
                         true
                     ) as string;
-
-                    // If regex not demeed safe, set to null
-                    // Not prefect, but worse case someone
-                    // freezes someones browser
-                    if (!safe(rawRegex)) rawRegex = null;
                 }
 
                 rawQuestions.push({

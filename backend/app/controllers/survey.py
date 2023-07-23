@@ -1,17 +1,20 @@
+import asyncio
 import hashlib
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from secrets import token_urlsafe
 from typing import TYPE_CHECKING, Any, AsyncGenerator, List, Optional
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from litestar import Request, Response, Router
+from litestar import Request, Response, Router, WebSocket, websocket
+from litestar.channels import ChannelsPlugin
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import get, post
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.response import Stream
+from sqlalchemy import true
 
 from app.errors import (
     InvalidAccountAuth,
@@ -24,7 +27,7 @@ from app.lib.geoip import GeoIp
 from app.lib.jwt import jwt_cookie_auth
 from app.lib.key_bulders import logged_in_user_key_builder
 from app.lib.mCaptcha import validate_captcha
-from app.lib.survey import Survey
+from app.lib.survey import Survey, SurveyUser
 
 if TYPE_CHECKING:
     from app.custom_types import State
@@ -70,7 +73,50 @@ async def list_surveys(
 class SurveyController(Controller):
     path = "/{survey_id:str}"
 
-    @get("/responses/stream", description="Stream survey responses")
+    @websocket(
+        "/responses/realtime",
+        description="Stream survey responses in realtime",
+    )
+    async def stream_responses_ws(
+        self,
+        socket: WebSocket,
+        channels: ChannelsPlugin,
+        state: "State",
+        survey_id: str,
+    ) -> None:
+        try:
+            id_ = ObjectId(survey_id)
+        except InvalidId:
+            raise SurveyNotFoundException()
+
+        user = Survey(state, id_).user(socket.user)
+
+        try:
+            await user.exists()
+        except SurveyNotFoundException:
+            await socket.close()
+            return
+
+        await socket.accept()
+
+        async with channels.start_subscription(
+            [f"survey.results.{survey_id}"]
+        ) as subscriber:
+            async for answer in user.stream_answers():
+                await socket.send_json(answer.json(by_alias=True))
+
+            async for message in subscriber.iter_events():
+                await socket.send_json(message.decode())
+
+    async def __stream_responses(
+        self, survey: SurveyUser
+    ) -> AsyncGenerator[bytes, None]:
+        async for answer in survey.stream_answers():
+            yield (answer.json(by_alias=True) + "\n").encode()
+
+    @get(
+        "/responses", description="Stream survey responses using ndjson (not realtime)"
+    )
     async def stream_responses(
         self,
         state: "State",
@@ -82,21 +128,16 @@ class SurveyController(Controller):
         except InvalidId:
             raise SurveyNotFoundException()
 
-        survey = Survey(state, id_)
+        survey = Survey(state, id_).user(request.user)
 
-        await survey.user(request.user).exists()
-
-        async def stream() -> AsyncGenerator[bytes, None]:
-            async for answer in survey.stream_answers():
-                yield (answer.json(by_alias=True) + "\n").encode()
-
-        return Stream(stream)
+        return Stream(self.__stream_responses(survey))
 
     @post("/submit", description="Submit answers to a survey", exclude_from_auth=True)
     async def submit_survey(
         self,
         state: "State",
         request: Request[Optional[ObjectId], Token, Any],
+        channels: ChannelsPlugin,
         survey_id: str,
         data: SubmitSurveyModel,
         captcha: Optional[str] = None,
@@ -194,9 +235,25 @@ class SurveyController(Controller):
 
         await Survey(state, id_).submit(data, user_id=user_id)
 
+        channels.publish(data.json(by_alias=True), f"survey.results.{survey_id}")
+
         return response
 
-    @get("/public", description="Get a survey", exclude_from_auth=True)
+    @get("/", description="Get a survey")
+    async def get_survey(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        survey_id: str,
+    ) -> SurveyModel:
+        try:
+            id_ = ObjectId(survey_id)
+        except InvalidId:
+            raise SurveyNotFoundException()
+
+        return await Survey(state, id_).user(request.user).get()
+
+    @get("/public", description="Get a survey public details", exclude_from_auth=True)
     async def public_survey(
         self,
         state: "State",

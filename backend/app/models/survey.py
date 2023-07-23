@@ -157,7 +157,7 @@ class SurveyModel(SurveyPublicModel, SurveyCreateModel):
     ip_salt: Optional[str] = Field(None, max_length=256)
 
 
-class SurveyAnswerModel(BaseModel):
+class SurveyAnswerModel(CustomJsonEncoder):
     id: int = Field(..., ge=0, lt=1024)
     # For simplicity of data types, every answer is stored
     # as an array regardless of the question type.
@@ -172,11 +172,10 @@ class SurveyAnswerModel(BaseModel):
             raise ValueError("Only multiple choice types can have multiple answers")
 
 
-class SubmitSurveyModel(BaseModel):
+class SubmitSurveyModel(CustomJsonEncoder):
     answers: List[SurveyAnswerModel] = Field(..., min_items=1, max_items=128)
 
 
-class SurveyResultModel(SurveyAnswerModel):
+class SurveyResultModel(SubmitSurveyModel):
     survey_id: ObjectId
-    user_id: ObjectId
     created: datetime

@@ -23,7 +23,6 @@
     let regexDialogOpen: boolean = false;
     const regexPatterns = {
         Email: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-        Phone: /^\d{10}$/,
         Number: /^\d+$/,
         Street: /^\d+\s[A-z]+\s[A-z]+/,
         Website: /^https?:\/\/[\w-\.]+\.[a-z]{2,4}\/?$/,

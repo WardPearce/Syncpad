@@ -14,8 +14,53 @@ export class SurveyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * PublicSurvey
+     * GetSurvey
      * Get a survey
+     * @param surveyId
+     * @returns SurveyModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdGetSurvey(
+        surveyId: string,
+    ): CancelablePromise<SurveyModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}',
+            path: {
+                'survey_id': surveyId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * StreamResponses
+     * Stream survey responses (not realtime)
+     * @param surveyId
+     * @returns string Stream Response
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdResponsesStreamResponses(
+        surveyId: string,
+    ): CancelablePromise<string> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}/responses',
+            path: {
+                'survey_id': surveyId,
+            },
+            responseHeader: 'content-length',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicSurvey
+     * Get a survey public details
      * @param surveyId
      * @returns SurveyPublicModel Request fulfilled, document follows
      * @throws ApiError

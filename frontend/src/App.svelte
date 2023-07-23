@@ -142,6 +142,13 @@
       <PageLoading />
     </LazyRoute>
     <LazyRoute
+      path="/dashboard/survey/results/:surveyId"
+      component={() => import("./routes/Dashboard/Survey/Results.svelte")}
+      requiresAuth={true}
+    >
+      <PageLoading />
+    </LazyRoute>
+    <LazyRoute
       path="/dashboard/canary/add-site"
       component={() => import("./routes/Dashboard/Canary/AddSite.svelte")}
       requiresAuth={true}

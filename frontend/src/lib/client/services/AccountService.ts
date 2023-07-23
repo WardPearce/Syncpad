@@ -19,6 +19,32 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
+     * VerifyEmail
+     * Verify email for given account
+     * @param email
+     * @param emailSecret
+     * @returns string Redirect Response
+     * @throws ApiError
+     */
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
+        email: string,
+        emailSecret: string,
+    ): CancelablePromise<string> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
+            path: {
+                'email': email,
+                'email_secret': emailSecret,
+            },
+            responseHeader: 'location',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * Public
      * Public KDF details
      * @param email
@@ -36,6 +62,29 @@ export class AccountService {
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * ToSign
+     * Used to generate a unique code to sign.
+     * @param email
+     * @returns UserToSignModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailToSignToSign(
+        email: string,
+    ): CancelablePromise<UserToSignModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/to-sign',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
             },
         });
     }
@@ -71,55 +120,6 @@ export class AccountService {
             errors: {
                 400: `Bad request syntax or unsupported method`,
                 401: `No permission -- see authorization schemes`,
-            },
-        });
-    }
-
-    /**
-     * ToSign
-     * Used to generate a unique code to sign.
-     * @param email
-     * @returns UserToSignModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailToSignToSign(
-        email: string,
-    ): CancelablePromise<UserToSignModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/to-sign',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                404: `Nothing matches the given URI`,
-            },
-        });
-    }
-
-    /**
-     * VerifyEmail
-     * Verify email for given account
-     * @param email
-     * @param emailSecret
-     * @returns string Redirect Response
-     * @throws ApiError
-     */
-    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
-        email: string,
-        emailSecret: string,
-    ): CancelablePromise<string> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/email/verify/{email_secret}',
-            path: {
-                'email': email,
-                'email_secret': emailSecret,
-            },
-            responseHeader: 'location',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
             },
         });
     }

@@ -31,6 +31,14 @@ class SurveyUser:
 
         return survey
 
+    async def stream_answers(self) -> AsyncGenerator[SurveyResultModel, None]:
+        await self.exists()
+
+        async for answer in self._upper._state.mongo.survey_answer.find(
+            {"survey_id": self._upper._survey_id}
+        ):
+            yield SurveyResultModel(**answer)
+
     async def get(self) -> SurveyModel:
         return SurveyModel(**(await self.__get_raw()))
 
@@ -59,12 +67,6 @@ class Survey:
 
     async def public(self) -> SurveyPublicModel:
         return SurveyPublicModel(**(await self.__get_raw()))
-
-    async def stream_answers(self) -> AsyncGenerator[SurveyResultModel, None]:
-        async for answer in self._state.mongo.survey_answer.find(
-            {"survey_id": self._survey_id}
-        ):
-            yield SurveyResultModel(**answer)
 
     async def submit(
         self, answers: SubmitSurveyModel, user_id: Optional[ObjectId] = None

@@ -63,7 +63,11 @@
                 <p>{relativeDate(survey.created)}</p>
             </nav>
             <nav class="wrap">
-                <button>Results</button>
+                <button
+                    on:click={() =>
+                        navigate(`/dashboard/survey/results/${survey._id}`)}
+                    >Results</button
+                >
                 <button class="border">Edit</button>
             </nav>
         </article>

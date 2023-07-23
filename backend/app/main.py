@@ -2,10 +2,12 @@ from typing import TYPE_CHECKING, cast
 
 import aiohttp
 from litestar import Litestar
+from litestar.channels import ChannelsPlugin
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.datastructures import ImmutableState, State
+from litestar.datastructures import State
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import License, Server
@@ -26,11 +28,10 @@ if TYPE_CHECKING:
 
     from app.custom_types import State as StateType
 
-redis_store = RedisStore(
-    redis=Redis(
-        host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db
-    )
-)
+
+redis = Redis(host=SETTINGS.redis.host, port=SETTINGS.redis.port, db=SETTINGS.redis.db)
+
+redis_store = RedisStore(redis=redis)
 
 
 async def init_tasks(app_config: "AppConfig") -> None:
@@ -116,7 +117,15 @@ app = Litestar(
         version=SETTINGS.open_api.version,
         servers=[Server(url=SETTINGS.proxy_urls.backend, description="Production API")],
     ),
-    stores={"redis": RedisStore.with_client()},
+    stores={"redis": redis_store.with_client()},
+    plugins=[
+        ChannelsPlugin(
+            backend=RedisChannelsPubSubBackend(
+                redis=redis,
+            ),
+            arbitrary_channels_allowed=True,
+        )
+    ],
     response_cache_config=ResponseCacheConfig(store="redis"),
     on_app_init=[jwt_cookie_auth.on_app_init],
     type_encoders={

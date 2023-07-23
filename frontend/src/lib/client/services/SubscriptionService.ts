@@ -9,18 +9,18 @@ export class SubscriptionService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Subscribe
-     * Subscribe to a canary
+     * Unsubscribe
+     * Unsubscribe from a canary
      * @param canaryId
-     * @returns any Document created, URL follows
+     * @returns void
      * @throws ApiError
      */
-    public controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
+    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
         canaryId: string,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/subscription/{canary_id}/subscribe',
+            method: 'DELETE',
+            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
             path: {
                 'canary_id': canaryId,
             },
@@ -53,18 +53,18 @@ export class SubscriptionService {
     }
 
     /**
-     * Unsubscribe
-     * Unsubscribe from a canary
+     * Subscribe
+     * Subscribe to a canary
      * @param canaryId
-     * @returns void
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
+    public controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
         canaryId: string,
-    ): CancelablePromise<void> {
+    ): CancelablePromise<any> {
         return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
+            method: 'POST',
+            url: '/controllers/canary/subscription/{canary_id}/subscribe',
             path: {
                 'canary_id': canaryId,
             },
