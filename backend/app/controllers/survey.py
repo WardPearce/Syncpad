@@ -1,4 +1,5 @@
 import base64
+import binascii
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, AsyncGenerator, List, Optional
 
@@ -55,7 +56,7 @@ async def create_survey(
     if data.ip:
         try:
             raw_ip_key = base64.b64decode(data.ip.key)
-        except ValueError:
+        except (ValueError, binascii.Error):
             raise SurveyKeyInvalidException()
 
         if len(raw_ip_key) != 32:
@@ -246,7 +247,7 @@ class SurveyController(Controller):
 
                 try:
                     raw_ip_key = base64.b64decode(data.ip_key)
-                except ValueError:
+                except (ValueError, binascii.Error):
                     raise SurveyKeyInvalidException()
 
                 if len(raw_ip_key) != 32:
