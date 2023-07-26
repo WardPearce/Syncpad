@@ -55,6 +55,7 @@
     }
 
     function asSummary() {
+        summaryResults = {};
         mode = ResponseMode.summary;
 
         ws = createWs(true);
@@ -116,6 +117,7 @@
     }
 
     async function asIndividual() {
+        summaryResults = {};
         mode = ResponseMode.individual;
 
         if (ws) {
