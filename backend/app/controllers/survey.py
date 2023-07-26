@@ -3,6 +3,7 @@ import binascii
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, AsyncGenerator, List, Optional
 
+import argon2
 from argon2 import PasswordHasher
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -252,8 +253,14 @@ class SurveyController(Controller):
                 raise SurveyAlreadySubmittedException()
 
             if request.client and request.client.host and survey.ip:
-                if not data.ip_key or not PasswordHasher().verify(
-                    survey.ip.key, data.ip_key
+                if not data.ip_key:
+                    raise SurveyKeyInvalidException()
+
+                try:
+                    PasswordHasher().verify(survey.ip.key, data.ip_key)
+                except (
+                    argon2.exceptions.VerificationError,
+                    argon2.exceptions.VerifyMismatchError,
                 ):
                     raise SurveyKeyInvalidException()
 

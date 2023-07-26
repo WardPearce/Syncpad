@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Optional
 
+import argon2
 import pyotp
 from argon2 import PasswordHasher
 from bson import ObjectId
@@ -171,7 +172,12 @@ class LoginController(Controller):
         except (BadSignatureError, ValueError):
             raise InvalidAccountAuth()
 
-        if not PasswordHasher().verify(proof["to_sign"], given_code.decode()):
+        try:
+            PasswordHasher().verify(proof["to_sign"], given_code.decode())
+        except (
+            argon2.exceptions.VerificationError,
+            argon2.exceptions.VerifyMismatchError,
+        ):
             raise InvalidAccountAuth()
 
         now = datetime.utcnow()
