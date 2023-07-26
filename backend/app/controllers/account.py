@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Optional
 
 import pyotp
+from argon2 import PasswordHasher
 from bson import ObjectId
 from bson.errors import InvalidId
 from litestar import Request, Response, Router, delete
@@ -111,7 +112,7 @@ class LoginController(Controller):
             to_sign = secrets.token_urlsafe(32)
             result = await state.mongo.proof.insert_one(
                 {
-                    "to_sign": to_sign,
+                    "to_sign": PasswordHasher().hash(to_sign),
                     "user_id": ObjectId(user.id),
                     "expires": datetime.utcnow() + timedelta(minutes=4),
                 }
@@ -170,8 +171,7 @@ class LoginController(Controller):
         except (BadSignatureError, ValueError):
             raise InvalidAccountAuth()
 
-        # Not open to timing attacks, one use code.
-        if given_code.decode() != proof["to_sign"]:
+        if not PasswordHasher().verify(proof["to_sign"], given_code.decode()):
             raise InvalidAccountAuth()
 
         now = datetime.utcnow()
