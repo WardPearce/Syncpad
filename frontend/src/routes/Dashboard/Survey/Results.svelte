@@ -5,16 +5,12 @@
     import PageLoading from "../../../components/PageLoading.svelte";
     import Title from "../../../components/Survey/Submit/Title.svelte";
     import apiClient from "../../../lib/apiClient";
-    import type {
-        SurveyModel,
-        SurveyQuestionModel,
-        SurveyResultModel,
-    } from "../../../lib/client";
-    import publicKey from "../../../lib/crypto/publicKey";
+    import type { SurveyModel, SurveyResultModel } from "../../../lib/client";
     import secretKey, {
         SecretkeyLocation,
     } from "../../../lib/crypto/secretKey";
     import {
+        decryptAnswers,
         decryptSurveyQuestions,
         validateSurvey,
         type RawSurvey,
@@ -22,15 +18,24 @@
 
     export let surveyId: string;
 
-    interface RawAnswer {
-        id: number;
-        type: SurveyQuestionModel.type;
-        answer: string | string[];
+    enum ResponseMode {
+        individual,
+        summary,
     }
+
+    let mode = ResponseMode.summary;
 
     let survey: SurveyModel;
     let rawSurvey: RawSurvey;
-    let rawAnswers: RawAnswer[][][] = [];
+    let rawSurveyQuestions: Record<number, string> = {};
+
+    let summaryResults: Record<number, string[] | Record<string, number>> = {};
+
+    let rawSharedKey: Uint8Array;
+    let rawPublicKey: Uint8Array;
+    let rawPrivateKey: Uint8Array;
+    let rawSignPrivateKey: Uint8Array;
+    let rawSignPublicKey: Uint8Array;
 
     let isLoading = true;
 
@@ -49,6 +54,84 @@
         );
     }
 
+    function asSummary() {
+        mode = ResponseMode.summary;
+
+        ws = createWs(true);
+
+        ws.onclose = () => {
+            if (wsReconnect) {
+                ws = createWs(true);
+            }
+        };
+
+        const surveyChoices: Record<number, Record<number, string>> = {};
+        rawSurvey.questions.forEach((question) => {
+            if (question.choices.length > 0) {
+                if (!(question.id in surveyChoices))
+                    surveyChoices[question.id] = {};
+
+                question.choices.forEach((choice) => {
+                    surveyChoices[question.id][choice.id.toString()] =
+                        choice.choice;
+                });
+            }
+        });
+
+        ws.onmessage = (event: MessageEvent<any>) => {
+            const data = JSON.parse(
+                JSON.parse(event.data)
+            ) as SurveyResultModel;
+
+            for (const answer of decryptAnswers(
+                rawPublicKey,
+                rawPrivateKey,
+                data
+            )) {
+                if (answer.answer instanceof Array) {
+                    if (!(answer.id in summaryResults)) {
+                        summaryResults[answer.id] = {};
+                    }
+
+                    answer.answer.forEach((selectedChoice) => {
+                        const choice = surveyChoices[answer.id][selectedChoice];
+
+                        if (!(choice in summaryResults[answer.id])) {
+                            summaryResults[answer.id][choice] = 0;
+                        }
+
+                        summaryResults[answer.id][choice]++;
+                    });
+                } else {
+                    if (!(answer.id in summaryResults)) {
+                        summaryResults[answer.id] = [];
+                    }
+
+                    (summaryResults[answer.id] as string[]).push(answer.answer);
+                }
+
+                summaryResults = { ...summaryResults };
+            }
+        };
+    }
+
+    async function asIndividual() {
+        mode = ResponseMode.individual;
+
+        if (ws) {
+            wsReconnect = false;
+            ws.close();
+        }
+
+        const result =
+            await apiClient.survey.controllersSurveySurveyIdResponsesPageGetResponse(
+                surveyId,
+                0
+            );
+
+        // decryptAnswers(rawPublicKey, rawPrivateKey, result);
+    }
+
     onMount(async () => {
         isLoading = true;
 
@@ -58,95 +141,56 @@
 
         if (survey.hex_color) await ui("theme", `#${survey.hex_color}`);
 
-        const rawSharedKey = secretKey.decrypt(
+        rawSharedKey = secretKey.decrypt(
             SecretkeyLocation.localKeychain,
             survey.secret_key.iv,
             survey.secret_key.cipher_text,
             false
         ) as Uint8Array;
-        const rawPublicKey = secretKey.decrypt(
+        rawPublicKey = secretKey.decrypt(
             rawSharedKey,
             survey.keypair.public_key.iv,
             survey.keypair.public_key.cipher_text,
             false
         ) as Uint8Array;
-        const rawPrivateKey = secretKey.decrypt(
+        rawPrivateKey = secretKey.decrypt(
             SecretkeyLocation.localKeychain,
             survey.keypair.private_key.iv,
             survey.keypair.private_key.cipher_text,
             false
         ) as Uint8Array;
 
-        const rawSignPrivateKey = secretKey.decrypt(
+        rawSignPrivateKey = secretKey.decrypt(
             SecretkeyLocation.localKeychain,
             survey.sign_keypair.iv,
             survey.sign_keypair.cipher_text,
             false
         ) as Uint8Array;
-        const rawSignPublicKey =
+        rawSignPublicKey =
             sodium.crypto_sign_ed25519_sk_to_pk(rawSignPrivateKey);
 
         validateSurvey(rawSignPublicKey, survey);
 
         rawSurvey = decryptSurveyQuestions(rawSharedKey, survey);
 
-        ws = createWs(true);
-
-        ws.addEventListener("close", () => {
-            if (wsReconnect) {
-                ws = createWs(false);
-            }
+        rawSurvey.questions.forEach((question) => {
+            rawSurveyQuestions[question.id] = question.question;
         });
 
-        ws.addEventListener("message", (event) => {
-            const data = JSON.parse(
-                JSON.parse(event.data)
-            ) as SurveyResultModel;
-
-            const answers: RawAnswer[] = [];
-
-            data.answers.forEach((answer) => {
-                if (answer.answer instanceof Array) {
-                    const multipleChoiceAnswers: string[] = [];
-                    answer.answer.forEach((answer) => {
-                        multipleChoiceAnswers.push(
-                            publicKey.boxSealOpen(
-                                rawPublicKey,
-                                rawPrivateKey,
-                                answer,
-                                true
-                            ) as string
-                        );
-                    });
-
-                    answers.push({
-                        id: answer.id,
-                        type: answer.type,
-                        answer: multipleChoiceAnswers,
-                    });
-                } else {
-                    answers.push({
-                        id: answer.id,
-                        type: answer.type,
-                        answer: publicKey.boxSealOpen(
-                            rawPublicKey,
-                            rawPrivateKey,
-                            answer.answer,
-                            true
-                        ) as string,
-                    });
-                }
-            });
-
-            rawAnswers.push([answers]);
-        });
+        if (mode === ResponseMode.individual) {
+            await asIndividual();
+        } else {
+            await asSummary();
+        }
 
         isLoading = false;
     });
 
     onDestroy(() => {
-        wsReconnect = false;
-        ws.close();
+        if (ws) {
+            wsReconnect = false;
+            ws.close();
+        }
     });
 </script>
 
@@ -154,6 +198,39 @@
     <PageLoading />
 {:else}
     <div class="center-questions">
+        <div class="extra-large-width" style="margin-top: .5em;">
+            <nav class="wrap">
+                {#if mode === ResponseMode.individual}
+                    <button on:click={asSummary}>
+                        <i>summarize</i>
+                        <span>Summarize responses</span>
+                    </button>
+                {:else}
+                    <button on:click={asIndividual}>
+                        <i>call_to_action</i>
+                        <span>Individual responses</span>
+                    </button>
+                {/if}
+            </nav>
+        </div>
+
         <Title title={rawSurvey.title} description={rawSurvey.description} />
+
+        {#if mode === ResponseMode.summary}
+            {#each Object.entries(rawSurveyQuestions) as [id, question]}
+                <h5>{question}</h5>
+                <ul>
+                    {#if summaryResults[id] instanceof Array}
+                        {#each summaryResults[id] as result}
+                            <li>{result}</li>
+                        {/each}
+                    {:else if summaryResults[id] instanceof Object}
+                        {#each Object.entries(summaryResults[id]) as [choice, result]}
+                            <li>{choice} - {result}</li>
+                        {/each}
+                    {/if}
+                </ul>
+            {/each}
+        {/if}
     </div>
 {/if}

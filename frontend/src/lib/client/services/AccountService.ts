@@ -19,41 +19,6 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Login
-     * Validate signature and OTP code
-     * @param captcha
-     * @param email
-     * @param requestBody
-     * @param otp
-     * @returns UserJtiModel Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailLoginLogin(
-        captcha: string,
-        email: string,
-        requestBody: UserLoginSignatureModel,
-        otp?: (null | string),
-    ): CancelablePromise<UserJtiModel> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/{email}/login',
-            path: {
-                'email': email,
-            },
-            query: {
-                'captcha': captcha,
-                'otp': otp,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                401: `No permission -- see authorization schemes`,
-            },
-        });
-    }
-
-    /**
      * Public
      * Public KDF details
      * @param email
@@ -94,6 +59,41 @@ export class AccountService {
             errors: {
                 400: `Bad request syntax or unsupported method`,
                 404: `Nothing matches the given URI`,
+            },
+        });
+    }
+
+    /**
+     * Login
+     * Validate signature and OTP code
+     * @param captcha
+     * @param email
+     * @param requestBody
+     * @param otp
+     * @returns UserJtiModel Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailLoginLogin(
+        captcha: string,
+        email: string,
+        requestBody: UserLoginSignatureModel,
+        otp?: (null | string),
+    ): CancelablePromise<UserJtiModel> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/{email}/login',
+            path: {
+                'email': email,
+            },
+            query: {
+                'captcha': captcha,
+                'otp': otp,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                401: `No permission -- see authorization schemes`,
             },
         });
     }

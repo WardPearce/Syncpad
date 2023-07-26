@@ -1,6 +1,7 @@
 import { normalizeSurveyQuestions } from "../components/Survey/helpers";
 import type { rawChoice, rawQuestion } from "../components/Survey/types";
-import type { SurveyModel, SurveyPublicModel } from "./client";
+import type { SurveyModel, SurveyPublicModel, SurveyQuestionModel, SurveyResultModel } from "./client";
+import publicKey from "./crypto/publicKey";
 import secretKey from "./crypto/secretKey";
 import signatures from "./crypto/signatures";
 
@@ -10,11 +11,60 @@ export interface RawQuestionAnswer extends rawQuestion {
   error: string | null;
 }
 
+export interface RawAnswer {
+  id: number;
+  type: SurveyQuestionModel.type;
+  answer: string | string[];
+}
+
 export interface RawSurvey {
   title: string;
   description: string | undefined;
   questions: RawQuestionAnswer[];
 }
+
+
+export function* decryptAnswers(
+  rawPublicKey: Uint8Array,
+  rawPrivateKey: Uint8Array,
+  result: SurveyResultModel
+): Generator<RawAnswer> {
+
+  for (const answer of result.answers) {
+    if (answer.answer instanceof Array) {
+      const multipleChoiceAnswers: string[] = [];
+      answer.answer.forEach((answer) => {
+        multipleChoiceAnswers.push(
+          publicKey.boxSealOpen(
+            rawPublicKey,
+            rawPrivateKey,
+            answer,
+            true
+          ) as string
+        );
+      });
+
+      yield {
+        id: answer.id,
+        type: answer.type,
+        answer: multipleChoiceAnswers,
+      };
+    } else {
+      yield {
+        id: answer.id,
+        type: answer.type,
+        answer: publicKey.boxSealOpen(
+          rawPublicKey,
+          rawPrivateKey,
+          answer.answer,
+          true
+        ) as string,
+      };
+    }
+  }
+
+}
+
 
 export function validateSurvey(rawSignPublicKey: Uint8Array, survey: SurveyModel | SurveyPublicModel) {
   const toValidate: Record<string, any> = {
