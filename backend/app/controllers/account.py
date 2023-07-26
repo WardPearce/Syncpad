@@ -1,3 +1,4 @@
+import binascii
 import secrets
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Optional
@@ -160,7 +161,7 @@ class LoginController(Controller):
 
         try:
             public_key = Base64Encoder.decode(user.auth.public_key.encode())
-        except ValueError:
+        except (ValueError, binascii.Error):
             raise InvalidAccountAuth()
 
         try:
@@ -188,7 +189,7 @@ class LoginController(Controller):
             sealed_box = SealedBox(
                 PublicKey(Base64Encoder.decode(user.keypair.public_key.encode()))
             )
-        except ValueError:
+        except (ValueError, binascii.Error):
             pass
         else:
 

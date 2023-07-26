@@ -34,22 +34,24 @@ class CanaryUser:
         """Delete a canary"""
 
         canary = await self.get()
-        if canary.domain_verification.completed:
-            # Block canary from ever being recreated with that domain.
-            await self.__upper._state.mongo.deleted_canary.insert_one(
-                {
-                    "domain_hash": hashlib.sha256(
-                        self.__upper._domain.encode()
-                    ).hexdigest(),
-                    "deleted": datetime.utcnow(),
-                }
+
+        deleted = await self.__upper._state.mongo.canary.delete_one(self._canary_query)
+
+        if deleted.deleted_count > 0:
+            if canary.domain_verification.completed:
+                # Block canary from ever being recreated with that domain.
+                await self.__upper._state.mongo.deleted_canary.insert_one(
+                    {
+                        "domain_hash": hashlib.sha256(
+                            self.__upper._domain.encode()
+                        ).hexdigest(),
+                        "deleted": datetime.utcnow(),
+                    }
+                )
+
+            await self.__upper._state.mongo.canary_warrant.delete_many(
+                {"canary_id": canary.id}
             )
-
-        await self.__upper._state.mongo.canary_warrant.delete_many(
-            {"canary_id": canary.id}
-        )
-
-        await self.__upper._state.mongo.canary.delete_one(self._canary_query)
 
     async def attempt_verify(self) -> None:
         """Attempt to verify a canary domain.
