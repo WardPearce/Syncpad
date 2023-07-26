@@ -95,6 +95,10 @@
                     }
 
                     answer.answer.forEach((selectedChoice) => {
+                        if (!(selectedChoice in surveyChoices[answer.id])) {
+                            return;
+                        }
+
                         const choice = surveyChoices[answer.id][selectedChoice];
 
                         if (!(choice in summaryResults[answer.id])) {
@@ -219,20 +223,24 @@
         <Title title={rawSurvey.title} description={rawSurvey.description} />
 
         {#if mode === ResponseMode.summary}
-            {#each Object.entries(rawSurveyQuestions) as [id, question]}
-                <h5>{question}</h5>
-                <ul>
-                    {#if summaryResults[id] instanceof Array}
-                        {#each summaryResults[id] as result}
-                            <li>{result}</li>
-                        {/each}
-                    {:else if summaryResults[id] instanceof Object}
-                        {#each Object.entries(summaryResults[id]) as [choice, result]}
-                            <li>{choice} - {result}</li>
-                        {/each}
-                    {/if}
-                </ul>
-            {/each}
+            {#if Object.keys(summaryResults).length === 0}
+                <PageLoading />
+            {:else}
+                {#each Object.entries(rawSurveyQuestions) as [id, question]}
+                    <h5>{question}</h5>
+                    <ul>
+                        {#if summaryResults[id] instanceof Array}
+                            {#each summaryResults[id] as result}
+                                <li>{result}</li>
+                            {/each}
+                        {:else if summaryResults[id] instanceof Object}
+                            {#each Object.entries(summaryResults[id]) as [choice, result]}
+                                <li>{choice} - {result}</li>
+                            {/each}
+                        {/if}
+                    </ul>
+                {/each}
+            {/if}
         {/if}
     </div>
 {/if}

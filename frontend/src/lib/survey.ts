@@ -33,12 +33,12 @@ export function* decryptAnswers(
   for (const answer of result.answers) {
     if (answer.answer instanceof Array) {
       const multipleChoiceAnswers: string[] = [];
-      answer.answer.forEach((answer) => {
+      answer.answer.forEach((choice) => {
         multipleChoiceAnswers.push(
           publicKey.boxSealOpen(
             rawPublicKey,
             rawPrivateKey,
-            answer,
+            choice,
             true
           ) as string
         );

@@ -1,11 +1,11 @@
-import asyncio
-import hashlib
+import base64
 from datetime import datetime, timedelta
-from secrets import token_urlsafe
 from typing import TYPE_CHECKING, Any, AsyncGenerator, List, Optional
 
+from argon2 import PasswordHasher
 from bson import ObjectId
 from bson.errors import InvalidId
+from cryptography.hazmat.primitives import hashes, hmac
 from litestar import Request, Response, Router, WebSocket, websocket
 from litestar.channels import ChannelsPlugin
 from litestar.contrib.jwt import Token
@@ -19,6 +19,7 @@ from sqlalchemy import true
 from app.errors import (
     InvalidAccountAuth,
     SurveyAlreadySubmittedException,
+    SurveyKeyInvalidException,
     SurveyNotFoundException,
     SurveyProxyBlockException,
     SurveyRequiredQuestionsNotAnswered,
@@ -50,8 +51,17 @@ async def create_survey(
     request: Request[ObjectId, Token, Any], data: SurveyCreateModel, state: "State"
 ) -> SurveyModel:
     insert = {**data.dict(), "created": datetime.utcnow(), "user_id": request.user}
-    if not data.allow_multiple_submissions:
-        insert["ip_salt"] = token_urlsafe(16)
+
+    if data.ip:
+        try:
+            raw_ip_key = base64.b64decode(data.ip.key)
+        except ValueError:
+            raise SurveyKeyInvalidException()
+
+        if len(raw_ip_key) != 32:
+            raise SurveyKeyInvalidException()
+
+        insert["ip"]["key"] = PasswordHasher().hash(data.ip.key)
 
     await state.mongo.survey.insert_one(insert)
     return SurveyModel(**insert)
@@ -183,10 +193,13 @@ class SurveyController(Controller):
         ):
             raise SurveyRequiredQuestionsNotAnswered()
 
-        if isinstance(survey.closed, bool):
-            if survey.closed:
+        ip_expires = datetime.utcnow() + timedelta(days=7)
+        if isinstance(survey.closed, datetime):
+            if datetime.utcnow() > survey.closed:
                 raise SurveyNotFoundException()
-        elif datetime.utcnow() > survey.closed:
+
+            ip_expires = survey.closed
+        elif survey.closed:
             raise SurveyNotFoundException()
 
         if survey.requires_captcha:
@@ -225,10 +238,24 @@ class SurveyController(Controller):
             ):
                 raise SurveyAlreadySubmittedException()
 
-            if request.client and request.client.host and survey.ip_salt:
-                ip_hash = hashlib.sha256(
-                    (request.client.host + survey.ip_salt).encode()
-                ).hexdigest()
+            if request.client and request.client.host and survey.ip:
+                if not data.ip_key or not PasswordHasher().verify(
+                    survey.ip.key, data.ip_key
+                ):
+                    raise SurveyKeyInvalidException()
+
+                try:
+                    raw_ip_key = base64.b64decode(data.ip_key)
+                except ValueError:
+                    raise SurveyKeyInvalidException()
+
+                if len(raw_ip_key) != 32:
+                    raise SurveyKeyInvalidException()
+
+                ip_hmac = hmac.HMAC(raw_ip_key, hashes.SHA256())
+                ip_hmac.update(request.client.host.encode())
+
+                ip_hash = base64.b64encode(ip_hmac.finalize()).decode()
 
                 if (
                     await state.mongo.survey_blocker.count_documents(
@@ -245,7 +272,7 @@ class SurveyController(Controller):
                     {
                         "survey_id": id_,
                         "ip_hash": ip_hash,
-                        "expires": datetime.utcnow() + timedelta(hours=24),
+                        "expires": ip_expires,
                     }
                 )
 
