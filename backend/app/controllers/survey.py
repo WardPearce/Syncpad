@@ -228,7 +228,9 @@ class SurveyController(Controller):
             if request.cookies.get(survey_id) is not None:
                 raise SurveyAlreadySubmittedException()
 
-            response.set_cookie(survey_id, "true")
+            response.set_cookie(
+                survey_id, "true", max_age=2074000, path=request.url.path
+            )
 
             if (
                 user_id

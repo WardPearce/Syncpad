@@ -15,16 +15,15 @@ class GeoIp:
         if not SETTINGS.proxy_check:
             return
 
-        resp = await self._state.aiohttp.get(
+        async with self._state.aiohttp.get(
             url=f"{SETTINGS.proxy_check.url}/{self._ip}",
             params={"key": SETTINGS.proxy_check.api_key, "asn": "1"},
-        )
+        ) as resp:
+            if not resp.status == 200:
+                return
 
-        if not resp.status == 200:
-            return
+            resp_json = await resp.json()
+            if resp_json["status"] != "ok":
+                return
 
-        resp_json = await resp.json()
-        if resp_json["status"] != "ok":
-            return
-
-        return resp_json[self._ip]
+            return resp_json[self._ip]

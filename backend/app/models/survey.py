@@ -193,7 +193,7 @@ class SurveyAnswerModel(CustomJsonEncoder):
 
 class SubmitSurveyModel(CustomJsonEncoder):
     answers: List[SurveyAnswerModel] = Field(..., min_items=1, max_items=128)
-    ip_key: Optional[str] = Field(None, max_length=36)
+    ip_key: Optional[str] = Field(None, max_length=88)
 
 
 class SurveyResultModel(SubmitSurveyModel):

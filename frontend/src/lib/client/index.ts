@@ -33,6 +33,7 @@ export { PublishedCanaryWarrantModel } from './models/PublishedCanaryWarrantMode
 export type { SessionLocationModel } from './models/SessionLocationModel';
 export type { SessionModel } from './models/SessionModel';
 export type { SubmitSurveyModel } from './models/SubmitSurveyModel';
+export type { SurreyCreateIpModel } from './models/SurreyCreateIpModel';
 export { SurveyAnswerModel } from './models/SurveyAnswerModel';
 export type { SurveyChoicesModel } from './models/SurveyChoicesModel';
 export type { SurveyCreateModel } from './models/SurveyCreateModel';

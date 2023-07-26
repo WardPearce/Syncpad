@@ -14,17 +14,17 @@ async def validate_captcha(state: "State", token: Optional[str]) -> None:
     if not token:
         raise InvalidCaptcha()
 
-    resp = await state.aiohttp.post(
+    async with state.aiohttp.post(
         SETTINGS.mcaptcha.verify_url,
         json={
             "token": token,
             "key": SETTINGS.mcaptcha.site_key,
             "secret": SETTINGS.mcaptcha.account_secret,
         },
-    )
-    if resp.status != 200:
-        # Let user pass if our service is down.
-        return
+    ) as resp:
+        if resp.status != 200:
+            # Let user pass if our service is down.
+            return
 
-    if not (await resp.json())["valid"]:
-        raise InvalidCaptcha()
+        if not (await resp.json())["valid"]:
+            raise InvalidCaptcha()

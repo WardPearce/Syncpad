@@ -63,6 +63,10 @@ async def init_mongo(app_config: "AppConfig") -> None:
     )
 
 
+async def init_aiohttp(app_config: "AppConfig") -> None:
+    app_config.state.aiohttp = aiohttp.ClientSession()
+
+
 async def close_aiohttp(app_config: "AppConfig") -> None:
     await app_config.state.aiohttp.close()
 
@@ -73,7 +77,7 @@ async def wipe_cache_on_shutdown() -> None:
 
 app = Litestar(
     route_handlers=[routes],
-    on_startup=[init_mongo, init_tasks],  # type: ignore
+    on_startup=[init_mongo, init_tasks, init_aiohttp],  # type: ignore
     on_shutdown=[close_aiohttp, wipe_cache_on_shutdown, close_tasks],  # type: ignore
     csrf_config=CSRFConfig(
         secret=SETTINGS.csrf_secret, cookie_httponly=False, cookie_samesite="strict"
@@ -84,7 +88,7 @@ app = Litestar(
                 SETTINGS.mongo.host, SETTINGS.mongo.port
             )[SETTINGS.mongo.collection],
             "redis": redis_store,
-            "aiohttp": aiohttp.ClientSession(),
+            "aiohttp": None,
             "tasks": None,
         }
     ),

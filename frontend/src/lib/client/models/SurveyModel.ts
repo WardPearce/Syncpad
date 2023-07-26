@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { SurreyCreateIpModel } from './SurreyCreateIpModel';
 import type { SurveyDescriptionModel } from './SurveyDescriptionModel';
 import type { SurveyKeypairModel } from './SurveyKeypairModel';
 import type { SurveyQuestionModel } from './SurveyQuestionModel';
@@ -27,9 +28,9 @@ export type SurveyModel = {
     sign_keypair: SurveySignKeyPairModel;
     secret_key: SurveySecretKeyModel;
     keypair: SurveyKeypairModel;
+    ip?: (null | SurreyCreateIpModel);
     created: string;
     id: any;
     user_id: any;
-    ip_salt?: (null | string);
 };
 
