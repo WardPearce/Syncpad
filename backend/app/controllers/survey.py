@@ -46,7 +46,6 @@ from app.models.survey import (
 @post(
     "/create",
     description="Create a survey",
-    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
 )
 async def create_survey(
     request: Request[ObjectId, Token, Any], data: SurveyCreateModel, state: "State"
