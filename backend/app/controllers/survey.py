@@ -164,11 +164,22 @@ class SurveyController(Controller):
 
         return await survey.answer(page)
 
+    @post("/close", description="Closes survey submission, also clears IP hashes")
+    async def close_survey(
+        self, state: "State", request: Request[ObjectId, Token, Any], survey_id: str
+    ) -> None:
+        try:
+            id_ = ObjectId(survey_id)
+        except InvalidId:
+            raise SurveyNotFoundException()
+
+        await Survey(state, id_).user(request.user).close()
+
     @post("/submit", description="Submit answers to a survey", exclude_from_auth=True)
     async def submit_survey(
         self,
         state: "State",
-        request: Request[Optional[ObjectId], Token, Any],
+        request: Request[None, Token, Any],
         channels: ChannelsPlugin,
         survey_id: str,
         data: SubmitSurveyModel,

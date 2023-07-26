@@ -31,6 +31,17 @@ class SurveyUser:
 
         return survey
 
+    async def close(self) -> None:
+        update = await self._upper._state.mongo.update_one(
+            self.__query, {"closed": True}
+        )
+
+        if update.matched_count > 0:
+            # Delete any hashed IPs for this survey.
+            await self._upper._state.mongo.delete_many(
+                {"survey_id": self._upper._survey_id}
+            )
+
     async def answer(self, page: int) -> SurveyResultModel:
         result = await self._upper._state.mongo.survey_answer.find_one(
             {"survey_id": self._upper._survey_id, "user_id": self._user_id},
