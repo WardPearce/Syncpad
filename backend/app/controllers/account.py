@@ -124,7 +124,6 @@ class LoginController(Controller):
         tags=["account"],
         raises=[InvalidCaptcha, InvalidAccountAuth],
         exclude_from_auth=True,
-        middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
     )
     async def login(
         self,
@@ -295,7 +294,6 @@ async def password_reset(
     tags=["account"],
     status_code=201,
     exclude_from_auth=True,
-    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
 )
 async def create_account(
     state: "State", captcha: str, data: CreateUserModel

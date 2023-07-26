@@ -47,7 +47,6 @@ if TYPE_CHECKING:
     path="/create",
     description="Create a canary for a given domain",
     tags=["canary"],
-    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
 )
 async def create_canary(
     data: CreateCanaryModel, state: "State", request: Request[ObjectId, Token, Any]
@@ -118,7 +117,6 @@ async def list_trusted_canaries(
     description="Get a canary warrant",
     tags=["canary", "warrant"],
     exclude_from_auth=True,
-    middleware=[RateLimitConfig(rate_limit=("minute", 3)).middleware],
 )
 async def published_warrant(
     state: "State", canary_id: str, page: int = 0
@@ -146,7 +144,6 @@ class PublishCanary(Controller):
         "/document/{hash_:str}",
         description="Upload a canary warrant document",
         tags=["canary", "warrant", "document"],
-        middleware=[RateLimitConfig(rate_limit=("minute", 30)).middleware],
     )
     async def upload_document(
         self,
@@ -416,7 +413,6 @@ class CanaryController(Controller):
         cache=60,
         description="Verify domain ownership via DNS",
         tags=["canary"],
-        middleware=[RateLimitConfig(rate_limit=("minute", 4)).middleware],
     )
     async def verify(
         self, domain: str, request: Request[ObjectId, Token, Any], state: "State"
