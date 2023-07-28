@@ -26,21 +26,24 @@
 </script>
 
 <article class="extra-large-width">
+    {#if error}
+        <article class="error">
+            <span>{error}</span>
+        </article>
+    {/if}
+
     <h5>
         {question}
         {#if required}
             <span class="error-text" style="margin-left: .3em;">*</span>
         {/if}
     </h5>
+
     {#if description}
         <p>{description}</p>
     {/if}
 
     <svelte:component this={answerTypes[type]} {choices} bind:answer />
-
-    {#if error}
-        <p class="error-text">{error}</p>
-    {/if}
 
     {#if regex}
         <p>Regex: {regex}</p>

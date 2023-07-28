@@ -54,24 +54,27 @@ export class AccountService {
     }
 
     /**
-     * ToSign
-     * Used to generate a unique code to sign.
+     * VerifyEmail
+     * Verify email for given account
      * @param email
-     * @returns UserToSignModel Request fulfilled, document follows
+     * @param emailSecret
+     * @returns string Redirect Response
      * @throws ApiError
      */
-    public controllersAccountEmailToSignToSign(
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
         email: string,
-    ): CancelablePromise<UserToSignModel> {
+        emailSecret: string,
+    ): CancelablePromise<string> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/account/{email}/to-sign',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
             path: {
                 'email': email,
+                'email_secret': emailSecret,
             },
+            responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
-                404: `Nothing matches the given URI`,
             },
         });
     }
@@ -99,27 +102,24 @@ export class AccountService {
     }
 
     /**
-     * VerifyEmail
-     * Verify email for given account
+     * ToSign
+     * Used to generate a unique code to sign.
      * @param email
-     * @param emailSecret
-     * @returns string Redirect Response
+     * @returns UserToSignModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
+    public controllersAccountEmailToSignToSign(
         email: string,
-        emailSecret: string,
-    ): CancelablePromise<string> {
+    ): CancelablePromise<UserToSignModel> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/account/{email}/email/verify/{email_secret}',
+            url: '/controllers/account/{email}/to-sign',
             path: {
                 'email': email,
-                'email_secret': emailSecret,
             },
-            responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
             },
         });
     }
@@ -169,27 +169,6 @@ export class AccountService {
     }
 
     /**
-     * RemoveWebhook
-     * Remove a webhook
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/webhook/remove',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AddWebhook
      * Add a webhook
      * @param requestBody
@@ -211,18 +190,18 @@ export class AccountService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
+     * RemoveWebhook
+     * Remove a webhook
      * @param requestBody
      * @returns void
      * @throws ApiError
      */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
+        requestBody: WebhookModel,
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
+            url: '/controllers/account/notifications/webhook/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -253,14 +232,23 @@ export class AccountService {
     }
 
     /**
-     * IpProgressing
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
      * @returns void
      * @throws ApiError
      */
-    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/privacy/ip-progressing/disallow',
+            url: '/controllers/account/notifications/email/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
         });
     }
 
@@ -273,6 +261,18 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/privacy/ip-progressing/consent',
+        });
+    }
+
+    /**
+     * IpProgressing
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/privacy/ip-progressing/disallow',
         });
     }
 

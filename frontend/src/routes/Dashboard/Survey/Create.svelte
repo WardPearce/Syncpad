@@ -1,4 +1,5 @@
 <script lang="ts">
+    import sodium from "libsodium-wrappers-sumo";
     import safe from "safe-regex";
     import { dndzone } from "svelte-dnd-action";
 
@@ -6,7 +7,6 @@
     import PageLoading from "../../../components/PageLoading.svelte";
     import Question from "../../../components/Survey/Create/Question.svelte";
     import Title from "../../../components/Survey/Create/Title.svelte";
-    import { normalizeSurveyQuestions } from "../../../components/Survey/helpers";
     import { type rawQuestion } from "../../../components/Survey/types";
     import apiClient from "../../../lib/apiClient";
     import {
@@ -22,6 +22,7 @@
     } from "../../../lib/crypto/secretKey";
     import signatures from "../../../lib/crypto/signatures";
     import { localToUtc } from "../../../lib/date";
+    import { normalizeSurveyQuestions } from "../../../lib/survey";
 
     let lastQuestionIdId = 0;
     let surveyTitle = "Untitled survey";
@@ -252,6 +253,24 @@
             toSign.description = {
                 cipher_text: surveyDescriptionEncrypted.cipherText,
                 iv: surveyDescriptionEncrypted.iv,
+            };
+        }
+
+        if (!allowMultipleSubmissions) {
+            const ipHmacKey = sodium.randombytes_buf(32);
+            const ipHmacKeyEncrypted = secretKey.encrypt(rawKey, ipHmacKey);
+
+            // Raw ipHmacKey sent what is then hashed by the server and
+            // discarded.
+            surveyPayload.ip = {
+                key: base64Encode(ipHmacKey, false),
+                cipher_text: ipHmacKeyEncrypted.cipherText,
+                iv: ipHmacKeyEncrypted.iv,
+            };
+
+            toSign.ip = {
+                cipher_text: ipHmacKeyEncrypted.cipherText,
+                iv: ipHmacKeyEncrypted.iv,
             };
         }
 

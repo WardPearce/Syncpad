@@ -5,11 +5,16 @@
     import { get } from "svelte/store";
     import CheckMark from "../components/CheckMark.svelte";
     import PageLoading from "../components/PageLoading.svelte";
+    import Incomplete from "../components/Survey/Submit/Incomplete.svelte";
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
     import apiClient from "../lib/apiClient";
-    import type { SurveyAnswerModel, SurveyPublicModel } from "../lib/client";
-    import { base64Decode } from "../lib/crypto/codecUtils";
+    import type {
+        SubmitSurveyModel,
+        SurveyAnswerModel,
+        SurveyPublicModel,
+    } from "../lib/client";
+    import { base64Decode, base64Encode } from "../lib/crypto/codecUtils";
     import hash from "../lib/crypto/hash";
     import publicKey from "../lib/crypto/publicKey";
     import secretKey from "../lib/crypto/secretKey";
@@ -32,6 +37,7 @@
 
     let rawPublicKey: Uint8Array;
     let rawSignPublicKey: Uint8Array;
+    let rawKey: Uint8Array;
 
     let showSubmitDialog = false;
     let errorMsg = "";
@@ -52,7 +58,6 @@
             return;
         }
 
-        let rawKey: Uint8Array;
         try {
             rawKey = base64Decode(b64EncodedRawKey, true);
         } catch {
@@ -170,11 +175,25 @@
             return;
         }
 
+        const createPayload: SubmitSurveyModel = {
+            answers: encryptedAnswers,
+        };
+
+        if (!survey.allow_multiple_submissions && survey.ip) {
+            createPayload.ip_key = base64Encode(
+                secretKey.decrypt(
+                    rawKey,
+                    survey.ip.iv,
+                    survey.ip.cipher_text,
+                    false
+                ),
+                false
+            );
+        }
+
         await apiClient.survey.controllersSurveySurveyIdSubmitSubmitSurvey(
             surveyId,
-            {
-                answers: encryptedAnswers,
-            }
+            createPayload
         );
 
         surveyCompleted = true;
@@ -228,11 +247,11 @@
         {/if}
         {#if !survey.allow_multiple_submissions}
             <p>
-                This survey only allows one submission per account. A salted
-                hash of your IP address will be stored in {import.meta.env
-                    .VITE_SITE_NAME} for 24 hours to ensure you can't submit the
-                survey again. Please contact the survey owner if you wish to disable
-                this.
+                This survey only allows one submission per account. A HMAC hash
+                of your IP address will be stored in {import.meta.env
+                    .VITE_SITE_NAME} for 7 days or until the survey closes to ensure
+                you can't submit the survey again. Please contact the survey owner
+                if you wish to disable this.
             </p>
         {/if}
         <nav class="right-align">
@@ -307,12 +326,7 @@
         </div>
 
         {#if submissionError}
-            <div class="extra-large-width" style="margin-top: 1em;">
-                <article class="error middle-align">
-                    <i>error</i>
-                    <span>There was an error with your submission.</span>
-                </article>
-            </div>
+            <Incomplete />
         {/if}
 
         <Title title={rawSurvey.title} description={rawSurvey.description} />
@@ -320,6 +334,10 @@
         {#each rawSurvey.questions as question}
             <Question {...question} bind:answer={question.answer} />
         {/each}
+
+        {#if submissionError}
+            <Incomplete />
+        {/if}
 
         <div class="extra-large-width" style="margin-top: 1em;">
             <nav class="right-align">

@@ -240,7 +240,7 @@ class SurveyController(Controller):
                 raise SurveyAlreadySubmittedException()
 
             response.set_cookie(
-                survey_id, "true", max_age=2074000, path=request.url.path
+                survey_id, "true", max_age=2074000, path=f"/api{request.url.path}"
             )
 
             if (

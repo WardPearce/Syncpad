@@ -1,6 +1,5 @@
-import { normalizeSurveyQuestions } from "../components/Survey/helpers";
 import type { rawChoice, rawQuestion } from "../components/Survey/types";
-import type { SurveyModel, SurveyPublicModel, SurveyQuestionModel, SurveyResultModel } from "./client";
+import type { SurveyChoicesModel, SurveyModel, SurveyPublicModel, SurveyQuestionModel, SurveyResultModel } from "./client";
 import publicKey from "./crypto/publicKey";
 import secretKey from "./crypto/secretKey";
 import signatures from "./crypto/signatures";
@@ -21,6 +20,45 @@ export interface RawSurvey {
   title: string;
   description: string | undefined;
   questions: RawQuestionAnswer[];
+}
+
+
+export function normalizeSurveyQuestions(questions: SurveyQuestionModel[]): SurveyQuestionModel[] {
+  let normalizedQuestions: SurveyQuestionModel[] = [];
+
+  questions.sort((a, b) => a.id - b.id).forEach((survey) => {
+    const normalizedChoices: SurveyChoicesModel[] = [];
+
+    if (survey.choices)
+      survey.choices.sort((a, b) => a.id - b.id).forEach(choice => {
+        normalizedChoices.push({
+          id: choice.id,
+          iv: choice.iv,
+          cipher_text: choice.cipher_text
+        });
+      });
+
+    normalizedQuestions.push({
+      id: survey.id,
+      regex: survey.regex ? {
+        iv: survey.regex.iv,
+        cipher_text: survey.regex.cipher_text
+      } : null,
+      description: survey.description ? {
+        iv: survey.description.iv,
+        cipher_text: survey.description.cipher_text
+      } : null,
+      question: {
+        iv: survey.question.iv,
+        cipher_text: survey.question.cipher_text
+      },
+      choices: normalizedChoices ? normalizedChoices : null,
+      required: survey.required,
+      type: survey.type
+    });
+  });
+
+  return normalizedQuestions;
 }
 
 
@@ -65,7 +103,6 @@ export function* decryptAnswers(
 
 }
 
-
 export function validateSurvey(rawSignPublicKey: Uint8Array, survey: SurveyModel | SurveyPublicModel) {
   const toValidate: Record<string, any> = {
     title: {
@@ -85,6 +122,13 @@ export function validateSurvey(rawSignPublicKey: Uint8Array, survey: SurveyModel
     toValidate.description = {
       cipher_text: survey.description.cipher_text,
       iv: survey.description.iv,
+    };
+  }
+
+  if (survey.ip) {
+    toValidate.ip = {
+      cipher_text: survey.ip.cipher_text,
+      iv: survey.ip.iv,
     };
   }
 

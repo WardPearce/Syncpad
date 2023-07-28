@@ -137,7 +137,7 @@ class __SurveySharedModel(BaseModel):
 
 
 class SurreyCreateIpModel(IvField):
-    key: str = Field(..., max_length=88)
+    key: str = Field(..., max_length=255)
     cipher_text: str = Field(
         ...,
         max_length=64,
@@ -150,17 +150,6 @@ class SurveyCreateModel(__SurveySharedModel):
     keypair: SurveyKeypairModel
     ip: Optional[SurreyCreateIpModel] = None
 
-    @validator("ip")
-    def ip_validator(
-        cls, v: Optional[SurreyCreateIpModel]
-    ) -> Optional[SurreyCreateIpModel]:
-        if v and not cls.allow_multiple_submissions:
-            raise ValueError(
-                "allow_multiple_submissions must be True if salt.ip is set"
-            )
-
-        return v
-
 
 class SurveyPublicModel(__SurveySharedModel, CustomJsonEncoder):
     created: datetime
@@ -168,6 +157,7 @@ class SurveyPublicModel(__SurveySharedModel, CustomJsonEncoder):
     user_id: ObjectId
     sign_keypair: SurveySignPublicKeyModel
     keypair: SurveyPublicKeyModel
+    ip: Optional[SurreyCreateIpModel] = None
 
 
 class SurveyModel(SurveyPublicModel, SurveyCreateModel):
