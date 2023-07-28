@@ -30,6 +30,7 @@
     let rawSurveyQuestions: Record<number, string> = {};
 
     let summaryResults: Record<number, string[] | Record<string, number>> = {};
+    let summaryResultCount: Record<number, number> = {};
 
     let rawSharedKey: Uint8Array;
     let rawPublicKey: Uint8Array;
@@ -92,7 +93,10 @@
                 if (answer.answer instanceof Array) {
                     if (!(answer.id in summaryResults)) {
                         summaryResults[answer.id] = {};
+                        summaryResultCount[answer.id] = 0;
                     }
+
+                    summaryResultCount[answer.id]++;
 
                     answer.answer.forEach((selectedChoice) => {
                         if (!(selectedChoice in surveyChoices[answer.id])) {
@@ -110,12 +114,16 @@
                 } else {
                     if (!(answer.id in summaryResults)) {
                         summaryResults[answer.id] = [];
+                        summaryResultCount[answer.id] = 0;
                     }
+
+                    summaryResultCount[answer.id]++;
 
                     (summaryResults[answer.id] as string[]).push(answer.answer);
                 }
 
                 summaryResults = { ...summaryResults };
+                summaryResultCount = { ...summaryResultCount };
             }
         };
     }
@@ -227,18 +235,38 @@
                 <PageLoading />
             {:else}
                 {#each Object.entries(rawSurveyQuestions) as [id, question]}
-                    <h5>{question}</h5>
-                    <ul>
+                    <article class="extra-large-width">
+                        <nav>
+                            <h5>{question}</h5>
+                            <p>({summaryResultCount[id]} responses)</p>
+                        </nav>
+
                         {#if summaryResults[id] instanceof Array}
-                            {#each summaryResults[id] as result}
-                                <li>{result}</li>
-                            {/each}
+                            <div
+                                style="max-height: 300px;overflow-y: auto;border-radius: 0;"
+                            >
+                                {#each summaryResults[id] as result}
+                                    <div class="row">
+                                        <div class="max">{result}</div>
+                                        <i>delete</i>
+                                    </div>
+                                {/each}
+                            </div>
                         {:else if summaryResults[id] instanceof Object}
-                            {#each Object.entries(summaryResults[id]) as [choice, result]}
-                                <li>{choice} - {result}</li>
-                            {/each}
+                            <div class="grid">
+                                {#each Object.entries(summaryResults[id]) as [choice, result]}
+                                    <div class="s12 m6 l4">
+                                        <article class="surface-variant">
+                                            <h6>{choice}</h6>
+                                            <p style="font-size: 2em;">
+                                                {result}
+                                            </p>
+                                        </article>
+                                    </div>
+                                {/each}
+                            </div>
                         {/if}
-                    </ul>
+                    </article>
                 {/each}
             {/if}
         {/if}

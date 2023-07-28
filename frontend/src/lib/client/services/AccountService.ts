@@ -19,41 +19,6 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Login
-     * Validate signature and OTP code
-     * @param captcha
-     * @param email
-     * @param requestBody
-     * @param otp
-     * @returns UserJtiModel Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailLoginLogin(
-        captcha: string,
-        email: string,
-        requestBody: UserLoginSignatureModel,
-        otp?: (null | string),
-    ): CancelablePromise<UserJtiModel> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/{email}/login',
-            path: {
-                'email': email,
-            },
-            query: {
-                'captcha': captcha,
-                'otp': otp,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                401: `No permission -- see authorization schemes`,
-            },
-        });
-    }
-
-    /**
      * VerifyEmail
      * Verify email for given account
      * @param email
@@ -102,6 +67,41 @@ export class AccountService {
     }
 
     /**
+     * Login
+     * Validate signature and OTP code
+     * @param captcha
+     * @param email
+     * @param requestBody
+     * @param otp
+     * @returns UserJtiModel Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailLoginLogin(
+        captcha: string,
+        email: string,
+        requestBody: UserLoginSignatureModel,
+        otp?: (null | string),
+    ): CancelablePromise<UserJtiModel> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/{email}/login',
+            path: {
+                'email': email,
+            },
+            query: {
+                'captcha': captcha,
+                'otp': otp,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                401: `No permission -- see authorization schemes`,
+            },
+        });
+    }
+
+    /**
      * ToSign
      * Used to generate a unique code to sign.
      * @param email
@@ -125,28 +125,6 @@ export class AccountService {
     }
 
     /**
-     * OtpSetup
-     * Used to confirm OTP is completed
-     * @param otp
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountOtpSetupOtpSetup(
-        otp: string,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/otp/setup',
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * ResetOtp
      * Reset OTP
      * @param otp
@@ -159,6 +137,28 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/otp/reset',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * OtpSetup
+     * Used to confirm OTP is completed
+     * @param otp
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpSetupOtpSetup(
+        otp: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/otp/setup',
             query: {
                 'otp': otp,
             },
@@ -211,27 +211,6 @@ export class AccountService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AddEmail
      * Enable email notification
      * @param requestBody
@@ -244,6 +223,27 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/email/add',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
