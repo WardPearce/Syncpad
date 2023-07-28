@@ -269,9 +269,6 @@ class SurveyController(Controller):
                 except (ValueError, binascii.Error):
                     raise SurveyKeyInvalidException()
 
-                if len(raw_ip_key) != 32:
-                    raise SurveyKeyInvalidException()
-
                 ip_hmac = hmac.HMAC(raw_ip_key, hashes.SHA256())
                 ip_hmac.update(request.client.host.encode())
 

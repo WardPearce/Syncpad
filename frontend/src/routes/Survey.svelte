@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import { navigate, useLocation } from "svelte-navigator";
     import { get } from "svelte/store";
+    import CheckMark from "../components/CheckMark.svelte";
     import PageLoading from "../components/PageLoading.svelte";
     import Question from "../components/Survey/Submit/Question.svelte";
     import Title from "../components/Survey/Submit/Title.svelte";
@@ -35,6 +36,7 @@
     let showSubmitDialog = false;
     let errorMsg = "";
     let submissionError = false;
+    let surveyCompleted = false;
 
     onMount(async () => {
         surveyLoading = true;
@@ -114,7 +116,10 @@
         submissionError = false;
 
         rawSurvey.questions.forEach((question) => {
-            if (!question.answer) {
+            if (
+                question.answer === null ||
+                typeof question.answer === "undefined"
+            ) {
                 if (question.required) {
                     question.error = "This question is required";
                     submissionError = true;
@@ -171,6 +176,8 @@
                 answers: encryptedAnswers,
             }
         );
+
+        surveyCompleted = true;
     }
 
     async function determineSubmitPrompt() {
@@ -182,6 +189,8 @@
 
 {#if surveyLoading}
     <PageLoading />
+{:else if surveyCompleted}
+    <CheckMark header="Survey submitted" />
 {:else if survey.requires_login && get(localSecrets) === null}
     <h4>This survey requires an account</h4>
     <p>Please login or register to continue.</p>

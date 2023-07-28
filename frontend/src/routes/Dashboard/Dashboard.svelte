@@ -1,13 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { link, navigate } from "svelte-navigator";
+  import { link } from "svelte-navigator";
 
-  import Image from "../../components/Image.svelte";
-  import SurveyCard from "../../components/Survey/SurveyCard.svelte";
+  import CanaryCard from "../../components/Dashboard/CanaryCard.svelte";
+  import SurveyCard from "../../components/Dashboard/SurveyCard.svelte";
   import apiClient from "../../lib/apiClient";
-  import { goToCanary } from "../../lib/canary";
   import type { CanaryModel, SurveyModel } from "../../lib/client";
-  import { concat } from "../../lib/misc";
 
   let canaries: CanaryModel[] = [];
   let surveys: SurveyModel[] = [];
@@ -39,41 +37,7 @@
 <div class="grid">
   {#if canaries.length > 0}
     {#each canaries as canary}
-      <div class="s12 m6 l4">
-        <article>
-          <div class="row">
-            <Image
-              src={`${canary.logo}`}
-              size="small"
-              alt={`Logo for ${canary.domain}`}
-            />
-            {#if canary.domain_verification.completed}
-              <button on:click={() => goToCanary(canary)} class="link-button">
-                <h6>{concat(canary.domain)}</h6>
-              </button>
-            {:else}
-              <h6>{concat(canary.domain)}</h6>
-            {/if}
-          </div>
-          <nav>
-            {#if canary.domain_verification.completed}
-              <a
-                href={`/dashboard/canary/publish/${canary.domain}/`}
-                class="button"
-                use:link>Publish Canary</a
-              >
-              <button class="border">Edit</button>
-            {:else}
-              <button
-                on:click={() =>
-                  navigate(`/dashboard/canary/verify-site/${canary.domain}/`, {
-                    replace: true,
-                  })}>Verify domain</button
-              >
-            {/if}
-          </nav>
-        </article>
-      </div>
+      <CanaryCard {canary} />
     {/each}
   {/if}
   <div class="s12 m6 l4">

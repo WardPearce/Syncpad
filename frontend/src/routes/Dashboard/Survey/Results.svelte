@@ -51,7 +51,7 @@
             ).replace(
                 "https://",
                 ""
-            )}/controllers/survey/64b891ac33bdfe6a9d418eb6/responses/realtime?pull_history=${pullHistory}`
+            )}/controllers/survey/${surveyId}/responses/realtime?pull_history=${pullHistory}`
         );
     }
 
@@ -238,19 +238,26 @@
                     <article class="extra-large-width">
                         <nav>
                             <h5>{question}</h5>
-                            <p>({summaryResultCount[id]} responses)</p>
+                            {#if id in summaryResultCount}
+                                <p>({summaryResultCount[id]} responses)</p>
+                            {:else}
+                                <p>(No responses)</p>
+                            {/if}
                         </nav>
 
                         {#if summaryResults[id] instanceof Array}
                             <div
                                 style="max-height: 300px;overflow-y: auto;border-radius: 0;"
                             >
-                                {#each summaryResults[id] as result}
-                                    <div class="row">
-                                        <div class="max">{result}</div>
-                                        <i>delete</i>
-                                    </div>
-                                {/each}
+                                <ul>
+                                    {#each summaryResults[id] as result}
+                                        <li style="margin-top: 1em;">
+                                            <article class="surface-variant">
+                                                <p>{result}</p>
+                                            </article>
+                                        </li>
+                                    {/each}
+                                </ul>
                             </div>
                         {:else if summaryResults[id] instanceof Object}
                             <div class="grid">

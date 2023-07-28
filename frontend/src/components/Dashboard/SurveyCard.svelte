@@ -13,6 +13,7 @@
 
     let isLoading = true;
     let rawTitle: string;
+    let rawDescription: string | null | undefined;
     let rawKey: Uint8Array;
 
     onMount(() => {
@@ -29,6 +30,14 @@
             survey.title.cipher_text,
             true
         ) as string;
+
+        if (survey.description)
+            rawDescription = secretKey.decrypt(
+                rawKey,
+                survey.description.iv,
+                survey.description.cipher_text,
+                true
+            ) as string;
 
         isLoading = false;
     });
@@ -56,12 +65,17 @@
 {#if !isLoading}
     <div class="s12 m6 l4">
         <article>
-            <nav>
+            <nav class="wrap" style="margin-bottom: 1em;">
                 <button class="link-button" on:click={goToSurvey}>
                     <h6>{concat(rawTitle, 12)}</h6>
                 </button>
                 <p>{relativeDate(survey.created)}</p>
             </nav>
+            {#if rawDescription}
+                <p>{concat(rawDescription, 40)}</p>
+            {:else}
+                <p>No description</p>
+            {/if}
             <nav class="wrap">
                 <button
                     on:click={() =>
