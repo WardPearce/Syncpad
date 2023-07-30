@@ -93,12 +93,13 @@ class Survey:
 
     async def submit(
         self, answers: SubmitSurveyModel, user_id: Optional[ObjectId] = None
-    ) -> None:
-        await self._state.mongo.survey_answer.insert_one(
-            {
-                **answers.dict(),
-                "survey_id": self._survey_id,
-                "created": datetime.utcnow(),
-                "user_id": user_id,
-            }
-        )
+    ) -> SurveyResultModel:
+        insert = {
+            **answers.dict(),
+            "survey_id": self._survey_id,
+            "created": datetime.utcnow(),
+            "user_id": user_id,
+        }
+        await self._state.mongo.survey_answer.insert_one(**insert)
+
+        return SurveyResultModel(**insert)

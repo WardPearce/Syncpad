@@ -21,7 +21,7 @@
     import {
         decryptSurveyQuestions,
         validateSurvey,
-        type RawSurvey,
+        type rawSurvey,
     } from "../lib/survey";
     import { localSecrets } from "../stores";
 
@@ -33,7 +33,7 @@
     let surveyLoading = true;
 
     let survey: SurveyPublicModel;
-    let rawSurvey: RawSurvey;
+    let rawSurvey: rawSurvey;
 
     let rawPublicKey: Uint8Array;
     let rawSignPublicKey: Uint8Array;

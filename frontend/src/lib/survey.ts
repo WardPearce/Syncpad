@@ -5,21 +5,21 @@ import secretKey from "./crypto/secretKey";
 import signatures from "./crypto/signatures";
 
 
-export interface RawQuestionAnswer extends rawQuestion {
+export interface rawQuestionAnswer extends rawQuestion {
   answer: number | number[] | string | null;
   error: string | null;
 }
 
-export interface RawAnswer {
+export interface rawAnswer {
   id: number;
   type: SurveyQuestionModel.type;
   answer: string | string[];
 }
 
-export interface RawSurvey {
+export interface rawSurvey {
   title: string;
   description: string | undefined;
-  questions: RawQuestionAnswer[];
+  questions: rawQuestionAnswer[];
 }
 
 
@@ -66,7 +66,7 @@ export function* decryptAnswers(
   rawPublicKey: Uint8Array,
   rawPrivateKey: Uint8Array,
   result: SurveyResultModel
-): Generator<RawAnswer> {
+): Generator<rawAnswer> {
 
   for (const answer of result.answers) {
     if (answer.answer instanceof Array) {
@@ -140,8 +140,8 @@ export function validateSurvey(rawSignPublicKey: Uint8Array, survey: SurveyModel
 
 }
 
-export function decryptSurveyQuestions(rawKey: Uint8Array, survey: SurveyModel | SurveyPublicModel): RawSurvey {
-  const rawQuestions: RawQuestionAnswer[] = [];
+export function decryptSurveyQuestions(rawKey: Uint8Array, survey: SurveyModel | SurveyPublicModel): rawSurvey {
+  const rawQuestions: rawQuestionAnswer[] = [];
 
   const rawTitle = secretKey.decrypt(
     rawKey,

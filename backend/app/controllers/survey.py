@@ -298,9 +298,9 @@ class SurveyController(Controller):
             if geoip_lookup and geoip_lookup["proxy"] == "yes":
                 raise SurveyProxyBlockException()
 
-        await Survey(state, id_).submit(data, user_id=user_id)
+        inserted = await Survey(state, id_).submit(data, user_id=user_id)
 
-        channels.publish(data.json(by_alias=True), f"survey.results.{survey_id}")
+        channels.publish(inserted.json(by_alias=True), f"survey.results.{survey_id}")
 
         return response
 

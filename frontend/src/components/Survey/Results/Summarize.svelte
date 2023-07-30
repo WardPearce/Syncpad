@@ -3,19 +3,18 @@
 
     import apiClient from "../../../lib/apiClient";
     import type { SurveyResultModel } from "../../../lib/client";
-    import { decryptAnswers, type RawSurvey } from "../../../lib/survey";
+    import { decryptAnswers, type rawSurvey } from "../../../lib/survey";
     import PageLoading from "../../PageLoading.svelte";
+    import type { rawSurveyQuestions } from "../types";
 
     export let surveyId: string;
     export let rawPublicKey: Uint8Array;
     export let rawPrivateKey: Uint8Array;
-    export let rawSurvey: RawSurvey;
-    export let rawSurveyQuestions: Record<number, string> = {};
+    export let rawSurvey: rawSurvey;
+    export let rawSurveyQuestions: rawSurveyQuestions;
 
     let summaryResults: Record<number, string[] | Record<string, number>> = {};
     let summaryResultCount: Record<number, number> = {};
-
-    let isLoading = true;
 
     let ws: WebSocket;
     let wsReconnect = true;
@@ -32,7 +31,7 @@
         );
     }
 
-    function asSummary() {
+    onMount(async () => {
         summaryResults = {};
 
         ws = createWs(true);
@@ -118,14 +117,6 @@
                 summaryResultCount = { ...summaryResultCount };
             }
         };
-    }
-
-    onMount(async () => {
-        isLoading = true;
-
-        await asSummary();
-
-        isLoading = false;
     });
 
     onDestroy(() => {
@@ -139,16 +130,21 @@
 {#if Object.keys(summaryResults).length === 0}
     <PageLoading />
 {:else}
-    {#each Object.entries(rawSurveyQuestions) as [id, question]}
+    {#each Object.entries(rawSurveyQuestions) as [id, details]}
         <article class="extra-large-width">
-            <nav>
-                <h5>{question}</h5>
-                {#if id in summaryResultCount}
-                    <p>({summaryResultCount[id]} responses)</p>
-                {:else}
-                    <p>(No responses)</p>
-                {/if}
-            </nav>
+            <h5>
+                {details.question}
+                <span style="font-size: .5em; margin-left: 1em;">
+                    {#if id in summaryResultCount}
+                        ({summaryResultCount[id]} responses)
+                    {:else}
+                        (No responses)
+                    {/if}
+                </span>
+            </h5>
+            {#if details.description}
+                <p>{details.description}</p>
+            {/if}
 
             {#if summaryResults[id] instanceof Array}
                 <div

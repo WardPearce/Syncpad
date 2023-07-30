@@ -14,3 +14,7 @@ export type rawQuestion = {
   question: string;
   type: SurveyQuestionModel.type;
 };
+
+export type rawSurveyQuestions = {
+  [key: number]: rawQuestion;
+};

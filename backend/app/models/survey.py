@@ -181,11 +181,14 @@ class SurveyAnswerModel(CustomJsonEncoder):
             raise ValueError("Only multiple choice types can have multiple answers")
 
 
-class SubmitSurveyModel(CustomJsonEncoder):
+class __SurveyResultModel(CustomJsonEncoder):
     answers: List[SurveyAnswerModel] = Field(..., min_items=1, max_items=128)
+
+
+class SubmitSurveyModel(__SurveyResultModel):
     ip_key: Optional[str] = Field(None, max_length=88)
 
 
-class SurveyResultModel(SubmitSurveyModel):
+class SurveyResultModel(__SurveyResultModel):
     survey_id: ObjectId
     created: datetime

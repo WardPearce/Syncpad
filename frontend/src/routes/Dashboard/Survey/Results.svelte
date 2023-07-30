@@ -3,8 +3,10 @@
     import { onDestroy, onMount } from "svelte";
 
     import PageLoading from "../../../components/PageLoading.svelte";
+    import Individual from "../../../components/Survey/Results/Individual.svelte";
     import Summarize from "../../../components/Survey/Results/Summarize.svelte";
     import Title from "../../../components/Survey/Submit/Title.svelte";
+    import type { rawSurveyQuestions } from "../../../components/Survey/types";
     import apiClient from "../../../lib/apiClient";
     import type { SurveyModel } from "../../../lib/client";
     import secretKey, {
@@ -13,7 +15,7 @@
     import {
         decryptSurveyQuestions,
         validateSurvey,
-        type RawSurvey,
+        type rawSurvey,
     } from "../../../lib/survey";
 
     export let surveyId: string;
@@ -23,11 +25,11 @@
         summary,
     }
 
-    let mode = ResponseMode.summary;
+    let mode = ResponseMode.individual;
 
     let survey: SurveyModel;
-    let rawSurvey: RawSurvey;
-    let rawSurveyQuestions: Record<number, string> = {};
+    let rawSurvey: rawSurvey;
+    let rawSurveyQuestions: rawSurveyQuestions = {};
 
     let rawSharedKey: Uint8Array;
     let rawPublicKey: Uint8Array;
@@ -39,18 +41,6 @@
 
     let ws: WebSocket;
     let wsReconnect = true;
-
-    function createWs(pullHistory: boolean): WebSocket {
-        return new WebSocket(
-            `ws://${apiClient.request.config.BASE.replace(
-                "http://",
-                ""
-            ).replace(
-                "https://",
-                ""
-            )}/controllers/survey/${surveyId}/responses/realtime?pull_history=${pullHistory}`
-        );
-    }
 
     onMount(async () => {
         isLoading = true;
@@ -86,6 +76,7 @@
             survey.sign_keypair.cipher_text,
             false
         ) as Uint8Array;
+        // Extract public key from private key, prevents MITM attacks.
         rawSignPublicKey =
             sodium.crypto_sign_ed25519_sk_to_pk(rawSignPrivateKey);
 
@@ -94,7 +85,7 @@
         rawSurvey = decryptSurveyQuestions(rawSharedKey, survey);
 
         rawSurvey.questions.forEach((question) => {
-            rawSurveyQuestions[question.id] = question.question;
+            rawSurveyQuestions[question.id] = question;
         });
 
         isLoading = false;
@@ -137,6 +128,13 @@
                 {rawSurveyQuestions}
                 {rawPrivateKey}
                 {rawPublicKey}
+            />
+        {:else}
+            <Individual
+                {surveyId}
+                {rawPublicKey}
+                {rawPrivateKey}
+                {rawSurveyQuestions}
             />
         {/if}
     </div>

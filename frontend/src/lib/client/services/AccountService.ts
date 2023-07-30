@@ -19,41 +19,6 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Login
-     * Validate signature and OTP code
-     * @param captcha
-     * @param email
-     * @param requestBody
-     * @param otp
-     * @returns UserJtiModel Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailLoginLogin(
-        captcha: string,
-        email: string,
-        requestBody: UserLoginSignatureModel,
-        otp?: (null | string),
-    ): CancelablePromise<UserJtiModel> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/{email}/login',
-            path: {
-                'email': email,
-            },
-            query: {
-                'captcha': captcha,
-                'otp': otp,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                401: `No permission -- see authorization schemes`,
-            },
-        });
-    }
-
-    /**
      * ToSign
      * Used to generate a unique code to sign.
      * @param email
@@ -125,23 +90,36 @@ export class AccountService {
     }
 
     /**
-     * ResetOtp
-     * Reset OTP
+     * Login
+     * Validate signature and OTP code
+     * @param captcha
+     * @param email
+     * @param requestBody
      * @param otp
-     * @returns OtpModel Request fulfilled, document follows
+     * @returns UserJtiModel Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountOtpResetResetOtp(
-        otp: string,
-    ): CancelablePromise<OtpModel> {
+    public controllersAccountEmailLoginLogin(
+        captcha: string,
+        email: string,
+        requestBody: UserLoginSignatureModel,
+        otp?: (null | string),
+    ): CancelablePromise<UserJtiModel> {
         return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/otp/reset',
+            method: 'POST',
+            url: '/controllers/account/{email}/login',
+            path: {
+                'email': email,
+            },
             query: {
+                'captcha': captcha,
                 'otp': otp,
             },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
+                401: `No permission -- see authorization schemes`,
             },
         });
     }
@@ -169,20 +147,21 @@ export class AccountService {
     }
 
     /**
-     * RemoveWebhook
-     * Remove a webhook
-     * @param requestBody
-     * @returns void
+     * ResetOtp
+     * Reset OTP
+     * @param otp
+     * @returns OtpModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<void> {
+    public controllersAccountOtpResetResetOtp(
+        otp: string,
+    ): CancelablePromise<OtpModel> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/notifications/webhook/remove',
-            body: requestBody,
-            mediaType: 'application/json',
+            url: '/controllers/account/otp/reset',
+            query: {
+                'otp': otp,
+            },
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -202,6 +181,27 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/webhook/add',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * RemoveWebhook
+     * Remove a webhook
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/notifications/webhook/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -253,18 +253,6 @@ export class AccountService {
     }
 
     /**
-     * IpProgressing
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/privacy/ip-progressing/disallow',
-        });
-    }
-
-    /**
      * IpProgressingConsent
      * @returns any Document created, URL follows
      * @throws ApiError
@@ -273,6 +261,18 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/privacy/ip-progressing/consent',
+        });
+    }
+
+    /**
+     * IpProgressing
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/privacy/ip-progressing/disallow',
         });
     }
 
