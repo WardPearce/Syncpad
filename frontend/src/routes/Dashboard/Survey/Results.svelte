@@ -111,6 +111,22 @@
 
                         summaryResults[answer.id][choice]++;
                     });
+                } else if (answer.type === 3) {
+                    if (!(answer.id in summaryResults)) {
+                        summaryResults[answer.id] = {};
+                        summaryResultCount[answer.id] = 0;
+                    }
+
+                    summaryResultCount[answer.id]++;
+
+                    const choice =
+                        surveyChoices[answer.id][Number(answer.answer)];
+
+                    if (!(choice in summaryResults[answer.id])) {
+                        summaryResults[answer.id][choice] = 0;
+                    }
+
+                    summaryResults[answer.id][choice]++;
                 } else {
                     if (!(answer.id in summaryResults)) {
                         summaryResults[answer.id] = [];

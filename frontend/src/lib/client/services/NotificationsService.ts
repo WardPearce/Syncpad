@@ -11,27 +11,6 @@ export class NotificationsService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * AddWebhook
-     * Add a webhook
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookAddAddWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/notifications/webhook/add',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * RemoveWebhook
      * Remove a webhook
      * @param requestBody
@@ -53,18 +32,18 @@ export class NotificationsService {
     }
 
     /**
-     * AddEmail
-     * Enable email notification
+     * AddWebhook
+     * Add a webhook
      * @param requestBody
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountNotificationsEmailAddAddEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    public controllersAccountNotificationsWebhookAddAddWebhook(
+        requestBody: WebhookModel,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/account/notifications/email/add',
+            url: '/controllers/account/notifications/webhook/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -86,6 +65,27 @@ export class NotificationsService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/notifications/email/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * AddEmail
+     * Enable email notification
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsEmailAddAddEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/notifications/email/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
