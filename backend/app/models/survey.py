@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import Enum, IntEnum
+from enum import Enum
 from typing import List, Optional, Union
 
 from bson import ObjectId

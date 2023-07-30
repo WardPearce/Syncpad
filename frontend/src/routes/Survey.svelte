@@ -241,8 +241,8 @@
                 using a proxy or VPN regardless of your account IP processing
                 preference. {#if survey.allow_multiple_submissions}Your IP is
                     not stored after processing by {import.meta.env
-                        .VITE_SITE_NAME}{/if}. Please contact the survey owner
-                if you wish to disable this.
+                        .VITE_SITE_NAME}.{/if} Please contact the survey owner if
+                you wish to disable this.
             </p>
         {/if}
         {#if !survey.allow_multiple_submissions}
@@ -268,7 +268,7 @@
                 <div class="chip surface-variant small">
                     <i class="primary-text">security</i>
                     <div class="tooltip bottom">
-                        This survey is end-to-end encrypted.
+                        This survey is end-to-end encrypted
                     </div>
                 </div>
                 <div class="chip surface-variant small">

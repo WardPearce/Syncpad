@@ -3,14 +3,14 @@
     import { onDestroy, onMount } from "svelte";
 
     import PageLoading from "../../../components/PageLoading.svelte";
+    import Summarize from "../../../components/Survey/Results/Summarize.svelte";
     import Title from "../../../components/Survey/Submit/Title.svelte";
     import apiClient from "../../../lib/apiClient";
-    import type { SurveyModel, SurveyResultModel } from "../../../lib/client";
+    import type { SurveyModel } from "../../../lib/client";
     import secretKey, {
         SecretkeyLocation,
     } from "../../../lib/crypto/secretKey";
     import {
-        decryptAnswers,
         decryptSurveyQuestions,
         validateSurvey,
         type RawSurvey,
@@ -28,9 +28,6 @@
     let survey: SurveyModel;
     let rawSurvey: RawSurvey;
     let rawSurveyQuestions: Record<number, string> = {};
-
-    let summaryResults: Record<number, string[] | Record<string, number>> = {};
-    let summaryResultCount: Record<number, number> = {};
 
     let rawSharedKey: Uint8Array;
     let rawPublicKey: Uint8Array;
@@ -53,113 +50,6 @@
                 ""
             )}/controllers/survey/${surveyId}/responses/realtime?pull_history=${pullHistory}`
         );
-    }
-
-    function asSummary() {
-        summaryResults = {};
-        mode = ResponseMode.summary;
-
-        ws = createWs(true);
-
-        ws.onclose = () => {
-            if (wsReconnect) {
-                ws = createWs(true);
-            }
-        };
-
-        const surveyChoices: Record<number, Record<number, string>> = {};
-        rawSurvey.questions.forEach((question) => {
-            if (question.choices.length > 0) {
-                if (!(question.id in surveyChoices))
-                    surveyChoices[question.id] = {};
-
-                question.choices.forEach((choice) => {
-                    surveyChoices[question.id][choice.id.toString()] =
-                        choice.choice;
-                });
-            }
-        });
-
-        ws.onmessage = (event: MessageEvent<any>) => {
-            const data = JSON.parse(
-                JSON.parse(event.data)
-            ) as SurveyResultModel;
-
-            for (const answer of decryptAnswers(
-                rawPublicKey,
-                rawPrivateKey,
-                data
-            )) {
-                if (answer.answer instanceof Array) {
-                    if (!(answer.id in summaryResults)) {
-                        summaryResults[answer.id] = {};
-                        summaryResultCount[answer.id] = 0;
-                    }
-
-                    summaryResultCount[answer.id]++;
-
-                    answer.answer.forEach((selectedChoice) => {
-                        if (!(selectedChoice in surveyChoices[answer.id])) {
-                            return;
-                        }
-
-                        const choice = surveyChoices[answer.id][selectedChoice];
-
-                        if (!(choice in summaryResults[answer.id])) {
-                            summaryResults[answer.id][choice] = 0;
-                        }
-
-                        summaryResults[answer.id][choice]++;
-                    });
-                } else if (answer.type === 3) {
-                    if (!(answer.id in summaryResults)) {
-                        summaryResults[answer.id] = {};
-                        summaryResultCount[answer.id] = 0;
-                    }
-
-                    summaryResultCount[answer.id]++;
-
-                    const choice =
-                        surveyChoices[answer.id][Number(answer.answer)];
-
-                    if (!(choice in summaryResults[answer.id])) {
-                        summaryResults[answer.id][choice] = 0;
-                    }
-
-                    summaryResults[answer.id][choice]++;
-                } else {
-                    if (!(answer.id in summaryResults)) {
-                        summaryResults[answer.id] = [];
-                        summaryResultCount[answer.id] = 0;
-                    }
-
-                    summaryResultCount[answer.id]++;
-
-                    (summaryResults[answer.id] as string[]).push(answer.answer);
-                }
-
-                summaryResults = { ...summaryResults };
-                summaryResultCount = { ...summaryResultCount };
-            }
-        };
-    }
-
-    async function asIndividual() {
-        summaryResults = {};
-        mode = ResponseMode.individual;
-
-        if (ws) {
-            wsReconnect = false;
-            ws.close();
-        }
-
-        const result =
-            await apiClient.survey.controllersSurveySurveyIdResponsesPageGetResponse(
-                surveyId,
-                0
-            );
-
-        // decryptAnswers(rawPublicKey, rawPrivateKey, result);
     }
 
     onMount(async () => {
@@ -207,12 +97,6 @@
             rawSurveyQuestions[question.id] = question.question;
         });
 
-        if (mode === ResponseMode.individual) {
-            await asIndividual();
-        } else {
-            await asSummary();
-        }
-
         isLoading = false;
     });
 
@@ -231,12 +115,12 @@
         <div class="extra-large-width" style="margin-top: .5em;">
             <nav class="wrap">
                 {#if mode === ResponseMode.individual}
-                    <button on:click={asSummary}>
+                    <button on:click={() => (mode = ResponseMode.summary)}>
                         <i>summarize</i>
                         <span>Summarize responses</span>
                     </button>
                 {:else}
-                    <button on:click={asIndividual}>
+                    <button on:click={() => (mode = ResponseMode.individual)}>
                         <i>call_to_action</i>
                         <span>Individual responses</span>
                     </button>
@@ -247,51 +131,13 @@
         <Title title={rawSurvey.title} description={rawSurvey.description} />
 
         {#if mode === ResponseMode.summary}
-            {#if Object.keys(summaryResults).length === 0}
-                <PageLoading />
-            {:else}
-                {#each Object.entries(rawSurveyQuestions) as [id, question]}
-                    <article class="extra-large-width">
-                        <nav>
-                            <h5>{question}</h5>
-                            {#if id in summaryResultCount}
-                                <p>({summaryResultCount[id]} responses)</p>
-                            {:else}
-                                <p>(No responses)</p>
-                            {/if}
-                        </nav>
-
-                        {#if summaryResults[id] instanceof Array}
-                            <div
-                                style="max-height: 300px;overflow-y: auto;border-radius: 0;"
-                            >
-                                <ul>
-                                    {#each summaryResults[id] as result}
-                                        <li style="margin-top: 1em;">
-                                            <article class="surface-variant">
-                                                <p>{result}</p>
-                                            </article>
-                                        </li>
-                                    {/each}
-                                </ul>
-                            </div>
-                        {:else if summaryResults[id] instanceof Object}
-                            <div class="grid">
-                                {#each Object.entries(summaryResults[id]) as [choice, result]}
-                                    <div class="s12 m6 l4">
-                                        <article class="surface-variant">
-                                            <h6>{choice}</h6>
-                                            <p style="font-size: 2em;">
-                                                {result}
-                                            </p>
-                                        </article>
-                                    </div>
-                                {/each}
-                            </div>
-                        {/if}
-                    </article>
-                {/each}
-            {/if}
+            <Summarize
+                {surveyId}
+                {rawSurvey}
+                {rawSurveyQuestions}
+                {rawPrivateKey}
+                {rawPublicKey}
+            />
         {/if}
     </div>
 {/if}
