@@ -16,6 +16,7 @@
     emailVerificationRequired,
     isDarkMode,
     localSecrets,
+    showNav,
     type LocalSecretsModel,
   } from "./stores";
 
@@ -63,43 +64,45 @@
 </script>
 
 <Router primary={false}>
-  <header class="mobile-nav" class:surface-variant={!darkMode}>
-    <nav>
-      <button
-        class="circle transparent"
-        on:click={() => (mobileNavShow = true)}
-      >
-        <i>menu</i>
-      </button>
-    </nav>
-  </header>
-
-  <dialog
-    class="modal left"
-    class:active={mobileNavShow}
-    class:surface-variant={!darkMode}
-  >
-    <header class="fixed">
-      <nav style="display: flex;justify-content: space-between;">
-        <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
-          <div class="logo">
-            <Logo />
-          </div>
-        </a>
+  {#if $showNav}
+    <header class="mobile-nav" class:surface-variant={!darkMode}>
+      <nav>
         <button
-          class="transparent circle large"
-          on:click={() => (mobileNavShow = false)}
+          class="circle transparent"
+          on:click={() => (mobileNavShow = true)}
         >
-          <i>close</i>
+          <i>menu</i>
         </button>
       </nav>
     </header>
-    <NavItems isMobile={true} />
-  </dialog>
 
-  <nav class="m l left" class:surface-variant={!darkMode}>
-    <NavItems isMobile={false} />
-  </nav>
+    <dialog
+      class="modal left"
+      class:active={mobileNavShow}
+      class:surface-variant={!darkMode}
+    >
+      <header class="fixed">
+        <nav style="display: flex;justify-content: space-between;">
+          <a href={loggedInUser === undefined ? "/" : "/dashboard"} use:link>
+            <div class="logo">
+              <Logo />
+            </div>
+          </a>
+          <button
+            class="transparent circle large"
+            on:click={() => (mobileNavShow = false)}
+          >
+            <i>close</i>
+          </button>
+        </nav>
+      </header>
+      <NavItems isMobile={true} />
+    </dialog>
+
+    <nav class="m l left" class:surface-variant={!darkMode}>
+      <NavItems isMobile={false} />
+    </nav>
+  {/if}
 
   <main class="responsive">
     {#if emailVerification}
@@ -171,6 +174,7 @@
     </LazyRoute>
     <LazyRoute
       path="/email-verified"
+      requiresAuth={true}
       component={() => import("./routes/EmailVerified.svelte")}
     >
       <PageLoading />

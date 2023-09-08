@@ -114,8 +114,7 @@
             let regexEncrypted: encryptedData | null = null;
             if (question.regex) {
                 if (!safe(question.regex)) {
-                    // Display error that Regex won't be loaded
-                    // on survey.
+                    return;
                 }
 
                 regexEncrypted = secretKey.encrypt(rawKey, question.regex);

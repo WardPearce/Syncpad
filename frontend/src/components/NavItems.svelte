@@ -134,15 +134,6 @@
   <span>Trusted Canaries</span>
 </a>
 <a
-  use:link
-  href="/"
-  class:active={currentPage === "/"}
-  class={isMobile ? "row round" : ""}
->
-  <i>article</i>
-  <span>About</span>
-</a>
-<a
   target="_blank"
   referrerpolicy="no-referrer"
   href="https://github.com/WardPearce/Purplix.io"

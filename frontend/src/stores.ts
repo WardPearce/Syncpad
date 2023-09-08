@@ -6,6 +6,7 @@ export const themeStore = writable({});
 
 export const isDarkMode = writable(true);
 
+export const showNav = writable(true);
 
 export interface LocalSecretsModel {
     email: string;

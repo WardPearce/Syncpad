@@ -90,32 +90,6 @@ export class CanaryService {
     }
 
     /**
-     * Publish
-     * Publish a canary
-     * @param warrantId
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryWarrantWarrantIdPublishPublish(
-        warrantId: string,
-        requestBody: PublishCanaryWarrantModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/warrant/{warrant_id}/publish',
-            path: {
-                'warrant_id': warrantId,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * UploadDocument
      * Upload a canary warrant document
      * @param warrantId
@@ -145,6 +119,112 @@ export class CanaryService {
     }
 
     /**
+     * Publish
+     * Publish a canary
+     * @param warrantId
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryWarrantWarrantIdPublishPublish(
+        warrantId: string,
+        requestBody: PublishCanaryWarrantModel,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/warrant/{warrant_id}/publish',
+            path: {
+                'warrant_id': warrantId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * GetCanary
+     * Get private details about a canary
+     * @param domain
+     * @returns CanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainGetCanary(
+        domain: string,
+    ): CancelablePromise<CanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * CreateWarrant
+     * Create a warrant for a canary
+     * @param domain
+     * @param otp
+     * @param requestBody
+     * @returns CreatedCanaryWarrantModel Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainCreateWarrantCreateWarrant(
+        domain: string,
+        otp: string,
+        requestBody: CreateCanaryWarrantModel,
+    ): CancelablePromise<CreatedCanaryWarrantModel> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/{domain}/create/warrant',
+            path: {
+                'domain': domain,
+            },
+            query: {
+                'otp': otp,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * DeleteCanary
+     * Delete a canary
+     * @param domain
+     * @param otp
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersCanaryDomainDeleteDeleteCanary(
+        domain: string,
+        otp: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/canary/{domain}/delete',
+            path: {
+                'domain': domain,
+            },
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * Verify
      * Verify domain ownership via DNS
      * @param domain
@@ -157,6 +237,54 @@ export class CanaryService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/canary/{domain}/verify',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * UpdateLogo
+     * Update logo for given domain
+     * @param domain
+     * @param formData
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainLogoUpdateUpdateLogo(
+        domain: string,
+        formData: Array<string>,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/{domain}/logo/update',
+            path: {
+                'domain': domain,
+            },
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicCanary
+     * Get public details about canary
+     * @param domain
+     * @returns PublicCanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainPublicPublicCanary(
+        domain: string,
+    ): CancelablePromise<PublicCanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}/public',
             path: {
                 'domain': domain,
             },
@@ -215,134 +343,6 @@ export class CanaryService {
     }
 
     /**
-     * GetCanary
-     * Get private details about a canary
-     * @param domain
-     * @returns CanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainGetCanary(
-        domain: string,
-    ): CancelablePromise<CanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * DeleteCanary
-     * Delete a canary
-     * @param domain
-     * @param otp
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersCanaryDomainDeleteDeleteCanary(
-        domain: string,
-        otp: string,
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/canary/{domain}/delete',
-            path: {
-                'domain': domain,
-            },
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * PublicCanary
-     * Get public details about canary
-     * @param domain
-     * @returns PublicCanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainPublicPublicCanary(
-        domain: string,
-    ): CancelablePromise<PublicCanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}/public',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * UpdateLogo
-     * Update logo for given domain
-     * @param domain
-     * @param formData
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainLogoUpdateUpdateLogo(
-        domain: string,
-        formData: Array<string>,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/{domain}/logo/update',
-            path: {
-                'domain': domain,
-            },
-            formData: formData,
-            mediaType: 'multipart/form-data',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * CreateWarrant
-     * Create a warrant for a canary
-     * @param domain
-     * @param otp
-     * @param requestBody
-     * @returns CreatedCanaryWarrantModel Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainCreateWarrantCreateWarrant(
-        domain: string,
-        otp: string,
-        requestBody: CreateCanaryWarrantModel,
-    ): CancelablePromise<CreatedCanaryWarrantModel> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/{domain}/create/warrant',
-            path: {
-                'domain': domain,
-            },
-            query: {
-                'otp': otp,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * Subscribe
      * Subscribe to a canary
      * @param canaryId
@@ -365,28 +365,6 @@ export class CanaryService {
     }
 
     /**
-     * AmSubscribed
-     * Check if user is subscribed to a canary
-     * @param canaryId
-     * @returns boolean Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanarySubscriptionCanaryIdAmSubscribed(
-        canaryId: string,
-    ): CancelablePromise<boolean> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/subscription/{canary_id}',
-            path: {
-                'canary_id': canaryId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * Unsubscribe
      * Unsubscribe from a canary
      * @param canaryId
@@ -399,6 +377,28 @@ export class CanaryService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
+            path: {
+                'canary_id': canaryId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * AmSubscribed
+     * Check if user is subscribed to a canary
+     * @param canaryId
+     * @returns boolean Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanarySubscriptionCanaryIdAmSubscribed(
+        canaryId: string,
+    ): CancelablePromise<boolean> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/subscription/{canary_id}',
             path: {
                 'canary_id': canaryId,
             },
