@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import { link, navigate } from "svelte-navigator";
     import { get } from "svelte/store";
@@ -16,7 +16,7 @@
 
     const words = ["customers", "family", "employees", "friends"];
     let wordsIndex = 0;
-    let roller;
+    let roller: NodeJS.Timer;
 
     onMount(() => {
         roller = setInterval(() => {
@@ -36,7 +36,7 @@
             <Logo />
         </div>
         <div>
-            <a use:link href="/register" class="chip fill">Register</a>
+            <a use:link href="/register" class="chip fill">Get started</a>
             <a use:link href="/login" class="chip">Login</a>
         </div>
     </nav>
