@@ -5,6 +5,7 @@
         decryptAnswers,
         type rawQuestionAnswer,
     } from "../../../lib/survey";
+    import Question from "../Submit/Question.svelte";
     import type { rawSurveyQuestions } from "../types";
 
     export let surveyId: string;
@@ -16,21 +17,55 @@
     let individualResult: rawQuestionAnswer[] = [];
 
     async function loadResult() {
+        individualResult = [];
+
         const result =
             await apiClient.survey.controllersSurveySurveyIdResponsesPageGetResponse(
                 surveyId,
                 page
             );
 
+        let resultAnswer: number | number[] | string;
         for (const answer of decryptAnswers(
             rawPublicKey,
             rawPrivateKey,
             result
         )) {
+            if (!(answer.answer instanceof Array)) {
+                if (!isNaN(Number(answer.answer))) {
+                    resultAnswer = Number(answer.answer);
+                } else {
+                    resultAnswer = answer.answer;
+                }
+            } else {
+                resultAnswer = [];
+                answer.answer.forEach((answerId) =>
+                    (resultAnswer as number[]).push(Number(answerId))
+                );
+            }
+            individualResult.push({
+                id: answer.id,
+                type: answer.type,
+                answer: resultAnswer,
+                regex: rawSurveyQuestions[answer.id].regex,
+                error: null,
+                description: rawSurveyQuestions[answer.id].description,
+                choices: rawSurveyQuestions[answer.id].choices,
+                required: rawSurveyQuestions[answer.id].required,
+                question: rawSurveyQuestions[answer.id].question,
+            });
         }
+
+        individualResult = [...individualResult];
+
+        console.log(individualResult);
     }
 
     onMount(async () => {
         await loadResult();
     });
 </script>
+
+{#each individualResult as question}
+    <Question {...question} answer={question.answer} readOnly={true} />
+{/each}

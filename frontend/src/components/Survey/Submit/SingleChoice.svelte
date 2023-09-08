@@ -3,8 +3,14 @@
 
     export let choices: rawChoice[];
     export let answer: number | number[] | string | null = null;
+    export let readOnly: boolean = false;
 
-    function onChoiceSelect(choice: number) {
+    function onChoiceSelect(event: Event, choice: number) {
+        if (readOnly) {
+            event.preventDefault();
+            answer = answer;
+            return;
+        }
         if (answer === choice) answer = null;
         else answer = choice;
     }
@@ -15,7 +21,7 @@
         <label class="radio">
             <input
                 type="radio"
-                on:click={() => onChoiceSelect(choice.id)}
+                on:click={(event) => onChoiceSelect(event, choice.id)}
                 name={choice.choice}
                 checked={answer === choice.id}
             />

@@ -19,6 +19,63 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
+     * Login
+     * Validate signature and OTP code
+     * @param captcha
+     * @param email
+     * @param requestBody
+     * @param otp
+     * @returns UserJtiModel Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailLoginLogin(
+        captcha: string,
+        email: string,
+        requestBody: UserLoginSignatureModel,
+        otp?: (null | string),
+    ): CancelablePromise<UserJtiModel> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/{email}/login',
+            path: {
+                'email': email,
+            },
+            query: {
+                'captcha': captcha,
+                'otp': otp,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                401: `No permission -- see authorization schemes`,
+            },
+        });
+    }
+
+    /**
+     * Public
+     * Public KDF details
+     * @param email
+     * @returns PublicUserModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailPublicPublic(
+        email: string,
+    ): CancelablePromise<PublicUserModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/public',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * ToSign
      * Used to generate a unique code to sign.
      * @param email
@@ -68,58 +125,23 @@ export class AccountService {
     }
 
     /**
-     * Public
-     * Public KDF details
-     * @param email
-     * @returns PublicUserModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailPublicPublic(
-        email: string,
-    ): CancelablePromise<PublicUserModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/public',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * Login
-     * Validate signature and OTP code
-     * @param captcha
-     * @param email
-     * @param requestBody
+     * ResetOtp
+     * Reset OTP
      * @param otp
-     * @returns UserJtiModel Document created, URL follows
+     * @returns OtpModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountEmailLoginLogin(
-        captcha: string,
-        email: string,
-        requestBody: UserLoginSignatureModel,
-        otp?: (null | string),
-    ): CancelablePromise<UserJtiModel> {
+    public controllersAccountOtpResetResetOtp(
+        otp: string,
+    ): CancelablePromise<OtpModel> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/{email}/login',
-            path: {
-                'email': email,
-            },
+            method: 'DELETE',
+            url: '/controllers/account/otp/reset',
             query: {
-                'captcha': captcha,
                 'otp': otp,
             },
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
-                401: `No permission -- see authorization schemes`,
             },
         });
     }
@@ -147,21 +169,20 @@ export class AccountService {
     }
 
     /**
-     * ResetOtp
-     * Reset OTP
-     * @param otp
-     * @returns OtpModel Request fulfilled, document follows
+     * RemoveWebhook
+     * Remove a webhook
+     * @param requestBody
+     * @returns void
      * @throws ApiError
      */
-    public controllersAccountOtpResetResetOtp(
-        otp: string,
-    ): CancelablePromise<OtpModel> {
+    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/otp/reset',
-            query: {
-                'otp': otp,
-            },
+            url: '/controllers/account/notifications/webhook/remove',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -181,27 +202,6 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/webhook/add',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * RemoveWebhook
-     * Remove a webhook
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/webhook/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

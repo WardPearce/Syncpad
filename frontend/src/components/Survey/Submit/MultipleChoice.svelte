@@ -3,8 +3,13 @@
 
     export let choices: rawChoice[];
     export let answer: number | number[] | string | null;
+    export let readOnly: boolean = false;
 
     function handleCheckboxChange(event: Event, choice: rawChoice) {
+        if (readOnly) {
+            (event.target as HTMLInputElement).checked = false;
+            return;
+        }
         if ((event.target as HTMLInputElement).checked) {
             // Append choice.id to answer
             if (Array.isArray(answer)) {
@@ -28,6 +33,8 @@
         <label class="checkbox">
             <input
                 type="checkbox"
+                checked={answer === choice.id ||
+                    (answer instanceof Array && choice.id in answer)}
                 on:change={(event) => handleCheckboxChange(event, choice)}
             />
             <span>{choice.choice}</span>
