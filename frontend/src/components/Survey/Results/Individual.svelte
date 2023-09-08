@@ -64,8 +64,6 @@
         }
 
         individualResult = [...individualResult];
-
-        console.log(individualResult);
     }
 
     onMount(async () => {
