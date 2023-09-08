@@ -33,8 +33,7 @@
         <label class="checkbox">
             <input
                 type="checkbox"
-                checked={answer === choice.id ||
-                    (answer instanceof Array && choice.id in answer)}
+                checked={answer instanceof Array && answer.includes(choice.id)}
                 on:change={(event) => handleCheckboxChange(event, choice)}
             />
             <span>{choice.choice}</span>
