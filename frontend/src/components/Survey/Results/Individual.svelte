@@ -13,17 +13,24 @@
     export let rawPrivateKey: Uint8Array;
     export let rawSurveyQuestions: rawSurveyQuestions;
 
-    let page = 0;
+    let currentPage = 0;
     let individualResult: rawQuestionAnswer[] = [];
+    let apiError: string = "";
 
     async function loadResult() {
         individualResult = [];
 
-        const result =
-            await apiClient.survey.controllersSurveySurveyIdResponsesPageGetResponse(
-                surveyId,
-                page
-            );
+        let result;
+        try {
+            result =
+                await apiClient.survey.controllersSurveySurveyIdResponsesPageGetResponse(
+                    surveyId,
+                    currentPage
+                );
+        } catch (error) {
+            apiError = error.body.detail;
+            return;
+        }
 
         let resultAnswer: number | number[] | string;
         for (const answer of decryptAnswers(
@@ -66,6 +73,32 @@
     });
 </script>
 
-{#each individualResult as question}
-    <Question {...question} answer={question.answer} readOnly={true} />
-{/each}
+{#if individualResult.length > 0}
+    {#each individualResult as question}
+        <Question {...question} answer={question.answer} readOnly={true} />
+    {/each}
+{:else}
+    <article
+        class="extra-large-width"
+        style="display: flex;justify-content: center; align-items: center;height: 35vh;"
+    >
+        <h5>{apiError}</h5>
+    </article>
+{/if}
+
+<div class="pagination extra-large-width">
+    {#if currentPage !== 0}
+        <button on:click={async () => (currentPage--, await loadResult())}>
+            <i>arrow_back</i>
+            <span>Past statement</span>
+        </button>
+    {:else}
+        <div />
+    {/if}
+    {#if individualResult.length > 0}
+        <button on:click={async () => (currentPage++, await loadResult())}>
+            <span>Next statement</span>
+            <i>arrow_forward</i>
+        </button>
+    {/if}
+</div>

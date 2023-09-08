@@ -10,9 +10,9 @@
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type {
-      DocumentCanaryWarrantModel,
-      PublicCanaryModel,
-      PublishedCanaryWarrantModel,
+    DocumentCanaryWarrantModel,
+    PublicCanaryModel,
+    PublishedCanaryWarrantModel,
   } from "../lib/client";
   import { base64Decode } from "../lib/crypto/codecUtils";
   import { hashBase64Encode } from "../lib/crypto/hash";
@@ -620,12 +620,6 @@
 {/if}
 
 <style>
-  .pagination {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
-  }
-
   .strikeout {
     text-decoration: line-through;
   }
