@@ -161,6 +161,7 @@ class SurveyPublicModel(__SurveySharedModel, CustomJsonEncoder):
 
 
 class SurveyModel(SurveyPublicModel, SurveyCreateModel):
+    responses_count: int = 0
     sign_keypair: SurveySignKeyPairModel
     keypair: SurveyKeypairModel
     secret_key: SurveySecretKeyModel

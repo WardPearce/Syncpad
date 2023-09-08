@@ -32,5 +32,6 @@ export type SurveyModel = {
     created: string;
     id: any;
     user_id: any;
+    responses_count?: number;
 };
 

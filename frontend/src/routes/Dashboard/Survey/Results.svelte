@@ -12,6 +12,7 @@
     import secretKey, {
         SecretkeyLocation,
     } from "../../../lib/crypto/secretKey";
+    import { relativeDate } from "../../../lib/date";
     import {
         decryptSurveyQuestions,
         validateSurvey,
@@ -103,7 +104,30 @@
     <PageLoading />
 {:else}
     <div class="center-questions">
-        <div class="extra-large-width" style="margin-top: .5em;">
+        <div class="extra-large-width stats">
+            <div class="grid">
+                <div class="s12 m6 l4">
+                    <article>
+                        <h5>Responses</h5>
+                        <p>{survey.responses_count}</p>
+                    </article>
+                </div>
+                <div class="s12 m6 l4">
+                    <article>
+                        <h5>Created</h5>
+                        <p>{relativeDate(survey.created)}</p>
+                    </article>
+                </div>
+                <div class="s12 m6 l4">
+                    <article>
+                        <h5>Questions</h5>
+                        <p>{survey.questions.length}</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+
+        <div class="extra-large-width" style="margin-top: 2em;">
             <nav class="wrap">
                 {#if mode === ResponseMode.individual}
                     <button on:click={() => (mode = ResponseMode.summary)}>
@@ -139,3 +163,9 @@
         {/if}
     </div>
 {/if}
+
+<style>
+    .stats p {
+        font-size: 1.4em;
+    }
+</style>

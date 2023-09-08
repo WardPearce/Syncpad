@@ -94,6 +94,10 @@ class Survey:
     async def submit(
         self, answers: SubmitSurveyModel, user_id: Optional[ObjectId] = None
     ) -> SurveyResultModel:
+        await self._state.mongo.survey.update_one(
+            {"_id": self._survey_id}, {"$inc": {"responses_count": 1}}, upsert=True
+        )
+
         insert = {
             **answers.dict(),
             "survey_id": self._survey_id,

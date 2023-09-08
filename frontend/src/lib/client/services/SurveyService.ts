@@ -15,81 +15,6 @@ export class SurveyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * PublicSurvey
-     * Get a survey public details
-     * @param surveyId
-     * @returns SurveyPublicModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersSurveySurveyIdPublicPublicSurvey(
-        surveyId: string,
-    ): CancelablePromise<SurveyPublicModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/survey/{survey_id}/public',
-            path: {
-                'survey_id': surveyId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * SubmitSurvey
-     * Submit answers to a survey
-     * @param surveyId
-     * @param requestBody
-     * @param captcha
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersSurveySurveyIdSubmitSubmitSurvey(
-        surveyId: string,
-        requestBody: SubmitSurveyModel,
-        captcha?: (null | string),
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/survey/{survey_id}/submit',
-            path: {
-                'survey_id': surveyId,
-            },
-            query: {
-                'captcha': captcha,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * GetSurvey
-     * Get a survey
-     * @param surveyId
-     * @returns SurveyModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersSurveySurveyIdGetSurvey(
-        surveyId: string,
-    ): CancelablePromise<SurveyModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/survey/{survey_id}',
-            path: {
-                'survey_id': surveyId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * GetResponse
      * Get a survey response
      * @param surveyId
@@ -153,6 +78,81 @@ export class SurveyService {
                 'survey_id': surveyId,
             },
             responseHeader: 'content-length',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicSurvey
+     * Get a survey public details
+     * @param surveyId
+     * @returns SurveyPublicModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdPublicPublicSurvey(
+        surveyId: string,
+    ): CancelablePromise<SurveyPublicModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}/public',
+            path: {
+                'survey_id': surveyId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * GetSurvey
+     * Get a survey
+     * @param surveyId
+     * @returns SurveyModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdGetSurvey(
+        surveyId: string,
+    ): CancelablePromise<SurveyModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}',
+            path: {
+                'survey_id': surveyId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * SubmitSurvey
+     * Submit answers to a survey
+     * @param surveyId
+     * @param requestBody
+     * @param captcha
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdSubmitSubmitSurvey(
+        surveyId: string,
+        requestBody: SubmitSurveyModel,
+        captcha?: (null | string),
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/survey/{survey_id}/submit',
+            path: {
+                'survey_id': surveyId,
+            },
+            query: {
+                'captcha': captcha,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

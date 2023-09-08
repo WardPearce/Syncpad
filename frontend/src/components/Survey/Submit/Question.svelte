@@ -35,7 +35,7 @@
 
     <h5>
         {question}
-        {#if required}
+        {#if required && !readOnly}
             <span class="error-text" style="margin-left: .3em;">*</span>
         {/if}
     </h5>
