@@ -36,8 +36,8 @@
             <Logo />
         </div>
         <div>
-            <a use:link href="/register" class="chip fill">Get started</a>
-            <a use:link href="/login" class="chip">Login</a>
+            <a use:link href="/register" class="button">Get started</a>
+            <a use:link href="/login" class="button secondary">Login</a>
         </div>
     </nav>
 </article>
@@ -48,7 +48,7 @@
             Securely survey your&nbsp;<span
                 in:slide
                 out:slide={{ duration: 0 }}
-                style="font-weight: bolder;">{words[wordsIndex]}</span
+                style="font-weight: bolder;">{words[wordsIndex]}.</span
             >
         </h2>
         <h6>
@@ -59,10 +59,85 @@
 </div>
 
 <article>
-    <h3>Surveys</h3>
-    <p>ToDO: About surveys here</p>
-    <h3>Canaries</h3>
-    <p>ToDO: About canaries here</p>
+    <div class="grid">
+        <div class="s12 m6 l8">
+            <h3>What is {import.meta.env.VITE_SITE_NAME} Survey?</h3>
+            <p>
+                Purplix Survey is a free & <a
+                    target="_blank"
+                    referrerpolicy="no-referrer"
+                    href="https://github.com/WardPearce/Purplix.io"
+                    class="link">open source</a
+                > survey tool what can't read your questions & answers.
+            </p>
+
+            <h5>How does it work?</h5>
+            <h6>Questions, Descriptions & Title encryption</h6>
+            <p>
+                When you create a survey, we protect your questions with a
+                secret key. This key is then stored encrypted in your keychain.
+                When you share your survey with others using a link, the key is
+                stored in the link for your participants. This ensures that your
+                survey questions can only be read by your participants.
+            </p>
+
+            <h6>Answers encryption</h6>
+            <p>
+                Every survey has its own unique key pair. The private key is
+                securely stored in your keychain, while the public key is used
+                by users to encrypt their answers. Only you have the means to
+                decrypt the answers once they are submitted. When you share a
+                survey, we include a hash of the public key in the URL to
+                prevent main-in-the-middle attacks.
+            </p>
+
+            <nav class="wrap left-align">
+                <button>Get started</button>
+                <button class="secondary">Learn more</button>
+            </nav>
+        </div>
+        <div class="s12 m6 l4 right-align">
+            <img
+                src="/previews/survey.png"
+                height="700px"
+                alt="Preview of a car wash survey"
+            />
+        </div>
+    </div>
+</article>
+
+<article>
+    <div class="grid">
+        <div class="s12 m6 l4">
+            <img
+                src="/previews/canary.png"
+                height="700px"
+                alt="Preview of a car wash survey"
+            />
+        </div>
+        <div class="s12 m6 l8">
+            <h3>What is {import.meta.env.VITE_SITE_NAME} Canary?</h3>
+            <p>
+                Purplix Canary is a free & <a
+                    target="_blank"
+                    referrerpolicy="no-referrer"
+                    href="https://github.com/WardPearce/Purplix.io"
+                    class="link">open source</a
+                > warrant canary tool what helps you to build trust with your users.
+            </p>
+            <p>
+                It allows you to inform users cryptographically if your site has
+                been compromised, seized or raided by anyone.
+            </p>
+
+            <h5>How does it work?</h5>
+
+            <nav class="wrap left-align">
+                <button>Get started</button>
+                <button class="secondary">Learn more</button>
+            </nav>
+        </div>
+    </div>
 </article>
 
 <style>
@@ -85,6 +160,7 @@
         background-color: var(--primary);
         color: var(--on-primary);
         border-radius: 0 0 0.75rem 0.75rem;
+        box-shadow: var(--elevate1);
     }
 
     .header h6,
