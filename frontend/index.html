@@ -1,13 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/android-chrome-192x192.png">
-    <title>Purplix.io</title>
-  </head>
-  <body>
-    <div id="app" ></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/android-chrome-192x192.png">
+  <title>Purplix.io</title>
+</head>
+
+<body>
+  <noscript>
+    <div class="noscript">
+      <h2>Purplix requires Javascript to function.</h2>
+      <p>Due to the end-to-end encrypted nature of our site we require Javascript.</p>
+
+      <p>If your worried about using Javascript, please use a operating system like Whonix or Tails.</p>
+    </div>
+  </noscript>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  .noscript {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #21005E;
+    background-color: #EADDFF;
+    padding: 0;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .noscript h2 {
+    margin-bottom: 1em;
+  }
+</style>
