@@ -96,6 +96,10 @@ label.color span {
     }
 }
 
+.tooltip .max {
+    z-index: 9999;
+}
+
 .pagination {
     display: flex;
     justify-content: space-between;

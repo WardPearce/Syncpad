@@ -14,7 +14,7 @@
         navigate("/dashboard");
     }
 
-    const words = ["customers", "family", "employees", "friends"];
+    const words = ["customers", "friends", "employees", "audience"];
     let wordsIndex = 0;
     let roller: NodeJS.Timer;
 
@@ -42,7 +42,7 @@
     </nav>
 </article>
 
-<div class="header">
+<div class="header" transition:slide>
     {#key wordsIndex}
         <h2>
             Securely survey your&nbsp;<span
@@ -71,6 +71,13 @@
                 > survey tool what can't read your questions & answers.
             </p>
 
+            <p>
+                With traditional surveys you are one data breach, one rouge
+                employee or one government warrant away from all your user's
+                data being exposed. Purplix uses modern encryption techniques to
+                keep your user's data away from any actors.
+            </p>
+
             <h5>How does it work?</h5>
             <h6>Questions, Descriptions & Title encryption</h6>
             <p>
@@ -91,8 +98,17 @@
                 prevent main-in-the-middle attacks.
             </p>
 
+            <h6>Preventing spam & multiple submissions</h6>
+            <p>
+                Survey creators can opt-in to use VPN blocking, requiring a
+                Purplix account or IP blocking. IP blocking works by storing a
+                hash of the IP with a key not stored by Purplix, minimizing the
+                attack surface of tracking submission locations. Users will
+                always be informed when any of these features are enabled.
+            </p>
+
             <nav class="wrap left-align">
-                <button>Get started</button>
+                <a use:link href="/register" class="button">Get started</a>
                 <button class="secondary">Learn more</button>
             </nav>
         </div>
@@ -131,9 +147,38 @@
             </p>
 
             <h5>How does it work?</h5>
+            <h6>Site verification</h6>
+            <p>
+                Purplix uses DNS records to verify the domain the canary is for,
+                giving your users confidence they are trusting the right people.
+            </p>
+
+            <h6>Canary signatures</h6>
+            <p>
+                Each domain is associated with a unique key pair. The private
+                key is generated locally and securely stored within the owner's
+                keychain. When a user visits a canary from a specific domain for
+                the first time, their private key is used to sign the public
+                key. This signed version of the public key is then automatically
+                employed for subsequent visits, effectively mitigating
+                man-in-the-middle attacks and ensuring the trustworthiness of
+                canary statements from the respective domain.
+            </p>
+
+            <h6>Files</h6>
+            <p>
+                Canaries can include signed documents to help users further
+                understand a situation.
+            </p>
+
+            <h6>Notifications</h6>
+            <p>
+                Users are automatically notified on the event of a new statement
+                being published.
+            </p>
 
             <nav class="wrap left-align">
-                <button>Get started</button>
+                <a use:link href="/register" class="button">Get started</a>
                 <button class="secondary">Learn more</button>
             </nav>
         </div>
