@@ -81,11 +81,12 @@
             <h5>How does it work?</h5>
             <h6>Questions, Descriptions & Title encryption</h6>
             <p>
-                When you create a survey, we protect your questions with a
-                secret key. This key is then stored encrypted in your keychain.
-                When you share your survey with others using a link, the key is
-                stored in the link for your participants. This ensures that your
-                survey questions can only be read by your participants.
+                When you create a survey, we encrypt your title, descriptions &
+                questions with a secret key. This key is then stored encrypted
+                in your keychain. When you share your survey with others using a
+                link, the key is stored in the link for your participants. This
+                ensures that your survey questions can only be read by your
+                participants.
             </p>
 
             <h6>Answers encryption</h6>
@@ -102,9 +103,11 @@
             <p>
                 Survey creators can opt-in to use VPN blocking, requiring a
                 Purplix account or IP blocking. IP blocking works by storing a
-                hash of the IP with a key not stored by Purplix, minimizing the
-                attack surface of tracking submission locations. Users will
-                always be informed when any of these features are enabled.
+                hash of the IP salted with a key not stored by Purplix,
+                minimizing the attack surface of tracking submission locations,
+                these IP hashes are only stored for 7 days or until the survey
+                closes. Users will always be informed when any of these features
+                are enabled.
             </p>
 
             <nav class="wrap left-align">

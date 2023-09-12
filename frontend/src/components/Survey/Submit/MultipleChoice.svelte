@@ -7,7 +7,9 @@
 
     function handleCheckboxChange(event: Event, choice: rawChoice) {
         if (readOnly) {
-            (event.target as HTMLInputElement).checked = false;
+            (event.target as HTMLInputElement).checked = (
+                answer as number[]
+            ).includes(choice.id);
             return;
         }
         if ((event.target as HTMLInputElement).checked) {
