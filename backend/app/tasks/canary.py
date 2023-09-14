@@ -54,23 +54,14 @@ async def canary_domain_verification(state: "State") -> None:
 
 
 async def canary_owner_alerts(state: "State") -> None:
-    # Todo
-    return
-
     now = datetime.utcnow()
 
-    alerts = [
-        now + timedelta(days=90),
-        now + timedelta(days=30),
-        now + timedelta(days=7),
-        now + timedelta(days=3),
-        now + timedelta(days=1),
-        now + timedelta(hours=1),
-    ]
     async for canary_warrant in state.mongo.canary_warrant.find(
         {
             "active": True,
             "published": True,
+            "next_canary": {"$gte": now, "$lte": now + timedelta(hours=24)},
+            "alerted": False,
         }
     ):
         try:
@@ -118,6 +109,10 @@ async def canary_owner_alerts(state: "State") -> None:
 
         if futures:
             asyncio.gather(*futures)
+
+        await state.mongo.canary_warrant.update_one(
+            {"_id": canary_warrant["_id"]}, {"alerted": True}
+        )
 
 
 tasks: list[Tab] = [

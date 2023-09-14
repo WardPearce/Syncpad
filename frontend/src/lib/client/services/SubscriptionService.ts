@@ -9,28 +9,6 @@ export class SubscriptionService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Unsubscribe
-     * Unsubscribe from a canary
-     * @param canaryId
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
-        canaryId: string,
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
-            path: {
-                'canary_id': canaryId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AmSubscribed
      * Check if user is subscribed to a canary
      * @param canaryId
@@ -65,6 +43,28 @@ export class SubscriptionService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/canary/subscription/{canary_id}/subscribe',
+            path: {
+                'canary_id': canaryId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * Unsubscribe
+     * Unsubscribe from a canary
+     * @param canaryId
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
+        canaryId: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
             path: {
                 'canary_id': canaryId,
             },
