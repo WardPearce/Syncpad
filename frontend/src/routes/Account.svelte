@@ -96,14 +96,14 @@
       await apiClient.session.controllersSessionSessionIdInvalidateSession(
         sessionId
       );
-      activeSessions = activeSessions.filter((v) => v._id !== sessionId);
+      activeSessions = activeSessions.filter((v) => v.id !== sessionId);
     }
   }
 
   async function logoutAllOther() {
     activeSessions.forEach(async (session) => {
-      if (session._id !== loggedInSecrets.jti) {
-        await logoutSession(session._id);
+      if (session.id !== loggedInSecrets.jti) {
+        await logoutSession(session.id);
       }
     });
   }
@@ -461,8 +461,8 @@
 
         {#each activeSessions as session}
           <article
-            class:surface-variant={session._id !== loggedInSecrets.jti}
-            class:primary-container={session._id === loggedInSecrets.jti}
+            class:surface-variant={session.id !== loggedInSecrets.jti}
+            class:primary-container={session.id === loggedInSecrets.jti}
           >
             <div class="grid">
               <div class="s12 m6 l3">
@@ -514,9 +514,9 @@
                 </p>
               </div>
               <div class="s12 m6 l3">
-                <button on:click={async () => await logoutSession(session._id)}
+                <button on:click={async () => await logoutSession(session.id)}
                   >Logout
-                  {#if session._id === loggedInSecrets.jti}
+                  {#if session.id === loggedInSecrets.jti}
                     current session
                   {/if}
                 </button>
@@ -546,7 +546,7 @@
 
         <h6>User ID</h6>
         <div class="field border" style="margin-top: 0;">
-          <input readonly value={user._id} />
+          <input readonly value={user.id} />
         </div>
 
         <h6>Algorithms</h6>
@@ -578,10 +578,6 @@
         </div>
       </summary>
       <nav class="wrap">
-        <button class="secondary">
-          <i>autorenew</i>
-          <span>Rotate keychain</span>
-        </button>
         <button class="tertiary">
           <i>delete_forever</i>
           <span>Delete account</span>

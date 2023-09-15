@@ -11,7 +11,6 @@ import type { NotificationsModel } from './NotificationsModel';
 import type { OtpModel } from './OtpModel';
 
 export type UserModel = {
-    email: string;
     auth: AccountAuthModal;
     keypair: AccountX25519Model;
     sign_keypair: AccountEd25199Modal;
@@ -21,6 +20,7 @@ export type UserModel = {
      * Locally signed with ed25519 private key to validate account data hasn't been changed. Base64 encoded
      */
     signature: string;
+    email: string;
     ip_lookup_consent?: boolean;
     /**
      * Algorithms used by client.

@@ -2,6 +2,7 @@ import hashlib
 import json
 from datetime import datetime
 from typing import TYPE_CHECKING
+from urllib.parse import quote_plus
 
 import yarl
 from bson import ObjectId
@@ -68,7 +69,7 @@ class CanaryUser:
             raise DomainValidationError()
 
         resp = await self.__upper._state.aiohttp.get(
-            f"https://cloudflare-dns.com/dns-query?name={self.__upper._domain}&type=TXT",
+            f"https://cloudflare-dns.com/dns-query?name={quote_plus(self.__upper._domain)}&type=TXT",
             headers={"accept": "application/dns-json"},
         )
         if resp.status != 200:

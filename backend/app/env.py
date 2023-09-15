@@ -1,7 +1,8 @@
 import secrets
 from typing import List, Optional
 
-from pydantic import BaseModel, BaseSettings, Field
+from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
 
 
 class MongoDB(BaseModel):
@@ -24,7 +25,7 @@ class S3(BaseModel):
     folder: str = "purplix"
     download_url: str
     endpoint_url: Optional[str] = None
-    chunk_size = 655400
+    chunk_size: int = 655400
 
 
 class OpenAPI(BaseModel):
@@ -85,7 +86,7 @@ class Smtp(BaseModel):
 
 
 class CanaryLogo(BaseModel):
-    max_size = 358400
+    max_size: int = 358400
     allowed_extensions: List[str] = [
         ".png",
         ".jpeg",
@@ -105,7 +106,7 @@ class Settings(BaseSettings):
     proxy_urls: ProxiedUrls = ProxiedUrls()
     open_api: OpenAPI = OpenAPI()
     mcaptcha: Optional[mCaptcha] = None
-    site_name = "Purplix.io"
+    site_name: str = "Purplix.io"
     proxy_check: Optional[Proxycheck] = None
     smtp: Optional[Smtp] = None
     canary: Canary = Canary()

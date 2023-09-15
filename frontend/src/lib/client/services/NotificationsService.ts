@@ -53,27 +53,6 @@ export class NotificationsService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AddEmail
      * Enable email notification
      * @param requestBody
@@ -86,6 +65,27 @@ export class NotificationsService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/email/add',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

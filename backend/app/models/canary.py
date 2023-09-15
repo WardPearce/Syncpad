@@ -13,7 +13,7 @@ from app.models.customs import CustomJsonEncoder, IvField
 class DomainModel(BaseModel):
     domain: str = Field(
         ...,
-        regex=r"(?i)^((?!(?:www|www\d+)\.)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:[a-zA-Z]{2,})$",
+        pattern=r"(?i)^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:[a-zA-Z]{2,})$",
     )
 
 
@@ -39,7 +39,7 @@ class __CanarySharedModel(CustomJsonEncoder, DomainModel):
         max_length=120,
         description="Algorithms used for canary",
     )
-    hex_color: Optional[str] = Field(None, max_length=6, regex=r"^[0-9a-fA-F]{6}$")
+    hex_color: Optional[str] = Field(None, max_length=6, pattern=r"^[0-9a-fA-F]{6}$")
 
 
 class CreateCanaryModel(__CanarySharedModel):

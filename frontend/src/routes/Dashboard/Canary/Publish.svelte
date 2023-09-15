@@ -121,7 +121,7 @@
                     documentHashes[document.name] = docHash;
 
                     return apiClient.document.controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
-                        createdWarrant._id,
+                        createdWarrant.id,
                         docHash,
                         [document]
                     );
@@ -131,7 +131,7 @@
             }
 
             await apiClient.warrant.controllersCanaryWarrantWarrantIdPublishPublish(
-                createdWarrant._id,
+                createdWarrant.id,
                 {
                     statement: formattedStatement,
                     concern: canaryConcern,
@@ -149,7 +149,7 @@
                             next_canary: createdWarrant.next_canary,
                             issued: createdWarrant.issued,
                             domain: domainName,
-                            id: createdWarrant._id,
+                            id: createdWarrant.id,
                             document_hashes: documentHashes,
                         })
                     ),

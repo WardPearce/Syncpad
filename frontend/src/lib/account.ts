@@ -227,7 +227,7 @@ export async function* login(
       captchaToken as string,
       email,
       {
-        _id: toProve._id,
+        _id: toProve.id,
         signature: signatures.sign(rawAuthKeys.privateKey, toProve.to_sign),
         one_day_login: !rememberMe
       },
@@ -305,7 +305,7 @@ export async function* login(
   // Private auth key nor OTP code.
   await setLocalSecrets({
     email: loggedInUser.user.email,
-    userId: loggedInUser.user._id,
+    userId: loggedInUser.user.id,
     rawKeychain: base64Encode(rawKeychain),
     rawKeypair: {
       privateKey: base64Encode(rawKeypairPrivateKey),

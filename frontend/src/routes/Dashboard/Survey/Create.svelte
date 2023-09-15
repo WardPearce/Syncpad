@@ -284,7 +284,7 @@
             );
 
         navigate(
-            `/s/${savedSurvey._id}/${hash.hashBase64Encode(
+            `/s/${savedSurvey.id}/${hash.hashBase64Encode(
                 rawSignKeyPair.publicKey,
                 true
             )}#${base64Encode(rawKey, true)}`,

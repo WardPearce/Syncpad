@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 import pyotp
 from argon2.profiles import RFC_9106_LOW_MEMORY
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr, Field, HttpUrl
+from pydantic import AnyUrl, BaseModel, EmailStr, Field
 
 from app.env import SETTINGS
 from app.models.customs import CustomJsonEncoder, IvField
@@ -18,7 +18,7 @@ class NotificationEnum(Enum):
 
 
 class WebhookModel(BaseModel):
-    url: HttpUrl
+    url: AnyUrl
     type: NotificationEnum
 
 
@@ -117,11 +117,11 @@ class CreateUserModel(__CreateUserShared):
 
 
 class OtpModel(BaseModel):
-    secret: Optional[str]
-    provisioning_uri: Optional[str]
+    secret: Optional[str] = None
+    provisioning_uri: Optional[str] = None
     completed: bool = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.provisioning_uri = self.__provisioning_uri()
 

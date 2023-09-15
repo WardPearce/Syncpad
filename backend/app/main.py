@@ -133,7 +133,6 @@ app = Litestar(
     response_cache_config=ResponseCacheConfig(store="redis"),
     on_app_init=[jwt_cookie_auth.on_app_init],
     type_encoders={
-        BaseModel: lambda m: m.dict(by_alias=True),
         **CustomJsonEncoder.Config.json_encoders,
     },
     debug=SETTINGS.proxy_urls.frontend == "http://localhost",

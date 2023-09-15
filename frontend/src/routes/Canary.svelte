@@ -130,12 +130,12 @@
     if (subscribeStatus === SubscribeStatus.Subscribed) {
       subscribeStatus = SubscribeStatus.Unsubscribed;
       await apiClient.subscription.controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
-        canaryBio._id
+        canaryBio.id
       );
     } else {
       subscribeStatus = SubscribeStatus.Subscribed;
       await apiClient.subscription.controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
-        canaryBio._id
+        canaryBio.id
       );
     }
   }
@@ -144,7 +144,7 @@
     try {
       let status =
         await apiClient.subscription.controllersCanarySubscriptionCanaryIdAmSubscribed(
-          canaryBio._id
+          canaryBio.id
         );
 
       subscribeStatus = status
@@ -170,7 +170,7 @@
     }
 
     const documentHash = hashBase64Encode(documentData, true);
-    if (documentHash !== toDownload.hash) {
+    if (documentHash !== toDownload.hash_) {
       return;
     }
 
@@ -194,12 +194,12 @@
     try {
       const untrustedWarrant =
         await apiClient.warrant.controllersCanaryPublishedCanaryIdPagePublishedWarrant(
-          canaryBio._id,
+          canaryBio.id,
           page
         );
 
       untrustedWarrant.documents?.forEach((document) => {
-        documentHashes[document.filename] = document.hash;
+        documentHashes[document.filename] = document.hash_;
       });
 
       try {
@@ -213,7 +213,7 @@
             next_canary: untrustedWarrant.next_canary,
             issued: untrustedWarrant.issued,
             domain: domainName,
-            id: untrustedWarrant._id,
+            id: untrustedWarrant.id,
             document_hashes: documentHashes,
           })
         );
@@ -350,7 +350,7 @@
       {#if advanceMode}
         <h6>Canary ID</h6>
         <div class="field border" style="margin-top: 0;">
-          <input readonly value={canaryBio._id} />
+          <input readonly value={canaryBio.id} />
         </div>
 
         <h6>Public key</h6>
@@ -520,7 +520,7 @@
                           style="margin-top: 1em;"
                         >
                           <label for="file-hash">BLAKE2b hash</label>
-                          <input readonly value={document.hash} />
+                          <input readonly value={document.hash_} />
                         </div>
                       {/if}
 
@@ -552,7 +552,7 @@
       {#if advanceMode}
         <h5>Canary warrant ID</h5>
         <div class="field border" style="margin-top: 0;">
-          <input type="text" readonly value={currentPublishedWarrant._id} />
+          <input type="text" readonly value={currentPublishedWarrant.id} />
         </div>
 
         <h5>BTC Block</h5>

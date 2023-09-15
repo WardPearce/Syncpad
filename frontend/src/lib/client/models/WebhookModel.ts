@@ -3,10 +3,7 @@
 /* eslint-disable */
 
 export type WebhookModel = {
-    /**
-     * must be a valid HTTP based URL
-     */
-    url: string;
+    url: any;
     type: WebhookModel.type;
 };
 

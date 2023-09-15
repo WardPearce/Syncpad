@@ -55,7 +55,7 @@
         const publicKey = sodium.crypto_sign_ed25519_sk_to_pk(
             privateKey as Uint8Array
         );
-        return `/s/${survey._id}/${hashBase64Encode(
+        return `/s/${survey.id}/${hashBase64Encode(
             publicKey,
             true
         )}#${base64Encode(rawKey, true)}`;
@@ -79,7 +79,7 @@
             <nav class="wrap">
                 <button
                     on:click={() =>
-                        navigate(`/dashboard/survey/results/${survey._id}`)}
+                        navigate(`/dashboard/survey/results/${survey.id}`)}
                     >Results</button
                 >
                 <button class="border">Edit</button>

@@ -125,28 +125,6 @@ export class AccountService {
     }
 
     /**
-     * ResetOtp
-     * Reset OTP
-     * @param otp
-     * @returns OtpModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountOtpResetResetOtp(
-        otp: string,
-    ): CancelablePromise<OtpModel> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/otp/reset',
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * OtpSetup
      * Used to confirm OTP is completed
      * @param otp
@@ -159,6 +137,28 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/otp/setup',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * ResetOtp
+     * Reset OTP
+     * @param otp
+     * @returns OtpModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpResetResetOtp(
+        otp: string,
+    ): CancelablePromise<OtpModel> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/otp/reset',
             query: {
                 'otp': otp,
             },
@@ -211,27 +211,6 @@ export class AccountService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AddEmail
      * Enable email notification
      * @param requestBody
@@ -253,14 +232,23 @@ export class AccountService {
     }
 
     /**
-     * IpProgressingConsent
-     * @returns any Document created, URL follows
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
      * @throws ApiError
      */
-    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/privacy/ip-progressing/consent',
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
         });
     }
 
@@ -273,6 +261,18 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/privacy/ip-progressing/disallow',
+        });
+    }
+
+    /**
+     * IpProgressingConsent
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/privacy/ip-progressing/consent',
         });
     }
 

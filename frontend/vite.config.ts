@@ -1,6 +1,5 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
-import viteCompression from "vite-plugin-compression";
 import { VitePWA } from 'vite-plugin-pwa';
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
@@ -11,7 +10,6 @@ export default defineConfig({
     svelte(),
     wasm(),
     topLevelAwait(),
-    viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
       manifest: {
         name: "Purplix.io",
