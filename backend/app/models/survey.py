@@ -86,7 +86,7 @@ class SurveyQuestionModel(BaseModel):
     regex: Optional[SurveyRegexModel] = None
     description: Optional[SurveyDescriptionModel] = None
     question: SurveyQuestionsModel
-    choices: Optional[List[SurveyChoicesModel]] = Field(None, max_items=56)
+    choices: Optional[List[SurveyChoicesModel]] = Field(None, max_length=56)
     required: bool = False
     type: SurveyQuestionType
 
@@ -113,7 +113,7 @@ class TitleModel(IvField):
 class __SurveySharedModel(BaseModel):
     title: TitleModel
     description: Optional[SurveyDescriptionModel] = None
-    questions: List[SurveyQuestionModel] = Field(..., max_items=128)
+    questions: List[SurveyQuestionModel] = Field(..., max_length=128)
     signature: str = Field(..., max_length=128)
     requires_login: bool = False
     proxy_block: bool = False
@@ -171,7 +171,7 @@ class SurveyAnswerModel(CustomJsonEncoder):
     id: int = Field(..., ge=0, lt=1024)
     # For simplicity of data types, every answer is stored
     # as an array regardless of the question type.
-    answer: Union[List[str], str] = Field(..., min_items=1, max_items=56)
+    answer: Union[List[str], str]
     type: SurveyQuestionType
 
     def __init__(self, **data):
@@ -183,7 +183,7 @@ class SurveyAnswerModel(CustomJsonEncoder):
 
 
 class __SurveyResultModel(CustomJsonEncoder):
-    answers: List[SurveyAnswerModel] = Field(..., min_items=1, max_items=128)
+    answers: List[SurveyAnswerModel] = Field(..., min_length=1, max_length=128)
 
 
 class SubmitSurveyModel(__SurveyResultModel):

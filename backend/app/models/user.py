@@ -135,7 +135,7 @@ class OtpModel(BaseModel):
 
 
 class NotificationsModel(CustomJsonEncoder):
-    email: List[NotificationEnum] = Field(..., max_items=3)
+    email: List[NotificationEnum] = Field(..., max_length=3)
     webhooks: Dict[NotificationEnum, List[str]]
 
 
