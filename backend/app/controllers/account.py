@@ -14,7 +14,6 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.handlers import get, post
-from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.response import Redirect
 from nacl.encoding import Base64Encoder
 from nacl.exceptions import BadSignatureError
@@ -232,7 +231,7 @@ class LoginController(Controller):
                 location=location,
                 device=device,
                 user_id=user.id,
-            ).dict()
+            ).model_dump()
         )
 
         # If OTP mark as completed, redact secrets.
@@ -288,7 +287,7 @@ async def password_reset(
 
     await state.mongo.user.update_one(
         {"_id": user.id},
-        {"$set": data.dict()},
+        {"$set": data.model_dump()},
     )
 
     await delete_all_user_sessions(state, request.user)
@@ -319,7 +318,7 @@ async def create_account(
 
     await state.mongo.user.insert_one(
         {
-            **data.dict(),
+            **data.model_dump(),
             "email": email,
             "email_verified": False,
             "created": datetime.utcnow(),

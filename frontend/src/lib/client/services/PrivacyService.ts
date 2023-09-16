@@ -9,18 +9,6 @@ export class PrivacyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * IpProgressing
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/privacy/ip-progressing/disallow',
-        });
-    }
-
-    /**
      * IpProgressingConsent
      * @returns any Document created, URL follows
      * @throws ApiError
@@ -29,6 +17,18 @@ export class PrivacyService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/privacy/ip-progressing/consent',
+        });
+    }
+
+    /**
+     * IpProgressing
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/privacy/ip-progressing/disallow',
         });
     }
 

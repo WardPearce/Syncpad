@@ -99,7 +99,7 @@ class Survey:
         )
 
         insert = {
-            **answers.dict(),
+            **answers.model_dump(),
             "survey_id": self._survey_id,
             "created": datetime.utcnow(),
             "user_id": user_id,

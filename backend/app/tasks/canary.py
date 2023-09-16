@@ -103,7 +103,7 @@ async def canary_owner_alerts(state: "State") -> None:
                         state=state,
                         url=webhook,
                         method="POST",
-                        json=PublishedCanaryWarrantModel(**canary_warrant).dict(),
+                        json=PublishedCanaryWarrantModel(**canary_warrant).model_dump(),
                     )
                 )
 

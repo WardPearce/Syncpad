@@ -71,7 +71,7 @@ async def create_canary(
         raise CanaryTaken()
 
     to_insert = {
-        **data.dict(),
+        **data.model_dump(),
         "domain": domain,
         "user_id": request.user,
         "created": datetime.utcnow(),
@@ -222,7 +222,7 @@ class PublishCanary(Controller):
             },
             {
                 "$set": {
-                    **data.dict(),
+                    **data.model_dump(),
                     "concern": data.concern.value,
                     "active": True,
                     "published": True,
@@ -405,7 +405,7 @@ class CanaryController(Controller):
         ):
             raise CanaryAlreadyTrusted()
 
-        trusted = {"user_id": request.user, "domain": domain, **data.dict()}
+        trusted = {"user_id": request.user, "domain": domain, **data.model_dump()}
         await state.mongo.trusted_canary.insert_one(trusted)
 
     @post(

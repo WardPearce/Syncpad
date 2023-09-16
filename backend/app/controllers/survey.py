@@ -14,9 +14,7 @@ from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers import get, post
-from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.response import Stream
-from sqlalchemy import true
 
 from app.errors import (
     InvalidAccountAuth,
@@ -51,7 +49,11 @@ from app.models.survey import (
 async def create_survey(
     request: Request[ObjectId, Token, Any], data: SurveyCreateModel, state: "State"
 ) -> SurveyModel:
-    insert = {**data.dict(), "created": datetime.utcnow(), "user_id": request.user}
+    insert = {
+        **data.model_dump(),
+        "created": datetime.utcnow(),
+        "user_id": request.user,
+    }
 
     if data.ip:
         try:
