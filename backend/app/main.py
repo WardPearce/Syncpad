@@ -12,6 +12,7 @@ from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import License, Server
 from litestar.stores.redis import RedisStore
+from models.customs import TYPE_ENCODERS
 from motor import motor_asyncio
 from pydantic import BaseModel
 from redis.asyncio import Redis
@@ -20,7 +21,6 @@ from app.controllers import routes
 from app.env import SETTINGS
 from app.lib.crontabs import CronTabs
 from app.lib.jwt import jwt_cookie_auth
-from app.models.customs import CustomJsonEncoder
 from app.tasks import tasks
 
 if TYPE_CHECKING:
@@ -132,8 +132,6 @@ app = Litestar(
     ],
     response_cache_config=ResponseCacheConfig(store="redis"),
     on_app_init=[jwt_cookie_auth.on_app_init],
-    type_encoders={
-        **CustomJsonEncoder.Config.json_encoders,
-    },
+    type_encoders=TYPE_ENCODERS,
     debug=SETTINGS.proxy_urls.frontend == "http://localhost",
 )

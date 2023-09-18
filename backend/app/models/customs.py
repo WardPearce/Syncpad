@@ -1,14 +1,17 @@
 from bson import Int64, ObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+TYPE_ENCODERS = {
+    ObjectId: lambda v: str(v),
+    Int64: lambda v: int(v),
+}
 
 
 class CustomJsonEncoder(BaseModel):
-    class Config:
-        json_encoders = {
-            ObjectId: lambda v: str(v),
-            Int64: lambda v: int(v),
-        }
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        json_encoders=TYPE_ENCODERS,  # type: ignore
+        arbitrary_types_allowed=True,
+    )
 
 
 class IvField(BaseModel):

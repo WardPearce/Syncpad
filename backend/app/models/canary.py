@@ -3,8 +3,7 @@ from enum import Enum
 from typing import List, Optional
 
 from bson import ObjectId
-from litestar.datastructures import UploadFile
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.env import SETTINGS
 from app.models.customs import CustomJsonEncoder, IvField
@@ -110,11 +109,11 @@ class CreatedCanaryWarrantModel(CustomJsonEncoder):
     next_canary: datetime
     issued: datetime
 
-    @validator("next_canary")
+    @field_validator("next_canary")
     def validate_next_canary(cls, value: datetime) -> str:
         return value.strftime("%Y-%m-%dT%H:%M:%S")
 
-    @validator("issued")
+    @field_validator("issued")
     def validate_issued(cls, value: datetime) -> str:
         return value.strftime("%Y-%m-%dT%H:%M:%S")
 

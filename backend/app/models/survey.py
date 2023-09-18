@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Optional, Union
 
 from bson import ObjectId
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.customs import CustomJsonEncoder, IvField
 
@@ -90,7 +90,7 @@ class SurveyQuestionModel(BaseModel):
     required: bool = False
     type: SurveyQuestionType
 
-    @validator("choices")
+    @field_validator("choices")
     def choices_validator(
         cls, v: Optional[List[SurveyChoicesModel]]
     ) -> Optional[List[SurveyChoicesModel]]:
@@ -126,7 +126,7 @@ class __SurveySharedModel(BaseModel):
         description="Encryption algorithms used for survey",
     )
 
-    @validator("questions")
+    @field_validator("questions")
     def questions_validator(
         cls, v: List[SurveyQuestionModel]
     ) -> List[SurveyQuestionModel]:

@@ -2,7 +2,7 @@ import secrets
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class MongoDB(BaseModel):
@@ -120,8 +120,7 @@ class Settings(BaseSettings):
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
 
-    class Config:
-        env_prefix = "purplix_"
+    model_config = SettingsConfigDict(env_prefix="purplix_")
 
 
 SETTINGS = Settings()  # type: ignore
