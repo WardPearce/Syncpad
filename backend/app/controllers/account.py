@@ -130,10 +130,10 @@ class LoginController(Controller):
         self,
         state: "State",
         request: Request,
-        captcha: str,
         otp: Optional[str],
         data: UserLoginSignatureModel,
         email: str,
+        captcha: Optional[str] = None,
     ) -> Response[UserJtiModel]:
         user = await User(state, email).get()
 
@@ -301,7 +301,9 @@ async def password_reset(
     exclude_from_auth=True,
 )
 async def create_account(
-    state: "State", captcha: str, data: CreateUserModel
+    state: "State",
+    data: CreateUserModel,
+    captcha: Optional[str] = None,
 ) -> Response:
     if SETTINGS.disable_registration:
         raise NotAuthorizedException(detail="Registration is disabled")
@@ -337,11 +339,11 @@ async def create_account(
     return Response(
         None,
         status_code=201,
-        background=BackgroundTask(
-            send_email_verify,
-            to=data.email,
-            email_secret=await generate_email_validation(state, email),
-        ),
+        # background=BackgroundTask(
+        #     send_email_verify,
+        #     to=data.email,
+        #     email_secret=await generate_email_validation(state, email),
+        # ),
     )
 
 
