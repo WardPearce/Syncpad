@@ -115,7 +115,7 @@
                 <button class="secondary">Learn more</button>
             </nav>
         </div>
-        <div class="s12 m6 l4 right-align">
+        <div class="s12 m6 l4 right-align site-preview">
             <img
                 src="/previews/survey.png"
                 height="700px"
@@ -127,7 +127,7 @@
 
 <article>
     <div class="grid">
-        <div class="s12 m6 l4">
+        <div class="s12 m6 l4 site-preview">
             <img
                 src="/previews/canary.png"
                 height="700px"
@@ -215,5 +215,17 @@
     .header h2 {
         margin-top: 0.3em;
         margin-bottom: 0;
+    }
+
+    @media only screen and (max-width: 735px) {
+        .site-preview {
+            display: none;
+        }
+    }
+
+    @media only screen and (max-width: 735px) {
+        .header {
+            display: none;
+        }
     }
 </style>
