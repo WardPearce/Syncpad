@@ -15,22 +15,24 @@ export class SurveyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * StreamResponses
-     * Stream survey responses using ndjson (not realtime)
+     * GetResponse
+     * Get a survey response
      * @param surveyId
-     * @returns string Stream Response
+     * @param page
+     * @returns SurveyResultModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersSurveySurveyIdResponsesStreamResponses(
+    public controllersSurveySurveyIdResponsesPageGetResponse(
         surveyId: string,
-    ): CancelablePromise<string> {
+        page: number,
+    ): CancelablePromise<SurveyResultModel> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/survey/{survey_id}/responses',
+            url: '/controllers/survey/{survey_id}/responses/{page}',
             path: {
                 'survey_id': surveyId,
+                'page': page,
             },
-            responseHeader: 'content-length',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -50,28 +52,6 @@ export class SurveyService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/survey/{survey_id}/close',
-            path: {
-                'survey_id': surveyId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * PublicSurvey
-     * Get a survey public details
-     * @param surveyId
-     * @returns SurveyPublicModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersSurveySurveyIdPublicPublicSurvey(
-        surveyId: string,
-    ): CancelablePromise<SurveyPublicModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/survey/{survey_id}/public',
             path: {
                 'survey_id': surveyId,
             },
@@ -113,23 +93,43 @@ export class SurveyService {
     }
 
     /**
-     * GetResponse
-     * Get a survey response
+     * StreamResponses
+     * Stream survey responses using ndjson (not realtime)
      * @param surveyId
-     * @param page
-     * @returns SurveyResultModel Request fulfilled, document follows
+     * @returns string Stream Response
      * @throws ApiError
      */
-    public controllersSurveySurveyIdResponsesPageGetResponse(
+    public controllersSurveySurveyIdResponsesStreamResponses(
         surveyId: string,
-        page: number,
-    ): CancelablePromise<SurveyResultModel> {
+    ): CancelablePromise<string> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/survey/{survey_id}/responses/{page}',
+            url: '/controllers/survey/{survey_id}/responses',
             path: {
                 'survey_id': surveyId,
-                'page': page,
+            },
+            responseHeader: 'content-length',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicSurvey
+     * Get a survey public details
+     * @param surveyId
+     * @returns SurveyPublicModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdPublicPublicSurvey(
+        surveyId: string,
+    ): CancelablePromise<SurveyPublicModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}/public',
+            path: {
+                'survey_id': surveyId,
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,

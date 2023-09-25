@@ -8,6 +8,11 @@ export const isDarkMode = writable(true);
 
 export const showNav = writable(true);
 
+export const enabled: Writable<{
+    canaries: boolean;
+    survey: boolean;
+}> = writable({ canaries: false, survey: false });
+
 export interface LocalSecretsModel {
     email: string;
     userId: string;

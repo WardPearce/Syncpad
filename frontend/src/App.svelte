@@ -14,6 +14,7 @@
   import Logo from "./components/Logo.svelte";
   import {
     emailVerificationRequired,
+    enabled,
     isDarkMode,
     localSecrets,
     showNav,
@@ -42,13 +43,17 @@
 
   onMount(async () => {
     // Set theme color
-
     document.title = import.meta.env.VITE_SITE_NAME;
 
-    await sodium.ready;
+    const settings =
+      await apiClient.settings.controllersSettingsEnabledEnabled();
 
-    // Get a valid token.
-    await apiClient.default.controllersCsrfCsrfGet();
+    enabled.set({
+      canaries: settings.canaries as boolean,
+      survey: settings.survey as boolean,
+    });
+
+    await sodium.ready;
 
     if (loggedInUser === undefined) {
       return;

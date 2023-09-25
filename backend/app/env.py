@@ -69,7 +69,7 @@ class Jwt(BaseModel):
 
 class DomainVerify(BaseModel):
     prefix: str = "purplix.io__verify="
-    tim38eout: int = 60
+    timeout: int = 60
 
 
 class Proxycheck(BaseModel):
@@ -100,6 +100,12 @@ class Canary(BaseModel):
     logo: CanaryLogo = CanaryLogo()
 
 
+class Enabled(BaseModel):
+    survey: bool = True
+    canaries: bool = True
+    files: bool = True
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
@@ -116,6 +122,7 @@ class Settings(BaseSettings):
         description="It's recommended to simply use a proxy for untrusted requests.",
     )
     disable_registration: bool = False
+    enabled: Enabled = Enabled()
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)

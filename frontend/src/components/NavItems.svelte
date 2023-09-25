@@ -7,6 +7,7 @@
   import { getDynamicTheme } from "../lib/theme";
   import {
     advanceModeStore,
+    enabled,
     isDarkMode,
     localSecrets,
     themeStore,
@@ -20,6 +21,8 @@
     dark = "dark",
     light = "light",
   }
+
+  const enabledSettings = get(enabled);
 
   let mode: ThemeMode;
 
@@ -124,15 +127,17 @@
     <span>Account</span>
   </a>
 {/if}
-<a
-  use:link
-  href="/canaries"
-  class:active={currentPage === "/canaries"}
-  class={isMobile ? "row round" : ""}
->
-  <i>bookmarks</i>
-  <span>Trusted Canaries</span>
-</a>
+{#if enabledSettings.canaries}
+  <a
+    use:link
+    href="/canaries"
+    class:active={currentPage === "/canaries"}
+    class={isMobile ? "row round" : ""}
+  >
+    <i>bookmarks</i>
+    <span>Trusted Canaries</span>
+  </a>
+{/if}
 <a
   target="_blank"
   referrerpolicy="no-referrer"

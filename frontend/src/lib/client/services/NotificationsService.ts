@@ -11,27 +11,6 @@ export class NotificationsService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * AddWebhook
-     * Add a webhook
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookAddAddWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/notifications/webhook/add',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * RemoveWebhook
      * Remove a webhook
      * @param requestBody
@@ -44,6 +23,27 @@ export class NotificationsService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/notifications/webhook/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * AddWebhook
+     * Add a webhook
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsWebhookAddAddWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/notifications/webhook/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
