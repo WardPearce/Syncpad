@@ -224,14 +224,14 @@ export async function* login(
   let loggedInUser: UserJtiModel;
   try {
     loggedInUser = await apiClient.account.controllersAccountEmailLoginLogin(
-      captchaToken as string,
       email,
       {
         _id: toProve.id,
         signature: signatures.sign(rawAuthKeys.privateKey, toProve.to_sign),
         one_day_login: !rememberMe
       },
-      otpCode ? otpCode : ""
+      otpCode ? otpCode : "",
+      captchaToken as string,
     );
   } catch (error) {
     throw new LoginError(error.body.detail);
@@ -434,8 +434,8 @@ export async function* register(email: string, password: string, captchaToken?: 
 
   try {
     await apiClient.account.controllersAccountCreateCreateAccount(
+      createUser,
       captchaToken as string,
-      createUser
     );
   } catch (error) {
     throw new RegisterError(error.body.detail);

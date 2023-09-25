@@ -123,7 +123,7 @@
                     return apiClient.document.controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
                         createdWarrant.id,
                         docHash,
-                        [document]
+                        [document.toString()]
                     );
                 });
 

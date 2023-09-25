@@ -54,32 +54,6 @@ export class AccountService {
     }
 
     /**
-     * VerifyEmail
-     * Verify email for given account
-     * @param email
-     * @param emailSecret
-     * @returns string Redirect Response
-     * @throws ApiError
-     */
-    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
-        email: string,
-        emailSecret: string,
-    ): CancelablePromise<string> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/email/verify/{email_secret}',
-            path: {
-                'email': email,
-                'email_secret': emailSecret,
-            },
-            responseHeader: 'location',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * ToSign
      * Used to generate a unique code to sign.
      * @param email
@@ -118,6 +92,32 @@ export class AccountService {
             path: {
                 'email': email,
             },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * VerifyEmail
+     * Verify email for given account
+     * @param email
+     * @param emailSecret
+     * @returns string Redirect Response
+     * @throws ApiError
+     */
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
+        email: string,
+        emailSecret: string,
+    ): CancelablePromise<string> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
+            path: {
+                'email': email,
+                'email_secret': emailSecret,
+            },
+            responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -211,27 +211,6 @@ export class AccountService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AddEmail
      * Enable email notification
      * @param requestBody
@@ -253,14 +232,23 @@ export class AccountService {
     }
 
     /**
-     * IpProgressingConsent
-     * @returns any Document created, URL follows
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
      * @throws ApiError
      */
-    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/privacy/ip-progressing/consent',
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
         });
     }
 
@@ -273,6 +261,18 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/privacy/ip-progressing/disallow',
+        });
+    }
+
+    /**
+     * IpProgressingConsent
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/privacy/ip-progressing/consent',
         });
     }
 

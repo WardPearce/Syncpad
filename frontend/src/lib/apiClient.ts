@@ -18,6 +18,8 @@ class CSrfHttpRequest extends FetchHttpRequest {
             this.config.HEADERS["x-csrftoken"] = csrfToken;
         }
 
+        console.log(options);
+
         try {
             validateData(
                 options.url.toLowerCase(),

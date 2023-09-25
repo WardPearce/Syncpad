@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "npm run generate; vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "generate": "curl --insecure -o ./src/lib/client/schema.json https://localhost/api/schema/openapi.json; openapi --input ./src/lib/client/schema.json --output ./src/lib/client --name CanaryClient"
+    "generate": "export NODE_TLS_REJECT_UNAUTHORIZED=0; openapi --input https://localhost/api/schema/openapi.json --output ./src/lib/client --name CanaryClient; curl --insecure -o ./src/lib/client/schema.json https://localhost/api/schema/openapi.json  > /dev/null 2>&1; export NODE_TLS_REJECT_UNAUTHORIZED=1"
   },
   "devDependencies": {
     "@mcaptcha/pow-wasm": "^0.1.0-alpha-1",
