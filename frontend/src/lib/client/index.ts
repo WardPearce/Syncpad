@@ -60,6 +60,7 @@ export { WebhookModel } from './models/WebhookModel';
 
 export { AccountService } from './services/AccountService';
 export { CanaryService } from './services/CanaryService';
+export { DefaultService } from './services/DefaultService';
 export { DocumentService } from './services/DocumentService';
 export { NotificationsService } from './services/NotificationsService';
 export { PrivacyService } from './services/PrivacyService';

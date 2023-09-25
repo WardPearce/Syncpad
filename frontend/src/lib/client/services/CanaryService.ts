@@ -90,6 +90,32 @@ export class CanaryService {
     }
 
     /**
+     * Publish
+     * Publish a canary
+     * @param warrantId
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryWarrantWarrantIdPublishPublish(
+        warrantId: string,
+        requestBody: PublishCanaryWarrantModel,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/warrant/{warrant_id}/publish',
+            path: {
+                'warrant_id': warrantId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * UploadDocument
      * Upload a canary warrant document
      * @param warrantId
@@ -119,22 +145,22 @@ export class CanaryService {
     }
 
     /**
-     * Publish
-     * Publish a canary
-     * @param warrantId
+     * TrustCanary
+     * Saves a canary as a trusted canary
+     * @param domain
      * @param requestBody
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanaryWarrantWarrantIdPublishPublish(
-        warrantId: string,
-        requestBody: PublishCanaryWarrantModel,
+    public controllersCanaryDomainTrustedAddTrustCanary(
+        domain: string,
+        requestBody: TrustedCanaryModel,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/canary/warrant/{warrant_id}/publish',
+            url: '/controllers/canary/{domain}/trusted/add',
             path: {
-                'warrant_id': warrantId,
+                'domain': domain,
             },
             body: requestBody,
             mediaType: 'application/json',
@@ -145,21 +171,91 @@ export class CanaryService {
     }
 
     /**
-     * Verify
-     * Verify domain ownership via DNS
+     * GetCanary
+     * Get private details about a canary
      * @param domain
-     * @returns any Document created, URL follows
+     * @returns CanaryModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersCanaryDomainVerifyVerify(
+    public controllersCanaryDomainGetCanary(
         domain: string,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<CanaryModel> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/{domain}/verify',
+            method: 'GET',
+            url: '/controllers/canary/{domain}',
             path: {
                 'domain': domain,
             },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * PublicCanary
+     * Get public details about canary
+     * @param domain
+     * @returns PublicCanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainPublicPublicCanary(
+        domain: string,
+    ): CancelablePromise<PublicCanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}/public',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * GetTrusted
+     * Get signed public key hash for a trusted canary
+     * @param domain
+     * @returns TrustedCanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainTrustedGetTrusted(
+        domain: string,
+    ): CancelablePromise<TrustedCanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}/trusted',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * UpdateLogo
+     * Update logo for given domain
+     * @param domain
+     * @param formData
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainLogoUpdateUpdateLogo(
+        domain: string,
+        formData: Array<string>,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/{domain}/logo/update',
+            path: {
+                'domain': domain,
+            },
+            formData: formData,
+            mediaType: 'multipart/form-data',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -198,76 +294,6 @@ export class CanaryService {
     }
 
     /**
-     * GetTrusted
-     * Get signed public key hash for a trusted canary
-     * @param domain
-     * @returns TrustedCanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainTrustedGetTrusted(
-        domain: string,
-    ): CancelablePromise<TrustedCanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}/trusted',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * GetCanary
-     * Get private details about a canary
-     * @param domain
-     * @returns CanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainGetCanary(
-        domain: string,
-    ): CancelablePromise<CanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * UpdateLogo
-     * Update logo for given domain
-     * @param domain
-     * @param formData
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainLogoUpdateUpdateLogo(
-        domain: string,
-        formData: Array<string>,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/{domain}/logo/update',
-            path: {
-                'domain': domain,
-            },
-            formData: formData,
-            mediaType: 'multipart/form-data',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * DeleteCanary
      * Delete a canary
      * @param domain
@@ -295,68 +321,20 @@ export class CanaryService {
     }
 
     /**
-     * PublicCanary
-     * Get public details about canary
+     * Verify
+     * Verify domain ownership via DNS
      * @param domain
-     * @returns PublicCanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainPublicPublicCanary(
-        domain: string,
-    ): CancelablePromise<PublicCanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}/public',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * TrustCanary
-     * Saves a canary as a trusted canary
-     * @param domain
-     * @param requestBody
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanaryDomainTrustedAddTrustCanary(
+    public controllersCanaryDomainVerifyVerify(
         domain: string,
-        requestBody: TrustedCanaryModel,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/canary/{domain}/trusted/add',
+            url: '/controllers/canary/{domain}/verify',
             path: {
                 'domain': domain,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * Unsubscribe
-     * Unsubscribe from a canary
-     * @param canaryId
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
-        canaryId: string,
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
-            path: {
-                'canary_id': canaryId,
             },
             errors: {
                 400: `Bad request syntax or unsupported method`,
@@ -377,6 +355,28 @@ export class CanaryService {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/canary/subscription/{canary_id}',
+            path: {
+                'canary_id': canaryId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * Unsubscribe
+     * Unsubscribe from a canary
+     * @param canaryId
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
+        canaryId: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
             path: {
                 'canary_id': canaryId,
             },

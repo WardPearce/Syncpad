@@ -47,6 +47,9 @@
 
     await sodium.ready;
 
+    // Get a valid token.
+    await apiClient.default.controllersCsrfCsrfGet();
+
     if (loggedInUser === undefined) {
       return;
     }

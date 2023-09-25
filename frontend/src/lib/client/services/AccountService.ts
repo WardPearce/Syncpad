@@ -21,18 +21,18 @@ export class AccountService {
     /**
      * Login
      * Validate signature and OTP code
-     * @param captcha
      * @param email
      * @param requestBody
      * @param otp
+     * @param captcha
      * @returns UserJtiModel Document created, URL follows
      * @throws ApiError
      */
     public controllersAccountEmailLoginLogin(
-        captcha: string,
         email: string,
         requestBody: UserLoginSignatureModel,
         otp?: (null | string),
+        captcha?: (null | string),
     ): CancelablePromise<UserJtiModel> {
         return this.httpRequest.request({
             method: 'POST',
@@ -41,37 +41,14 @@ export class AccountService {
                 'email': email,
             },
             query: {
-                'captcha': captcha,
                 'otp': otp,
+                'captcha': captcha,
             },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
                 401: `No permission -- see authorization schemes`,
-            },
-        });
-    }
-
-    /**
-     * ToSign
-     * Used to generate a unique code to sign.
-     * @param email
-     * @returns UserToSignModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailToSignToSign(
-        email: string,
-    ): CancelablePromise<UserToSignModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/to-sign',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                404: `Nothing matches the given URI`,
             },
         });
     }
@@ -103,6 +80,29 @@ export class AccountService {
     }
 
     /**
+     * ToSign
+     * Used to generate a unique code to sign.
+     * @param email
+     * @returns UserToSignModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailToSignToSign(
+        email: string,
+    ): CancelablePromise<UserToSignModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/to-sign',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
+            },
+        });
+    }
+
+    /**
      * Public
      * Public KDF details
      * @param email
@@ -125,28 +125,6 @@ export class AccountService {
     }
 
     /**
-     * OtpSetup
-     * Used to confirm OTP is completed
-     * @param otp
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountOtpSetupOtpSetup(
-        otp: string,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/otp/setup',
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * ResetOtp
      * Reset OTP
      * @param otp
@@ -159,6 +137,28 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/otp/reset',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * OtpSetup
+     * Used to confirm OTP is completed
+     * @param otp
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpSetupOtpSetup(
+        otp: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/otp/setup',
             query: {
                 'otp': otp,
             },
@@ -279,14 +279,14 @@ export class AccountService {
     /**
      * CreateAccount
      * Create a user account
-     * @param captcha
      * @param requestBody
+     * @param captcha
      * @returns any Document created, URL follows
      * @throws ApiError
      */
     public controllersAccountCreateCreateAccount(
-        captcha: string,
         requestBody: CreateUserModel,
+        captcha?: (null | string),
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',

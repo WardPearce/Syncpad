@@ -1,6 +1,6 @@
 from litestar import Router
 
-from app.controllers import account, canary, session, survey
+from app.controllers import account, canary, csrf, session, survey
 
 routes = Router(
     path="/controllers",
@@ -9,5 +9,6 @@ routes = Router(
         session.router,
         canary.router,
         survey.router,
+        csrf.router,
     ],
 )

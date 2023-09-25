@@ -133,5 +133,5 @@ app = Litestar(
     response_cache_config=ResponseCacheConfig(store="redis"),
     on_app_init=[jwt_cookie_auth.on_app_init],
     type_encoders=TYPE_ENCODERS,
-    debug=SETTINGS.proxy_urls.frontend == "http://localhost",
+    debug=SETTINGS.proxy_urls.frontend.endswith("localhost"),
 )
