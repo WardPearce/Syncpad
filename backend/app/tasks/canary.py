@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, List
 
 import humanize
+from lib.ntfy import push_notification
 
 from app.env import SETTINGS
 from app.errors import DomainValidationError, UserNotFoundException
@@ -29,10 +30,21 @@ async def __handle_canary_verification(state: "State", canary: CanaryModel) -> N
     except UserNotFoundException:
         return
 
+    subject = "Canary domain verified!"
+    content = f"Your canary domain {canary.domain} has been verified!"
+
+    await push_notification(
+        state,
+        topic=user.notifications.push[NotificationEnum.canary_renewals],
+        message=content,
+        title=subject,
+        tags="+1",
+    )
+
     await send_email(
         to=user.email,
-        subject="Canary domain verified!",
-        content=f"Your canary domain {canary.domain} has been verified!",
+        subject=subject,
+        content=content,
     )
 
 
@@ -79,6 +91,9 @@ async def canary_owner_alerts(state: "State") -> None:
 
         futures: List = []
 
+        subject = f"Canary renewal due in {due_in}"
+        message = f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/"
+
         if any(
             NotificationEnum.canary_renewals.value == enum.value
             for enum in user.notifications.email
@@ -86,8 +101,23 @@ async def canary_owner_alerts(state: "State") -> None:
             futures.append(
                 send_email(
                     user.email,
-                    f"Canary renewal due in {due_in}",
-                    f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/",
+                    subject,
+                    message,
+                )
+            )
+
+        if any(
+            NotificationEnum.canary_renewals.value == enum.value
+            for enum in user.notifications.push
+        ):
+            futures.append(
+                push_notification(
+                    state,
+                    topic=user.notifications.push[NotificationEnum.canary_renewals],
+                    message=message,
+                    title=subject,
+                    tags="loudspeaker",
+                    priority="high",
                 )
             )
 
