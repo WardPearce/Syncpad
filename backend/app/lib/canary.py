@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 from datetime import datetime
@@ -6,6 +7,11 @@ from urllib.parse import quote_plus
 
 import yarl
 from bson import ObjectId
+from lib.ntfy import push_notification
+from lib.smtp import send_email
+from lib.url import untrusted_http_request
+from lib.user import User
+from models.user import NotificationEnum
 
 from app.env import SETTINGS
 from app.errors import CanaryNotFoundException, DomainValidationError
@@ -22,7 +28,10 @@ class CanaryUser:
 
     @property
     def _canary_query(self) -> dict:
-        return {"domain": self.__upper._domain, "user_id": self.__user_id}
+        if not self.__upper._object_id:
+            return {"domain": self.__upper.identifier, "user_id": self.__user_id}
+        else:
+            return {"_id": self.__upper.identifier, "user_id": self.__user_id}
 
     async def get(self) -> CanaryModel:
         result = await self.__upper._state.mongo.canary.find_one(self._canary_query)
@@ -44,7 +53,7 @@ class CanaryUser:
                 await self.__upper._state.mongo.deleted_canary.insert_one(
                     {
                         "domain_hash": hashlib.sha256(
-                            self.__upper._domain.encode()
+                            canary.domain.encode()
                         ).hexdigest(),
                         "deleted": datetime.utcnow(),
                     }
@@ -65,11 +74,11 @@ class CanaryUser:
             DomainValidationError
         """
 
-        if not self.__upper._domain:
+        if not self.__upper.identifier:
             raise DomainValidationError()
 
         resp = await self.__upper._state.aiohttp.get(
-            f"https://cloudflare-dns.com/dns-query?name={quote_plus(self.__upper._domain)}&type=TXT",
+            f"https://cloudflare-dns.com/dns-query?name={quote_plus(self.__upper.identifier)}&type=TXT",
             headers={"accept": "application/dns-json"},
         )
         if resp.status != 200:
@@ -122,23 +131,31 @@ class CanaryUser:
 
         # Delete any canaries of the same domain awaiting approval.
         await self.__upper._state.mongo.canary.delete_many(
-            {"domain": self.__upper._domain, "domain_verification.completed": False}
+            {"domain": self.__upper.identifier, "domain_verification.completed": False}
         )
 
 
 class Canary:
-    def __init__(self, state: "State", domain: str) -> None:
-        _domain = yarl.URL(domain).host
-        if not _domain:
-            self._domain = domain
+    def __init__(self, state: "State", identifier: str | ObjectId) -> None:
+        if not isinstance(identifier, ObjectId):
+            self._object_id = False
+            _identifier: str | None = yarl.URL(identifier).host
+            if not _identifier:
+                self.identifier = _identifier
+            else:
+                self.identifier = _identifier
         else:
-            self._domain = _domain
+            self._object_id = True
+            self._identifier = identifier
 
         self._state = state
 
     @property
     def __canary_where(self) -> dict:
-        return {"domain": self._domain, "domain_verification.completed": True}
+        if not self._object_id:
+            return {"domain": self.identifier, "domain_verification.completed": True}
+        else:
+            return {"_id": self.identifier, "domain_verification.completed": True}
 
     async def exists(self) -> None:
         if self._state.mongo.canary.count_documents(self.__canary_where) == 0:
@@ -150,6 +167,64 @@ class Canary:
             raise CanaryNotFoundException()
 
         return PublicCanaryModel(**result)
+
+    async def alert_subscribers(self, warrant: dict) -> None:
+        canary = await self.get()
+
+        futures = []
+
+        subject = f"A new canary warrant has been published for {canary.domain}"
+        message = f"Please visit the canary for {canary.domain} to view the latest statement.\n\nNever trust any claims made via emails about canaries."
+
+        async for subscribed in self._state.mongo.subscribed_canary.find(
+            {"canary_id": canary.id}
+        ):
+            user = await User(self._state, subscribed["user_id"]).get()
+
+            if any(
+                NotificationEnum.canary_subscriptions.value == enum.value
+                for enum in user.notifications.email
+            ):
+                futures.append(
+                    send_email(
+                        user.email,
+                        subject,
+                        message,
+                    )
+                )
+
+            if any(
+                NotificationEnum.canary_subscriptions.value == enum.value
+                for enum in user.notifications.push
+            ):
+                futures.append(
+                    push_notification(
+                        self._state,
+                        topic=user.notifications.push[
+                            NotificationEnum.canary_subscriptions
+                        ],
+                        message=message,
+                        title=subject,
+                        tags="mailbox_with_mail",
+                        priority="high",
+                    )
+                )
+
+            if any(
+                NotificationEnum.canary_subscriptions.value == enum.value
+                for enum in user.notifications.webhooks
+            ):
+                for webhook in user.notifications.webhooks[
+                    NotificationEnum.canary_subscriptions
+                ]:
+                    futures.append(
+                        untrusted_http_request(
+                            state=self._state, url=webhook, method="POST", json=warrant
+                        )
+                    )
+
+        if futures:
+            asyncio.gather(*futures)
 
     def user(self, user_id: ObjectId) -> CanaryUser:
         return CanaryUser(self, user_id)

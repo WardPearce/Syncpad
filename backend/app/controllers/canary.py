@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Annotated, Any, Dict, List
 from bson import ObjectId
 from bson.errors import InvalidId
 from litestar import Controller, Request, Response, Router, delete, get, post, put
+from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jwt import Token
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
-from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.params import Body
 
 from app.env import SETTINGS
@@ -202,7 +202,7 @@ class PublishCanary(Controller):
         state: "State",
         warrant_id: str,
         data: PublishCanaryWarrantModel,
-    ) -> None:
+    ) -> Response:
         try:
             id_ = ObjectId(warrant_id)
         except InvalidId:
@@ -214,6 +214,13 @@ class PublishCanary(Controller):
         if not warrant:
             raise PublishedWarrantNotFoundException()
 
+        to_set = {
+            **data.model_dump(),
+            "concern": data.concern.value,
+            "active": True,
+            "published": True,
+        }
+
         await state.mongo.canary_warrant.update_one(
             {
                 "_id": id_,
@@ -221,18 +228,21 @@ class PublishCanary(Controller):
                 "active": False,
             },
             {
-                "$set": {
-                    **data.model_dump(),
-                    "concern": data.concern.value,
-                    "active": True,
-                    "published": True,
-                },
+                "$set": to_set,
             },
         )
 
         await state.mongo.canary_warrant.update_many(
             {"canary_id": warrant["canary_id"], "_id": {"$ne": id_}},
             {"$set": {"active": False}},
+        )
+
+        return Response(
+            None,
+            background=BackgroundTask(
+                Canary(state, warrant["canary_id"]).alert_subscribers,
+                warrant={**warrant, **to_set},
+            ),
         )
 
 
