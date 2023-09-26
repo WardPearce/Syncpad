@@ -15,8 +15,11 @@
   const enabledSettings = get(enabled);
 
   onMount(async () => {
-    canaries = await apiClient.canary.controllersCanaryListListCanaries();
-    surveys = await apiClient.survey.controllersSurveyListListSurveys();
+    if (enabledSettings.canaries)
+      canaries = await apiClient.canary.controllersCanaryListListCanaries();
+
+    if (enabledSettings.survey)
+      surveys = await apiClient.survey.controllersSurveyListListSurveys();
   });
 </script>
 

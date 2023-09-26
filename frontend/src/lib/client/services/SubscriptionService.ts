@@ -9,28 +9,6 @@ export class SubscriptionService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Subscribe
-     * Subscribe to a canary
-     * @param canaryId
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
-        canaryId: string,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/subscription/{canary_id}/subscribe',
-            path: {
-                'canary_id': canaryId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AmSubscribed
      * Check if user is subscribed to a canary
      * @param canaryId
@@ -43,6 +21,28 @@ export class SubscriptionService {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/canary/subscription/{canary_id}',
+            path: {
+                'canary_id': canaryId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * Subscribe
+     * Subscribe to a canary
+     * @param canaryId
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanarySubscriptionCanaryIdSubscribeSubscribe(
+        canaryId: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/subscription/{canary_id}/subscribe',
             path: {
                 'canary_id': canaryId,
             },

@@ -103,7 +103,6 @@ class Canary(BaseModel):
 class Enabled(BaseModel):
     survey: bool = True
     canaries: bool = True
-    files: bool = True
 
 
 class Settings(BaseSettings):

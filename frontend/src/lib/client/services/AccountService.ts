@@ -19,55 +19,6 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * VerifyEmail
-     * Verify email for given account
-     * @param email
-     * @param emailSecret
-     * @returns string Redirect Response
-     * @throws ApiError
-     */
-    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
-        email: string,
-        emailSecret: string,
-    ): CancelablePromise<string> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/email/verify/{email_secret}',
-            path: {
-                'email': email,
-                'email_secret': emailSecret,
-            },
-            responseHeader: 'location',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * ToSign
-     * Used to generate a unique code to sign.
-     * @param email
-     * @returns UserToSignModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailToSignToSign(
-        email: string,
-    ): CancelablePromise<UserToSignModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/to-sign',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                404: `Nothing matches the given URI`,
-            },
-        });
-    }
-
-    /**
      * Login
      * Validate signature and OTP code
      * @param email
@@ -103,6 +54,55 @@ export class AccountService {
     }
 
     /**
+     * ToSign
+     * Used to generate a unique code to sign.
+     * @param email
+     * @returns UserToSignModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailToSignToSign(
+        email: string,
+    ): CancelablePromise<UserToSignModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/to-sign',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
+            },
+        });
+    }
+
+    /**
+     * VerifyEmail
+     * Verify email for given account
+     * @param email
+     * @param emailSecret
+     * @returns string Redirect Response
+     * @throws ApiError
+     */
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
+        email: string,
+        emailSecret: string,
+    ): CancelablePromise<string> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
+            path: {
+                'email': email,
+                'email_secret': emailSecret,
+            },
+            responseHeader: 'location',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * Public
      * Public KDF details
      * @param email
@@ -125,28 +125,6 @@ export class AccountService {
     }
 
     /**
-     * OtpSetup
-     * Used to confirm OTP is completed
-     * @param otp
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountOtpSetupOtpSetup(
-        otp: string,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/otp/setup',
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * ResetOtp
      * Reset OTP
      * @param otp
@@ -159,6 +137,28 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/otp/reset',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * OtpSetup
+     * Used to confirm OTP is completed
+     * @param otp
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpSetupOtpSetup(
+        otp: string,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/otp/setup',
             query: {
                 'otp': otp,
             },
@@ -253,18 +253,6 @@ export class AccountService {
     }
 
     /**
-     * IpProgressing
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/privacy/ip-progressing/disallow',
-        });
-    }
-
-    /**
      * IpProgressingConsent
      * @returns any Document created, URL follows
      * @throws ApiError
@@ -273,6 +261,18 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/privacy/ip-progressing/consent',
+        });
+    }
+
+    /**
+     * IpProgressing
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/privacy/ip-progressing/disallow',
         });
     }
 

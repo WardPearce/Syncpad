@@ -5,6 +5,5 @@
 export type Enabled = {
     survey?: boolean;
     canaries?: boolean;
-    files?: boolean;
 };
 
