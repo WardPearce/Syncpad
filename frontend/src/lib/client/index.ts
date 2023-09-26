@@ -25,7 +25,7 @@ export type { DocumentCanaryWarrantModel } from './models/DocumentCanaryWarrantM
 export type { Documents } from './models/Documents';
 export type { DomainVerification } from './models/DomainVerification';
 export type { Enabled } from './models/Enabled';
-export type { NftyNotification } from './models/NftyNotification';
+export type { NftyNotificationModel } from './models/NftyNotificationModel';
 export type { NotificationsModel } from './models/NotificationsModel';
 export type { NotificationWebhooks } from './models/NotificationWebhooks';
 export type { OtpModel } from './models/OtpModel';

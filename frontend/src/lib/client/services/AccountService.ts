@@ -3,7 +3,7 @@
 /* eslint-disable */
 import type { AccountUpdatePassword } from '../models/AccountUpdatePassword';
 import type { CreateUserModel } from '../models/CreateUserModel';
-import type { NftyNotification } from '../models/NftyNotification';
+import type { NftyNotificationModel } from '../models/NftyNotificationModel';
 import type { OtpModel } from '../models/OtpModel';
 import type { PublicUserModel } from '../models/PublicUserModel';
 import type { UserJtiModel } from '../models/UserJtiModel';
@@ -20,21 +20,25 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Public
-     * Public KDF details
+     * VerifyEmail
+     * Verify email for given account
      * @param email
-     * @returns PublicUserModel Request fulfilled, document follows
+     * @param emailSecret
+     * @returns string Redirect Response
      * @throws ApiError
      */
-    public controllersAccountEmailPublicPublic(
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
         email: string,
-    ): CancelablePromise<PublicUserModel> {
+        emailSecret: string,
+    ): CancelablePromise<string> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/account/{email}/public',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
             path: {
                 'email': email,
+                'email_secret': emailSecret,
             },
+            responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -77,6 +81,28 @@ export class AccountService {
     }
 
     /**
+     * Public
+     * Public KDF details
+     * @param email
+     * @returns PublicUserModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailPublicPublic(
+        email: string,
+    ): CancelablePromise<PublicUserModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/public',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * ToSign
      * Used to generate a unique code to sign.
      * @param email
@@ -95,32 +121,6 @@ export class AccountService {
             errors: {
                 400: `Bad request syntax or unsupported method`,
                 404: `Nothing matches the given URI`,
-            },
-        });
-    }
-
-    /**
-     * VerifyEmail
-     * Verify email for given account
-     * @param email
-     * @param emailSecret
-     * @returns string Redirect Response
-     * @throws ApiError
-     */
-    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
-        email: string,
-        emailSecret: string,
-    ): CancelablePromise<string> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/email/verify/{email_secret}',
-            path: {
-                'email': email,
-                'email_secret': emailSecret,
-            },
-            responseHeader: 'location',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
             },
         });
     }
@@ -170,27 +170,6 @@ export class AccountService {
     }
 
     /**
-     * AddWebhook
-     * Add a webhook
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookAddAddWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/notifications/webhook/add',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * RemoveWebhook
      * Remove a webhook
      * @param requestBody
@@ -212,18 +191,18 @@ export class AccountService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
+     * AddWebhook
+     * Add a webhook
      * @param requestBody
-     * @returns void
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<void> {
+    public controllersAccountNotificationsWebhookAddAddWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<any> {
         return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
+            method: 'POST',
+            url: '/controllers/account/notifications/webhook/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -254,15 +233,36 @@ export class AccountService {
     }
 
     /**
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * AddPush
      * Generate push notification topic
      * @param requestBody
-     * @returns NftyNotification Document created, URL follows
+     * @returns NftyNotificationModel Document created, URL follows
      * @throws ApiError
      */
     public controllersAccountNotificationsPushAddAddPush(
         requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<NftyNotification> {
+    ): CancelablePromise<NftyNotificationModel> {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/push/add',
@@ -296,14 +296,15 @@ export class AccountService {
     }
 
     /**
-     * IpProgressingConsent
-     * @returns any Document created, URL follows
+     * ListPush
+     * List topics
+     * @returns NftyNotificationModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+    public controllersAccountNotificationsPushListListPush(): CancelablePromise<Record<string, NftyNotificationModel>> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/privacy/ip-progressing/consent',
+            method: 'GET',
+            url: '/controllers/account/notifications/push/list',
         });
     }
 
@@ -316,6 +317,18 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'DELETE',
             url: '/controllers/account/privacy/ip-progressing/disallow',
+        });
+    }
+
+    /**
+     * IpProgressingConsent
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersAccountPrivacyIpProgressingConsentIpProgressingConsent(): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/account/privacy/ip-progressing/consent',
         });
     }
 

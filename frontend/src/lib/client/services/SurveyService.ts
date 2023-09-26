@@ -15,6 +15,28 @@ export class SurveyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
+     * GetSurvey
+     * Get a survey
+     * @param surveyId
+     * @returns SurveyModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSurveySurveyIdGetSurvey(
+        surveyId: string,
+    ): CancelablePromise<SurveyModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}',
+            path: {
+                'survey_id': surveyId,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * StreamResponses
      * Stream survey responses using ndjson (not realtime)
      * @param surveyId
@@ -38,18 +60,18 @@ export class SurveyService {
     }
 
     /**
-     * PublicSurvey
-     * Get a survey public details
+     * CloseSurvey
+     * Closes survey submission, also clears IP hashes
      * @param surveyId
-     * @returns SurveyPublicModel Request fulfilled, document follows
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersSurveySurveyIdPublicPublicSurvey(
+    public controllersSurveySurveyIdCloseCloseSurvey(
         surveyId: string,
-    ): CancelablePromise<SurveyPublicModel> {
+    ): CancelablePromise<any> {
         return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/survey/{survey_id}/public',
+            method: 'POST',
+            url: '/controllers/survey/{survey_id}/close',
             path: {
                 'survey_id': surveyId,
             },
@@ -91,28 +113,6 @@ export class SurveyService {
     }
 
     /**
-     * GetSurvey
-     * Get a survey
-     * @param surveyId
-     * @returns SurveyModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersSurveySurveyIdGetSurvey(
-        surveyId: string,
-    ): CancelablePromise<SurveyModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/survey/{survey_id}',
-            path: {
-                'survey_id': surveyId,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * GetResponse
      * Get a survey response
      * @param surveyId
@@ -138,18 +138,18 @@ export class SurveyService {
     }
 
     /**
-     * CloseSurvey
-     * Closes survey submission, also clears IP hashes
+     * PublicSurvey
+     * Get a survey public details
      * @param surveyId
-     * @returns any Document created, URL follows
+     * @returns SurveyPublicModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersSurveySurveyIdCloseCloseSurvey(
+    public controllersSurveySurveyIdPublicPublicSurvey(
         surveyId: string,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<SurveyPublicModel> {
         return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/survey/{survey_id}/close',
+            method: 'GET',
+            url: '/controllers/survey/{survey_id}/public',
             path: {
                 'survey_id': surveyId,
             },

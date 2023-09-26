@@ -5,5 +5,6 @@
 export type NotificationsModel = {
     email: Array<'canary_renewals' | 'canary_subscriptions' | 'survey_submissions'>;
     webhooks: Record<string, Array<string>>;
+    push?: Record<string, string>;
 };
 

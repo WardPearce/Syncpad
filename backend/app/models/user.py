@@ -137,6 +137,7 @@ class OtpModel(BaseModel):
 class NotificationsModel(CustomJsonEncoder):
     email: List[NotificationEnum] = Field(..., max_length=3)
     webhooks: Dict[NotificationEnum, List[str]]
+    push: Dict[NotificationEnum, str] = {}
 
 
 class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):
@@ -162,6 +163,6 @@ class UserToSignModel(CustomJsonEncoder):
     id: ObjectId = Field(..., alias="_id")
 
 
-class NftyNotification(BaseModel):
+class NftyNotificationModel(BaseModel):
     topic: str
     url: str

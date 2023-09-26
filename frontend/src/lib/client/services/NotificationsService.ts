@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { NftyNotification } from '../models/NftyNotification';
+import type { NftyNotificationModel } from '../models/NftyNotificationModel';
 import type { WebhookModel } from '../models/WebhookModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -10,27 +10,6 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class NotificationsService {
 
     constructor(public readonly httpRequest: BaseHttpRequest) {}
-
-    /**
-     * AddWebhook
-     * Add a webhook
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookAddAddWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/account/notifications/webhook/add',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
 
     /**
      * RemoveWebhook
@@ -54,18 +33,18 @@ export class NotificationsService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
+     * AddWebhook
+     * Add a webhook
      * @param requestBody
-     * @returns void
+     * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<void> {
+    public controllersAccountNotificationsWebhookAddAddWebhook(
+        requestBody: WebhookModel,
+    ): CancelablePromise<any> {
         return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
+            method: 'POST',
+            url: '/controllers/account/notifications/webhook/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -96,15 +75,36 @@ export class NotificationsService {
     }
 
     /**
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * AddPush
      * Generate push notification topic
      * @param requestBody
-     * @returns NftyNotification Document created, URL follows
+     * @returns NftyNotificationModel Document created, URL follows
      * @throws ApiError
      */
     public controllersAccountNotificationsPushAddAddPush(
         requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
-    ): CancelablePromise<NftyNotification> {
+    ): CancelablePromise<NftyNotificationModel> {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/push/add',
@@ -134,6 +134,19 @@ export class NotificationsService {
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
+        });
+    }
+
+    /**
+     * ListPush
+     * List topics
+     * @returns NftyNotificationModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsPushListListPush(): CancelablePromise<Record<string, NftyNotificationModel>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/notifications/push/list',
         });
     }
 

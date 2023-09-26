@@ -9,6 +9,7 @@
   import apiClient from "../lib/apiClient";
   import {
     WebhookModel,
+    type NftyNotificationModel,
     type SessionModel,
     type UserModel,
   } from "../lib/client";
@@ -46,6 +47,8 @@
 
   let webhookUrl = "";
   let currentNotifyTab: WebhookModel.type = WebhookModel.type.CANARY_RENEWALS;
+
+  let pushNotificationTokens: Record<string, NftyNotificationModel> = {};
 
   let themeColor = getCurrentThemePrimary();
 
@@ -150,6 +153,13 @@
     }
   }
 
+  async function generatePushToken() {
+    pushNotificationTokens[currentNotifyTab] =
+      await apiClient.account.controllersAccountNotificationsPushAddAddPush(
+        currentNotifyTab
+      );
+  }
+
   async function removeWebhook(url: string) {
     user.notifications.webhooks[currentNotifyTab] = user.notifications.webhooks[
       currentNotifyTab
@@ -187,6 +197,9 @@
 
   onMount(async () => {
     user = await apiClient.account.controllersAccountMeGetMe();
+
+    pushNotificationTokens =
+      await apiClient.account.controllersAccountNotificationsPushListListPush();
 
     maxAllowedWebhooks = (
       await apiClient.settings.controllersSettingsNotificationWebhooksNotificationWebhooks()
@@ -376,27 +389,39 @@
             > server so users don't have to relay on google services.
           </p>
 
-          <nav class="wrap" style="margin: 1em 0;">
-            <div class="field label border">
-              <input
-                name="server"
-                value="https://ntfy.purplix.io"
-                readonly
-                type="text"
-              />
-              <label for="server">Server</label>
-            </div>
-
-            <div class="field label border">
-              <input
-                name="topic"
-                value="awaufahu123412lnfa"
-                readonly
-                type="text"
-              />
-              <label for="topic">Topic secret (never share)</label>
-            </div>
+          <nav class="wrap">
+            <button on:click={generatePushToken}>
+              <i>autorenew</i>
+              <span>
+                {#if currentNotifyTab in pushNotificationTokens}Regenerate{:else}Generate{/if}
+                topic
+              </span>
+            </button>
           </nav>
+
+          {#if currentNotifyTab in pushNotificationTokens}
+            <nav class="wrap" style="margin: 1em 0;">
+              <div class="field label border">
+                <input
+                  name="server"
+                  bind:value={pushNotificationTokens[currentNotifyTab].url}
+                  readonly
+                  type="text"
+                />
+                <label for="server">Server</label>
+              </div>
+
+              <div class="field label border">
+                <input
+                  name="topic"
+                  bind:value={pushNotificationTokens[currentNotifyTab].topic}
+                  readonly
+                  type="text"
+                />
+                <label for="topic">Topic secret (never share)</label>
+              </div>
+            </nav>
+          {/if}
 
           <nav class="wrap app-stores">
             <a

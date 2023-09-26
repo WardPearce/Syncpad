@@ -13,14 +13,14 @@ export class SettingsService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Enabled
-     * @returns Enabled Request fulfilled, document follows
+     * Documents
+     * @returns Documents Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersSettingsEnabledEnabled(): CancelablePromise<Enabled> {
+    public controllersSettingsDocumentsDocuments(): CancelablePromise<Documents> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/settings/enabled',
+            url: '/controllers/settings/documents',
         });
     }
 
@@ -37,14 +37,14 @@ export class SettingsService {
     }
 
     /**
-     * Documents
-     * @returns Documents Request fulfilled, document follows
+     * Enabled
+     * @returns Enabled Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersSettingsDocumentsDocuments(): CancelablePromise<Documents> {
+    public controllersSettingsEnabledEnabled(): CancelablePromise<Enabled> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/settings/documents',
+            url: '/controllers/settings/enabled',
         });
     }
 

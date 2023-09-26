@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type NftyNotification = {
+export type NftyNotificationModel = {
     topic: string;
     url: string;
 };

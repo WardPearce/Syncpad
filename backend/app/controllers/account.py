@@ -9,7 +9,6 @@ from argon2 import PasswordHasher
 from bson import ObjectId
 from bson.errors import InvalidId
 from litestar import Request, Response, Router, delete
-from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import NotAuthorizedException, ValidationException
@@ -40,7 +39,7 @@ from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
     AccountUpdatePassword,
     CreateUserModel,
-    NftyNotification,
+    NftyNotificationModel,
     NotificationEnum,
     OtpModel,
     PublicUserModel,
@@ -420,6 +419,26 @@ class OtpController(Controller):
 class PushNotificationController(Controller):
     path = "/notifications/push"
 
+    @get(
+        "/list",
+        description="List topics",
+        tags=["account", "notifications", "push"],
+    )
+    async def list_push(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+    ) -> dict[str, NftyNotificationModel]:
+        user = await User(state, request.user).get()
+
+        response: dict[str, NftyNotificationModel] = {}
+        for type_, topic in user.notifications.push.items():
+            response[type_.value] = NftyNotificationModel(
+                topic=topic, url=SETTINGS.nfty.url
+            )
+
+        return response
+
     @post(
         "/add",
         description="Generate push notification topic",
@@ -430,7 +449,7 @@ class PushNotificationController(Controller):
         state: "State",
         request: Request[ObjectId, Token, Any],
         data: NotificationEnum,
-    ) -> NftyNotification:
+    ) -> NftyNotificationModel:
         topic = secrets.token_urlsafe(SETTINGS.nfty.topic_len)
 
         await state.mongo.user.update_one(
@@ -440,7 +459,7 @@ class PushNotificationController(Controller):
             },
         )
 
-        return NftyNotification(topic=topic, url=SETTINGS.nfty.url)
+        return NftyNotificationModel(topic=topic, url=SETTINGS.nfty.url)
 
     @delete(
         "/remove",
