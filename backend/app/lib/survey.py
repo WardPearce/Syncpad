@@ -1,7 +1,13 @@
+import asyncio
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Mapping, Optional
 
 from bson import ObjectId
+from lib.ntfy import push_notification
+from lib.smtp import send_email
+from lib.url import untrusted_http_request
+from lib.user import User
+from models.user import NotificationEnum
 
 from app.errors import SurveyNotFoundException, SurveyResultNotFoundException
 from app.models.survey import (
@@ -84,6 +90,59 @@ class Survey:
             raise SurveyNotFoundException()
 
         return survey
+
+    async def alert_subscribed(self, submission: dict) -> None:
+        survey = await self.get()
+
+        user = await User(self._state, survey.user_id).get()
+
+        futures = []
+
+        subject = "A new user has submitted a survey"
+        message = "A new survey response has been submitted"
+
+        if any(
+            NotificationEnum.survey_submissions.value == enum.value
+            for enum in user.notifications.email
+        ):
+            futures.append(
+                send_email(
+                    user.email,
+                    subject,
+                    message,
+                )
+            )
+
+        if any(
+            NotificationEnum.survey_submissions.value == enum.value
+            for enum in user.notifications.push
+        ):
+            futures.append(
+                push_notification(
+                    self._state,
+                    topic=user.notifications.push[NotificationEnum.survey_submissions],
+                    message=message,
+                    title=subject,
+                    tags="mailbox_with_mail",
+                    priority="high",
+                )
+            )
+
+        if any(
+            NotificationEnum.survey_submissions.value == enum.value
+            for enum in user.notifications.webhooks
+        ):
+            for webhook in user.notifications.webhooks[
+                NotificationEnum.survey_submissions
+            ]:
+                futures.append(
+                    untrusted_http_request(
+                        state=self._state, url=webhook, method="POST", json=submission
+                    )
+                )
+
+        if futures:
+            asyncio.gather(*futures)
 
     async def get(self) -> SurveyModel:
         return SurveyModel(**(await self.__get_raw()))

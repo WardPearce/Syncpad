@@ -9,6 +9,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from cryptography.hazmat.primitives import hashes, hmac
 from litestar import Request, Response, Router, WebSocket, websocket
+from litestar.background_tasks import BackgroundTask
 from litestar.channels import ChannelsPlugin
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
@@ -302,7 +303,13 @@ class SurveyController(Controller):
 
         inserted = await Survey(state, id_).submit(data, user_id=user_id)
 
-        channels.publish(inserted.json(by_alias=True), f"survey.results.{survey_id}")
+        channels.publish(
+            inserted.model_dump_json(by_alias=True), f"survey.results.{survey_id}"
+        )
+
+        response.background = BackgroundTask(
+            Survey(state, id_).alert_subscribed, submission=inserted.model_dump()
+        )
 
         return response
 
