@@ -241,7 +241,9 @@ class PublishCanary(Controller):
             None,
             background=BackgroundTask(
                 Canary(state, warrant["canary_id"]).alert_subscribers,
-                warrant={**warrant, **to_set},
+                warrant=PublishedCanaryWarrantModel(
+                    **{**warrant, **to_set}
+                ).model_dump(),
             ),
         )
 
