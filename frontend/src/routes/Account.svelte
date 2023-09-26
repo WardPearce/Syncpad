@@ -49,6 +49,8 @@
 
   let themeColor = getCurrentThemePrimary();
 
+  let maxAllowedWebhooks: number = 3;
+
   async function changeThemeColor() {
     await ui("theme", themeColor);
 
@@ -185,6 +187,10 @@
 
   onMount(async () => {
     user = await apiClient.account.controllersAccountMeGetMe();
+
+    maxAllowedWebhooks = (
+      await apiClient.settings.controllersSettingsNotificationWebhooksNotificationWebhooks()
+    ).max_amount as number;
 
     (await apiClient.session.controllersSessionGetSessions()).forEach(
       (session) =>
@@ -360,13 +366,72 @@
             <span />
           </label>
 
-          <h6>Browser</h6>
-          <button style="margin: 1em 0;">Grant browser notifications</button>
+          <h6>Push notifications</h6>
+          <p>
+            Purplix utilizes a self-hosted <a
+              href="https://github.com/binwiederhier/ntfy"
+              target="_blank"
+              class="link"
+              rel="noopener noreferrer">ntfy</a
+            > server so users don't have to relay on google services.
+          </p>
+
+          <nav class="wrap" style="margin: 1em 0;">
+            <div class="field label border">
+              <input
+                name="server"
+                value="https://ntfy.purplix.io"
+                readonly
+                type="text"
+              />
+              <label for="server">Server</label>
+            </div>
+
+            <div class="field label border">
+              <input
+                name="topic"
+                value="awaufahu123412lnfa"
+                readonly
+                type="text"
+              />
+              <label for="topic">Topic secret (never share)</label>
+            </div>
+          </nav>
+
+          <nav class="wrap app-stores">
+            <a
+              href="https://play.google.com/store/apps/details?id=io.heckel.ntfy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="/badge-google.19268080.png"
+                alt="Google play ntfy link"
+              />
+            </a>
+            <a
+              href="https://f-droid.org/en/packages/io.heckel.ntfy/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src="/badge-fdroid.f6ae6646.png" alt="fdroid ntfy link" />
+            </a>
+            <a
+              href="https://apps.apple.com/us/app/ntfy/id1625396347"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="/badge-apple.4bec723d.png"
+                alt="Apple store ntfy link"
+              />
+            </a>
+          </nav>
 
           <h6>
             Webhooks ({currentNotifyTab in user.notifications.webhooks
               ? user.notifications.webhooks[currentNotifyTab].length
-              : 0}/3)
+              : 0}/{maxAllowedWebhooks})
           </h6>
           <ul class="webhooks">
             {#if currentNotifyTab in user.notifications.webhooks}
@@ -389,7 +454,7 @@
                 </li>
               {/each}
             {/if}
-            {#if !(currentNotifyTab in user.notifications.webhooks) || user.notifications.webhooks[currentNotifyTab].length < 3}
+            {#if !(currentNotifyTab in user.notifications.webhooks) || user.notifications.webhooks[currentNotifyTab].length < maxAllowedWebhooks}
               <li>
                 <form on:submit|preventDefault={addWebhook}>
                   <nav class="wrap">
@@ -609,5 +674,13 @@
 
   .webhooks li {
     margin: 1em 0;
+  }
+
+  .app-stores img {
+    width: 150px;
+  }
+
+  .app-stores {
+    margin-bottom: 1em;
   }
 </style>

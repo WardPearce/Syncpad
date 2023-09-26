@@ -105,6 +105,15 @@ class Enabled(BaseModel):
     canaries: bool = True
 
 
+class NotificationWebhooks(BaseModel):
+    max_amount: int = 3
+
+
+class Ntfy(BaseModel):
+    url: str
+    topic_len: int = 32
+
+
 class Settings(BaseSettings):
     mongo: MongoDB = MongoDB()
     redis: Redis = Redis()
@@ -125,6 +134,9 @@ class Settings(BaseSettings):
 
     jwt: Jwt = Jwt()
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
+
+    notification_webhooks: NotificationWebhooks = NotificationWebhooks()
+    nfty: Ntfy
 
     model_config = SettingsConfigDict(env_prefix="purplix_")
 

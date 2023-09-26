@@ -1,28 +1,28 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { WebhookModel } from '../models/WebhookModel';
+import type { NftyNotification } from '../models/NftyNotification';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 
-export class WebhookService {
+export class PushService {
 
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * AddWebhook
-     * Add a webhook
+     * AddPush
+     * Generate push notification topic
      * @param requestBody
-     * @returns any Document created, URL follows
+     * @returns NftyNotification Document created, URL follows
      * @throws ApiError
      */
-    public controllersAccountNotificationsWebhookAddAddWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<any> {
+    public controllersAccountNotificationsPushAddAddPush(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    ): CancelablePromise<NftyNotification> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/account/notifications/webhook/add',
+            url: '/controllers/account/notifications/push/add',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -32,18 +32,18 @@ export class WebhookService {
     }
 
     /**
-     * RemoveWebhook
-     * Remove a webhook
+     * RemovePush
+     * Remove a push notification
      * @param requestBody
      * @returns void
      * @throws ApiError
      */
-    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
-        requestBody: WebhookModel,
+    public controllersAccountNotificationsPushRemoveRemovePush(
+        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/notifications/webhook/remove',
+            url: '/controllers/account/notifications/push/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

@@ -25,7 +25,9 @@ export type { DocumentCanaryWarrantModel } from './models/DocumentCanaryWarrantM
 export type { Documents } from './models/Documents';
 export type { DomainVerification } from './models/DomainVerification';
 export type { Enabled } from './models/Enabled';
+export type { NftyNotification } from './models/NftyNotification';
 export type { NotificationsModel } from './models/NotificationsModel';
+export type { NotificationWebhooks } from './models/NotificationWebhooks';
 export type { OtpModel } from './models/OtpModel';
 export type { PublicCanaryModel } from './models/PublicCanaryModel';
 export type { PublicKeyModel } from './models/PublicKeyModel';
@@ -66,6 +68,7 @@ export { DefaultService } from './services/DefaultService';
 export { DocumentService } from './services/DocumentService';
 export { NotificationsService } from './services/NotificationsService';
 export { PrivacyService } from './services/PrivacyService';
+export { PushService } from './services/PushService';
 export { SessionService } from './services/SessionService';
 export { SettingsService } from './services/SettingsService';
 export { SubscriptionService } from './services/SubscriptionService';

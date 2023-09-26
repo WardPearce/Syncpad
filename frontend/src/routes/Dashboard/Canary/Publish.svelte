@@ -1,5 +1,6 @@
 <script lang="ts">
     import * as idbKeyval from "idb-keyval";
+    import prettyBytes from "pretty-bytes";
     import { onMount } from "svelte";
     import OtpInput from "../../../components/OtpInput.svelte";
     import apiClient from "../../../lib/apiClient";
@@ -9,6 +10,7 @@
         CreateCanaryWarrantModel,
         PublishCanaryWarrantModel,
         type CanaryModel,
+        type Documents,
     } from "../../../lib/client";
     import hash from "../../../lib/crypto/hash";
     import secretKey, {
@@ -56,6 +58,8 @@
     let enteredDomain = "";
     let errorMsg = "";
 
+    let documentLimits: Documents;
+
     onMount(async () => {
         const customTemplates = await idbKeyval.get("customCanaryTemplates");
         if (customTemplates) {
@@ -70,6 +74,9 @@
         );
 
         if (canary.hex_color) await ui("theme", `#${canary.hex_color}`);
+
+        documentLimits =
+            await apiClient.settings.controllersSettingsDocumentsDocuments();
     });
 
     async function onPublish(otpCode: string) {
@@ -283,7 +290,10 @@
                 <input type="file" multiple={true} bind:files={documents} />
                 <label for="files">Files</label>
                 <i>attach_file</i>
-                <span class="helper"> Max 15MB each - Max 3 files </span>
+                <span class="helper">
+                    Max {prettyBytes(Number(documentLimits.max_size))} each - Max
+                    {documentLimits.max_amount} files
+                </span>
             </div>
         </nav>
 

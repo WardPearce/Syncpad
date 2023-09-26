@@ -160,3 +160,8 @@ class UserLoginSignatureModel(BaseModel):
 class UserToSignModel(CustomJsonEncoder):
     to_sign: str = Field(..., description="to be signed with ed25519 private key")
     id: ObjectId = Field(..., alias="_id")
+
+
+class NftyNotification(BaseModel):
+    topic: str
+    url: str

@@ -43,7 +43,7 @@
 {/if}
 
 {#if enabledSettings.canaries}
-  <h3>Canaries</h3>
+  <h3 style="margin-top: 2em;">Canaries</h3>
   <div class="grid">
     {#if canaries.length > 0}
       {#each canaries as canary}

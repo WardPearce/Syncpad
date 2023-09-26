@@ -11,6 +11,7 @@ import { DefaultService } from './services/DefaultService';
 import { DocumentService } from './services/DocumentService';
 import { NotificationsService } from './services/NotificationsService';
 import { PrivacyService } from './services/PrivacyService';
+import { PushService } from './services/PushService';
 import { SessionService } from './services/SessionService';
 import { SettingsService } from './services/SettingsService';
 import { SubscriptionService } from './services/SubscriptionService';
@@ -28,6 +29,7 @@ export class CanaryClient {
     public readonly document: DocumentService;
     public readonly notifications: NotificationsService;
     public readonly privacy: PrivacyService;
+    public readonly push: PushService;
     public readonly session: SessionService;
     public readonly settings: SettingsService;
     public readonly subscription: SubscriptionService;
@@ -56,6 +58,7 @@ export class CanaryClient {
         this.document = new DocumentService(this.request);
         this.notifications = new NotificationsService(this.request);
         this.privacy = new PrivacyService(this.request);
+        this.push = new PushService(this.request);
         this.session = new SessionService(this.request);
         this.settings = new SettingsService(this.request);
         this.subscription = new SubscriptionService(this.request);

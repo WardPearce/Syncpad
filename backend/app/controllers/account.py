@@ -40,6 +40,7 @@ from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
     AccountUpdatePassword,
     CreateUserModel,
+    NftyNotification,
     NotificationEnum,
     OtpModel,
     PublicUserModel,
@@ -416,6 +417,48 @@ class OtpController(Controller):
         return OtpModel(secret=otp_secret, completed=False)
 
 
+class PushNotificationController(Controller):
+    path = "/notifications/push"
+
+    @post(
+        "/add",
+        description="Generate push notification topic",
+        tags=["account", "notifications", "push"],
+    )
+    async def add_push(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        data: NotificationEnum,
+    ) -> NftyNotification:
+        topic = secrets.token_urlsafe(SETTINGS.nfty.topic_len)
+
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {
+                "$set": {f"notifications.push.{data.value}": topic},
+            },
+        )
+
+        return NftyNotification(topic=topic, url=SETTINGS.nfty.url)
+
+    @delete(
+        "/remove",
+        description="Remove a push notification",
+        tags=["account", "notifications", "push"],
+    )
+    async def remove_push(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        data: NotificationEnum,
+    ) -> None:
+        await state.mongo.user.update_one(
+            {"_id": request.user},
+            {"$unset": f"notifications.push.{data.value}"},
+        )
+
+
 class EmailNotificationController(Controller):
     path = "/notifications/email"
 
@@ -483,7 +526,8 @@ class WebhookController(Controller):
         user = await User(state, request.user).get()
         if (
             data.type in user.notifications.webhooks
-            and len(user.notifications.webhooks[data.type]) >= 3
+            and len(user.notifications.webhooks[data.type])
+            >= SETTINGS.notification_webhooks.max_amount
         ):
             raise TooManyWebhooks()
 
@@ -560,6 +604,7 @@ router = Router(
         OtpController,
         WebhookController,
         EmailNotificationController,
+        PushNotificationController,
         PrivacyController,
         create_account,
         jwt_info,
