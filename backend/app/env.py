@@ -12,9 +12,9 @@ class MongoDB(BaseModel):
 
 
 class ProxiedUrls(BaseModel):
-    frontend: str = "http://localhost"
-    backend: str = "http://localhost/api"
-    docs: str = "http://docs.localhost"
+    frontend: str = "https://localhost"
+    backend: str = "https://localhost/api"
+    docs: str = "https://docs.localhost"
 
 
 class S3(BaseModel):

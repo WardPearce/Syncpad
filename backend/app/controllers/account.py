@@ -11,7 +11,11 @@ from bson.errors import InvalidId
 from litestar import Request, Response, Router, delete
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
-from litestar.exceptions import NotAuthorizedException, ValidationException
+from litestar.exceptions import (
+    NotAuthorizedException,
+    NotFoundException,
+    ValidationException,
+)
 from litestar.handlers import get, post
 from litestar.response import Redirect
 from nacl.encoding import Base64Encoder
@@ -55,6 +59,36 @@ if TYPE_CHECKING:
 
 class LoginController(Controller):
     path = "/{email:str}"
+
+    @delete(
+        path="/delete",
+        description="Deletes entire account",
+        tags=["account"],
+    )
+    async def delete_account(
+        self,
+        request: Request[ObjectId, Token, Any],
+        state: "State",
+        email: str,
+        otp: str,
+    ) -> None:
+        user = await User(state, request.user).get()
+
+        if email != user.email:
+            raise NotFoundException(detail="Email doesn't match whats on record")
+
+        try:
+            await OneTimePassword.validate_user(state, user, otp)
+        except InvalidAccountAuth:
+            raise
+
+        collection_names = await request.state.mongo.list_collection_names()
+
+        for collection_name in collection_names:
+            collection = request.state.mongo[collection_name]
+            await collection.delete_many({"user_id": user.id})
+
+        await request.state.mongo.user.delete_one({"_id": user.id})
 
     @get(
         path="/public",
