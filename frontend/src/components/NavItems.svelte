@@ -22,8 +22,6 @@
     light = "light",
   }
 
-  const enabledSettings = get(enabled);
-
   let mode: ThemeMode;
 
   let isAdvanceMode: boolean;
@@ -127,7 +125,7 @@
     <span>Account</span>
   </a>
 {/if}
-{#if enabledSettings.canaries}
+{#if $enabled.canaries}
   <a
     use:link
     href="/canaries"

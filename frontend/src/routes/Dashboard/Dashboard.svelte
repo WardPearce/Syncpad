@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import { link } from "svelte-navigator";
 
-  import { get } from "svelte/store";
   import CanaryCard from "../../components/Dashboard/CanaryCard.svelte";
   import SurveyCard from "../../components/Dashboard/SurveyCard.svelte";
   import apiClient from "../../lib/apiClient";
@@ -12,18 +11,16 @@
   let canaries: CanaryModel[] = [];
   let surveys: SurveyModel[] = [];
 
-  const enabledSettings = get(enabled);
-
   onMount(async () => {
-    if (enabledSettings.canaries)
+    if ($enabled.canaries)
       canaries = await apiClient.canary.controllersCanaryListListCanaries();
 
-    if (enabledSettings.survey)
+    if ($enabled.canaries)
       surveys = await apiClient.survey.controllersSurveyListListSurveys();
   });
 </script>
 
-{#if enabledSettings.survey}
+{#if $enabled.canaries}
   <h3>Surveys</h3>
   <div class="grid">
     {#if surveys.length > 0}
@@ -42,7 +39,7 @@
   </div>
 {/if}
 
-{#if enabledSettings.canaries}
+{#if $enabled.canaries}
   <h3 style="margin-top: 2em;">Canaries</h3>
   <div class="grid">
     {#if canaries.length > 0}
