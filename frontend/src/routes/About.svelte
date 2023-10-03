@@ -112,7 +112,6 @@
 
             <nav class="wrap left-align">
                 <a use:link href="/register" class="button">Get started</a>
-                <button class="secondary">Learn more</button>
             </nav>
         </div>
         <div class="s12 m6 l4 right-align site-preview">
@@ -182,7 +181,6 @@
 
             <nav class="wrap left-align">
                 <a use:link href="/register" class="button">Get started</a>
-                <button class="secondary">Learn more</button>
             </nav>
         </div>
     </div>
