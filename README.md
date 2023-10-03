@@ -6,7 +6,7 @@
   <img src="https://i.imgur.com/1pkrLq9.png" width="100px" />
   <h1>Purplix</h1>
   <quote>
-    Purplix is a open source set of tools focused on privacy and building confidence with your users.
+    Purplix is an open-source collection of tools dedicated to user privacy and creating trust with your audience.
   </quote>
 </div>
 
