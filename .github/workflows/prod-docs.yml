@@ -1,4 +1,4 @@
-name: Production Vite workflow
+name: Production Docs workflow
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     - main
 
 jobs:
-  vite-production:
+  docs-production:
     runs-on: ubuntu-latest
     defaults:
       run:
