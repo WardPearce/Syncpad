@@ -49,6 +49,17 @@ Users are automatically notified on the event of a new statement being published
 
 # Setup
 ## Production
+In order to self-host Purplix, you must be conformable using Docker, using some sort of reverse proxy & following documentation.
+
+### Images used
+- `wardpearce/purplix-backend:latest` - Backend for Purplix.
+- `wardpearce/purplix-frontend:latest` - Frontend for Purplix (Optional if using Vercel.)
+- `wardpearce/purplix-docs:latest` - OpenAPI schema docs for Purplix.
+- `mongo:latest` - Database for Purplix.
+- `redis:latest` - Cache for Purplix.
+- `serjs/go-socks5-proxy:latest` - Sock5 proxy for Purplix untrusted webhooks.
+
+### Compose example
 ```yaml
 version: "3"
 services:
@@ -59,14 +70,6 @@ services:
         ports:
             - "8865:80"
         environment:
-            # MongoDB Settings
-            purplix_mongo: |
-                {
-                    "host": "localhost",
-                    "port": 27017,
-                    "collection": "purplix"
-                }
-
             # ProxiedUrls Settings
             purplix_proxy_urls: |
                 {
@@ -88,14 +91,6 @@ services:
                     "chunk_size": 655400
                 }
 
-            # Redis Settings
-            purplix_redis: |
-                {
-                    "host": "localhost",
-                    "port": 6379,
-                    "db": 0
-                }
-
             # mCaptcha Settings
             purplix_mcaptcha: |
                 {
@@ -109,6 +104,13 @@ services:
                 {
                     "secret": "your_jwt_secret",
                     "expire_days": 30
+                }
+
+            # Ntfy Settings
+            purplix_ntfy: |
+                {
+                    "url": "your_ntfy_url",
+                    "topic_len": 32
                 }
 
             # DomainVerify Settings
@@ -142,10 +144,47 @@ services:
                     "canaries": true
                 }
 
-            # Ntfy Settings
-            purplix_ntfy: |
+            # MongoDB Settings
+            purplix_mongo: |
                 {
-                    "url": "your_ntfy_url",
-                    "topic_len": 32
+                    "host": "purplix-mongo",
+                    "port": 27017,
+                    "collection": "purplix"
                 }
+
+            # Redis Settings
+            purplix_redis: |
+                {
+                    "host": "purplix-redis",
+                    "port": 6379,
+                    "db": 0
+                }
+
+
+  purplix-mongo:
+    image: mongo:latest
+    container_name: purplix-mongo
+    restart: unless-stopped
+    environment:
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - purplix-mongo-data:/data/db
+
+  purplix-redis:
+    image: redis:latest
+    container_name: purplix-redis
+
+  purplix-socks5:
+    restart: unless-stopped
+    image: serjs/go-socks5-proxy:latest
+    environment:
+        PROXY_USER: someuser
+        PROXY_PASSWORD: somepass
+        PROXY_PORT: 1080
+    ports:
+      - "1080:1080"
+
+volumes:
+    purplix-mongo-data:
 ```
