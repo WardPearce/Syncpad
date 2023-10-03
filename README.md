@@ -239,22 +239,22 @@ services:
     container_name: purplix-mongo
     restart: unless-stopped
     environment:
-    MONGODB_DATA_DIR: /data/db
-    MONDODB_LOG_DIR: /dev/null
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
     volumes:
       - purplix-mongo-data:/data/db
   
   purplix-redis:
-  image: redis:latest
-  container_name: purplix-redis
+    image: redis:latest
+    container_name: purplix-redis
   
   purplix-socks5:
     restart: unless-stopped
     image: serjs/go-socks5-proxy:latest
     environment:
-    PROXY_USER: someuser
-    PROXY_PASSWORD: somepass
-    PROXY_PORT: 1080
+      PROXY_USER: someuser
+      PROXY_PASSWORD: somepass
+      PROXY_PORT: 1080
     ports:
     - "1080:1080"
 
