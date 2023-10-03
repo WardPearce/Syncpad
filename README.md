@@ -93,6 +93,12 @@ services:
         ports:
             - "8865:80"
         environment:
+            untrusted_request_proxy: "sock5://"
+
+            disable_registration: false
+
+            csrf_secret: "!!change_me!!"
+
             # ProxiedUrls Settings
             purplix_proxy_urls: |
                 {
@@ -125,7 +131,7 @@ services:
             # Jwt Settings
             purplix_jwt: |
                 {
-                    "secret": "your_jwt_secret",
+                    "secret": "!!change_me!!",
                     "expire_days": 30
                 }
 
