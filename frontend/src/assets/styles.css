@@ -76,6 +76,12 @@ label.color span {
     margin-bottom: 0 !important;
 }
 
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    margin: 1em 0;
+}
+
 @media only screen and (max-width: 600px) {
     .logo {
         display: flex;
@@ -96,12 +102,3 @@ label.color span {
     }
 }
 
-.tooltip .max {
-    z-index: 9999;
-}
-
-.pagination {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
-}
