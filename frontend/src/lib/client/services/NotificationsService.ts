@@ -117,6 +117,19 @@ export class NotificationsService {
     }
 
     /**
+     * ListPush
+     * List topics
+     * @returns NftyNotificationModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsPushListListPush(): CancelablePromise<Record<string, NftyNotificationModel>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/notifications/push/list',
+        });
+    }
+
+    /**
      * RemovePush
      * Remove a push notification
      * @param requestBody
@@ -134,19 +147,6 @@ export class NotificationsService {
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
-        });
-    }
-
-    /**
-     * ListPush
-     * List topics
-     * @returns NftyNotificationModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsPushListListPush(): CancelablePromise<Record<string, NftyNotificationModel>> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/notifications/push/list',
         });
     }
 

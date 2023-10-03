@@ -90,6 +90,35 @@ export class CanaryService {
     }
 
     /**
+     * UploadDocument
+     * Upload a canary warrant document
+     * @param warrantId
+     * @param hash
+     * @param formData
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
+        warrantId: string,
+        hash: string,
+        formData: Array<string>,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/warrant/{warrant_id}/document/{hash_}',
+            path: {
+                'warrant_id': warrantId,
+                'hash_': hash,
+            },
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * Publish
      * Publish a canary
      * @param warrantId
@@ -116,25 +145,66 @@ export class CanaryService {
     }
 
     /**
-     * UploadDocument
-     * Upload a canary warrant document
-     * @param warrantId
-     * @param hash
+     * GetCanary
+     * Get private details about a canary
+     * @param domain
+     * @returns CanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainGetCanary(
+        domain: string,
+    ): CancelablePromise<CanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * GetTrusted
+     * Get signed public key hash for a trusted canary
+     * @param domain
+     * @returns TrustedCanaryModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainTrustedGetTrusted(
+        domain: string,
+    ): CancelablePromise<TrustedCanaryModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/canary/{domain}/trusted',
+            path: {
+                'domain': domain,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * UpdateLogo
+     * Update logo for given domain
+     * @param domain
      * @param formData
      * @returns any Document created, URL follows
      * @throws ApiError
      */
-    public controllersCanaryWarrantWarrantIdDocumentHashUploadDocument(
-        warrantId: string,
-        hash: string,
+    public controllersCanaryDomainLogoUpdateUpdateLogo(
+        domain: string,
         formData: Array<string>,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/controllers/canary/warrant/{warrant_id}/document/{hash_}',
+            url: '/controllers/canary/{domain}/logo/update',
             path: {
-                'warrant_id': warrantId,
-                'hash_': hash,
+                'domain': domain,
             },
             formData: formData,
             mediaType: 'multipart/form-data',
@@ -165,6 +235,32 @@ export class CanaryService {
             query: {
                 'otp': otp,
             },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * TrustCanary
+     * Saves a canary as a trusted canary
+     * @param domain
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryDomainTrustedAddTrustCanary(
+        domain: string,
+        requestBody: TrustedCanaryModel,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/{domain}/trusted/add',
+            path: {
+                'domain': domain,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -203,102 +299,6 @@ export class CanaryService {
     }
 
     /**
-     * UpdateLogo
-     * Update logo for given domain
-     * @param domain
-     * @param formData
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainLogoUpdateUpdateLogo(
-        domain: string,
-        formData: Array<string>,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/{domain}/logo/update',
-            path: {
-                'domain': domain,
-            },
-            formData: formData,
-            mediaType: 'multipart/form-data',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * TrustCanary
-     * Saves a canary as a trusted canary
-     * @param domain
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainTrustedAddTrustCanary(
-        domain: string,
-        requestBody: TrustedCanaryModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/{domain}/trusted/add',
-            path: {
-                'domain': domain,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * GetTrusted
-     * Get signed public key hash for a trusted canary
-     * @param domain
-     * @returns TrustedCanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainTrustedGetTrusted(
-        domain: string,
-    ): CancelablePromise<TrustedCanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}/trusted',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * PublicCanary
-     * Get public details about canary
-     * @param domain
-     * @returns PublicCanaryModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersCanaryDomainPublicPublicCanary(
-        domain: string,
-    ): CancelablePromise<PublicCanaryModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/{domain}/public',
-            path: {
-                'domain': domain,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * Verify
      * Verify domain ownership via DNS
      * @param domain
@@ -321,18 +321,18 @@ export class CanaryService {
     }
 
     /**
-     * GetCanary
-     * Get private details about a canary
+     * PublicCanary
+     * Get public details about canary
      * @param domain
-     * @returns CanaryModel Request fulfilled, document follows
+     * @returns PublicCanaryModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersCanaryDomainGetCanary(
+    public controllersCanaryDomainPublicPublicCanary(
         domain: string,
-    ): CancelablePromise<CanaryModel> {
+    ): CancelablePromise<PublicCanaryModel> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/controllers/canary/{domain}',
+            url: '/controllers/canary/{domain}/public',
             path: {
                 'domain': domain,
             },

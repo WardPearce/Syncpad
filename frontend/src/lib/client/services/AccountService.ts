@@ -20,6 +20,29 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
+     * ToSign
+     * Used to generate a unique code to sign.
+     * @param email
+     * @returns UserToSignModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailToSignToSign(
+        email: string,
+    ): CancelablePromise<UserToSignModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/to-sign',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
+            },
+        });
+    }
+
+    /**
      * VerifyEmail
      * Verify email for given account
      * @param email
@@ -41,51 +64,6 @@ export class AccountService {
             responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * Public
-     * Public KDF details
-     * @param email
-     * @returns PublicUserModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailPublicPublic(
-        email: string,
-    ): CancelablePromise<PublicUserModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/public',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * ToSign
-     * Used to generate a unique code to sign.
-     * @param email
-     * @returns UserToSignModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountEmailToSignToSign(
-        email: string,
-    ): CancelablePromise<UserToSignModel> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/to-sign',
-            path: {
-                'email': email,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                404: `Nothing matches the given URI`,
             },
         });
     }
@@ -126,6 +104,28 @@ export class AccountService {
     }
 
     /**
+     * Public
+     * Public KDF details
+     * @param email
+     * @returns PublicUserModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountEmailPublicPublic(
+        email: string,
+    ): CancelablePromise<PublicUserModel> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/public',
+            path: {
+                'email': email,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * DeleteAccount
      * Deletes entire account
      * @param email
@@ -153,28 +153,6 @@ export class AccountService {
     }
 
     /**
-     * ResetOtp
-     * Reset OTP
-     * @param otp
-     * @returns OtpModel Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersAccountOtpResetResetOtp(
-        otp: string,
-    ): CancelablePromise<OtpModel> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/otp/reset',
-            query: {
-                'otp': otp,
-            },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * OtpSetup
      * Used to confirm OTP is completed
      * @param otp
@@ -187,6 +165,28 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/otp/setup',
+            query: {
+                'otp': otp,
+            },
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * ResetOtp
+     * Reset OTP
+     * @param otp
+     * @returns OtpModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountOtpResetResetOtp(
+        otp: string,
+    ): CancelablePromise<OtpModel> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/otp/reset',
             query: {
                 'otp': otp,
             },
@@ -302,6 +302,19 @@ export class AccountService {
     }
 
     /**
+     * ListPush
+     * List topics
+     * @returns NftyNotificationModel Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsPushListListPush(): CancelablePromise<Record<string, NftyNotificationModel>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/notifications/push/list',
+        });
+    }
+
+    /**
      * RemovePush
      * Remove a push notification
      * @param requestBody
@@ -323,15 +336,14 @@ export class AccountService {
     }
 
     /**
-     * ListPush
-     * List topics
-     * @returns NftyNotificationModel Request fulfilled, document follows
+     * IpProgressing
+     * @returns void
      * @throws ApiError
      */
-    public controllersAccountNotificationsPushListListPush(): CancelablePromise<Record<string, NftyNotificationModel>> {
+    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
         return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/notifications/push/list',
+            method: 'DELETE',
+            url: '/controllers/account/privacy/ip-progressing/disallow',
         });
     }
 
@@ -344,18 +356,6 @@ export class AccountService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/privacy/ip-progressing/consent',
-        });
-    }
-
-    /**
-     * IpProgressing
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountPrivacyIpProgressingDisallowIpProgressing(): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/privacy/ip-progressing/disallow',
         });
     }
 

@@ -8,7 +8,7 @@ from argon2 import PasswordHasher
 from bson import ObjectId
 from bson.errors import InvalidId
 from cryptography.hazmat.primitives import hashes, hmac
-from litestar import Request, Response, Router, WebSocket, websocket
+from litestar import Request, Response, Router, WebSocket, delete, websocket
 from litestar.background_tasks import BackgroundTask
 from litestar.channels import ChannelsPlugin
 from litestar.contrib.jwt import Token
@@ -177,6 +177,24 @@ class SurveyController(Controller):
             raise SurveyNotFoundException()
 
         await Survey(state, id_).user(request.user).close()
+
+    @delete("/delete", description="Delete a survey and its results")
+    async def delete_survey(
+        self,
+        state: "State",
+        request: Request[ObjectId, Token, Any],
+        survey_id: str,
+    ) -> None:
+        try:
+            id_ = ObjectId(survey_id)
+        except InvalidId:
+            raise SurveyNotFoundException()
+
+        survey = await Survey(state, id_).user(request.user).get()
+
+        await state.mongo.survey_answer.delete_many({"survey_id": survey.id})
+        await state.mongo.survey_blocker.delete_many({"survey_id": survey.id})
+        await state.mongo.survey.delete_one({"_id": survey.id})
 
     @post("/submit", description="Submit answers to a survey", exclude_from_auth=True)
     async def submit_survey(

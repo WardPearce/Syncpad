@@ -2,6 +2,7 @@
     import sodium from "libsodium-wrappers-sumo";
     import { onMount } from "svelte";
     import { navigate } from "svelte-navigator";
+    import apiClient from "../../lib/apiClient";
     import type { SurveyModel } from "../../lib/client";
     import { base64Encode } from "../../lib/crypto/codecUtils";
     import { hashBase64Encode } from "../../lib/crypto/hash";
@@ -60,6 +61,13 @@
             true
         )}#${base64Encode(rawKey, true)}`;
     }
+
+    async function deleteSurvey() {
+        await apiClient.survey.controllersSurveySurveyIdDeleteDeleteSurvey(
+            survey.id
+        );
+        isLoading = true;
+    }
 </script>
 
 {#if !isLoading}
@@ -82,7 +90,7 @@
                         navigate(`/dashboard/survey/results/${survey.id}`)}
                     >Results</button
                 >
-                <button class="border">Edit</button>
+                <button class="border" on:click={deleteSurvey}>Delete</button>
             </nav>
         </article>
     </div>
