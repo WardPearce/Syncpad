@@ -49,3 +49,103 @@ Users are automatically notified on the event of a new statement being published
 
 # Setup
 ## Production
+```yaml
+version: "3"
+services:
+    purplix_backend:
+        container_name: purplix_backend
+        image: wardpearce/purplix-backend:latest
+        restart: unless-stopped
+        ports:
+            - "8865:80"
+        environment:
+            # MongoDB Settings
+            purplix_mongo: |
+                {
+                    "host": "localhost",
+                    "port": 27017,
+                    "collection": "purplix"
+                }
+
+            # ProxiedUrls Settings
+            purplix_proxy_urls: |
+                {
+                    "frontend": "https://localhost",
+                    "backend": "https://localhost/api",
+                    "docs": "https://docs.localhost"
+                }
+
+            # S3 Settings
+            purplix_s3: |
+                {
+                    "region_name": "your_region",
+                    "secret_access_key": "your_secret_key",
+                    "access_key_id": "your_access_key_id",
+                    "bucket": "your_bucket",
+                    "folder": "purplix",
+                    "download_url": "your_download_url",
+                    "endpoint_url": null,
+                    "chunk_size": 655400
+                }
+
+            # Redis Settings
+            purplix_redis: |
+                {
+                    "host": "localhost",
+                    "port": 6379,
+                    "db": 0
+                }
+
+            # mCaptcha Settings
+            purplix_mcaptcha: |
+                {
+                    "verify_url": "https://mcaptcha.purplix.io/api/v1/pow/verify",
+                    "site_key": "691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6",
+                    "account_secret": "f0bm6QvcbZoddSqeeTXoY4BvdGaMmOv7"
+                }
+
+            # Jwt Settings
+            purplix_jwt: |
+                {
+                    "secret": "your_jwt_secret",
+                    "expire_days": 30
+                }
+
+            # DomainVerify Settings
+            purplix_domain_verify: |
+                {
+                    "prefix": "purplix.io__verify=",
+                    "timeout": 60
+                }
+
+            # Proxycheck Settings
+            purplix_proxycheck: |
+                {
+                    "api_key": "",
+                    "url": "https://proxycheck.io/v2/"
+                }
+
+            # Smtp Settings
+            purplix_smtp: |
+                {
+                    "host": "your_smtp_host",
+                    "port": your_smtp_port,
+                    "username": "",
+                    "password": "",
+                    "email": "your_email@example.com"
+                }
+
+            # Enabled Settings
+            purplix_enabled: |
+                {
+                    "survey": true,
+                    "canaries": true
+                }
+
+            # Ntfy Settings
+            purplix_ntfy: |
+                {
+                    "url": "your_ntfy_url",
+                    "topic_len": 32
+                }
+```
