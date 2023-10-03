@@ -34,16 +34,17 @@ Purplix Canary is a free & open source warrant canary tool what helps you to bui
 
 It allows you to inform users cryptographically if your site has been compromised, seized or raided by anyone.
 
-### Site verification
+### How does it work?
+#### Site verification
 Purplix uses DNS records to verify the domain the canary is for, giving your users confidence they are trusting the right people.
 
-### Canary signatures
+#### Canary signatures
 Each domain is associated with a unique key pair. The private key is generated locally and securely stored within the owner's keychain. When a user visits a canary from a specific domain for the first time, their private key is used to sign the public key. This signed version of the public key is then automatically employed for subsequent visits, effectively mitigating man-in-the-middle attacks and ensuring the trustworthiness of canary statements from the respective domain.
 
-### Files
+#### Files
 Canaries can include signed documents to help users further understand a situation.
 
-### Notifications
+#### Notifications
 Users are automatically notified on the event of a new statement being published.
 
 # Setup
