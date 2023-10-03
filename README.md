@@ -59,135 +59,180 @@ In order to self-host Purplix, you must be conformable using Docker, using some 
 - `redis:latest` - Cache for Purplix.
 - `serjs/go-socks5-proxy:latest` - Sock5 proxy for Purplix untrusted webhooks.
 
+### Configuration
+I recommend looking at the example docker compose to learn what the values should be.
+
+#### wardpearce/purplix-frontend:latest
+- Set `VITE_MCAPTCHA_ENABLED`, `VITE_MCAPTCHA_API` & `VITE_MCAPTCHA_SITE_KEY` if mCaptcha in use.
+- `VITE_BLOCKSTREAM_API` is use to get the most recent BTC block hash, most likely you should set this as `https://blockstream.info/api`
+
+#### wardpearce/purplix-docs:latest
+- Set `VITE_API_SCHEMA_URL` as the reverse proxied URL for the API, e.g. `https://{myurl.tld}/api/schema/openapi.json`.
+
+#### serjs/go-socks5-proxy:latest
+ - `PROXY_USER`: proxy username.
+ - `PROXY_PASSWORD`: proxy password.
+
+#### wardpearce/purplix-backend:latest
+- `purplix_untrusted_request_proxy`: This variable should be set to the reverse proxied SOCKS5 proxy. It determines the proxy server used for handling untrusted requests.
+
+- `purplix_disable_registration`: Set this variable to true if you want to disable user registration. If set to false, registration will be enabled.
+
+- `purplix_csrf_secret`: This variable should contain a randomly generated 32-character secret key used for Cross-Site Request Forgery (CSRF) protection. If you want the secret to be generated randomly, you can remove this variable from your configuration.
+
+- `purplix_proxy_urls`: This variable should contain a JSON object with reverse proxied URLs for different endpoints. Ensure there is no trailing slash in the URLs. For example, it includes frontend, backend, and documentation URLs.
+
+- `purplix_s3`: These settings are related to the Amazon S3 storage configuration. You need to specify your S3 region, secret access key, access key ID, bucket name, folder, download URL, and optionally an endpoint URL and chunk size.
+
+- `purplix_mcaptcha`: These settings are for configuring mCaptcha, a CAPTCHA service. You should provide the verification URL, site key, and account secret, which are typically obtained from the mCaptcha website you host.
+
+- `purplix_jwt`: This variable should contain a randomly generated 32-character secret key used for JSON Web Token (JWT) authentication. If you want the secret to be generated randomly, you can remove this variable from your configuration. Additionally, you can specify the number of days until JWT tokens expire.
+
+- `purplix_ntfy`: Configure this variable with the URL and topic length for Ntfy, a notification service.
+
+- `purplix_domain_verify`: These settings are for domain verification. You can specify a prefix and timeout for verification.
+
+- `purplix_proxycheck`: Configuration for Proxycheck, which may include an API key and the URL for the service.
+
+- `purplix_smtp`: These settings are for configuring the SMTP server, including the host, port, username, password, and sender email address.
+
+- `purplix_enabled`: This variable contains settings for enabling or disabling certain features, such as surveys and canaries.
+
+- `purplix_mongo`: Configuration for connecting to a MongoDB database, including the host, port, and collection name.
+
+- `purplix_redis`: Configuration for connecting to a Redis database, including the host, port, and database number.
+
+
 ### Compose example
 ```yaml
 version: "3"
 services:
-    purplix-frontend:
-        container_name: purplix-frontend
-        image: wardpearce/purplix-frontend:latest
-        restart: unless-stopped
-        environment:
-            VITE_MCAPTCHA_ENABLED: true
-            VITE_MCAPTCHA_API: https://mcaptcha.purplix.io/api/v1
-            VITE_MCAPTCHA_SITE_KEY: 691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6
-            VITE_THEME: "#8749f4"
-            VITE_SITE_NAME: "Purplix"
-            VITE_BLOCKSTREAM_API: https://blockstream.info/api
-        ports:
-            - "8866:80"
+  purplix-frontend:
+      container_name: purplix-frontend
+      image: wardpearce/purplix-frontend:latest
+      restart: unless-stopped
+      environment:
+          VITE_MCAPTCHA_ENABLED: true
+          VITE_MCAPTCHA_API: https://mcaptcha.purplix.io/api/v1
+          VITE_MCAPTCHA_SITE_KEY: 691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6
+          VITE_THEME: "#8749f4"
+          VITE_SITE_NAME: "Purplix"
+          VITE_BLOCKSTREAM_API: https://blockstream.info/api
+      ports:
+          - "8866:80"
 
-    purplix-docs:
-        container_name: purplix-docs
-        image: wardpearce/purplix-docs:latest
-        restart: unless-stopped
-        environment:
-            VITE_API_SCHEMA_URL: true
-        ports:
-            - "8866:80"
+  purplix-docs:
+      container_name: purplix-docs
+      image: wardpearce/purplix-docs:latest
+      restart: unless-stopped
+      environment:
+          VITE_API_SCHEMA_URL: https://localhost/api/schema/openapi.json
+      ports:
+          - "8866:80"
 
-    purplix-backend:
-        container_name: purplix-backend
-        image: wardpearce/purplix-backend:latest
-        restart: unless-stopped
-        ports:
-            - "8865:80"
-        environment:
-            untrusted_request_proxy: "sock5://"
+  purplix-backend:
+      container_name: purplix-backend
+      image: wardpearce/purplix-backend:latest
+      restart: unless-stopped
+      ports:
+          - "8865:80"
+      environment:
+          purplix_untrusted_request_proxy: "sock5://"
 
-            disable_registration: false
+          purplix_disable_registration: false
 
-            csrf_secret: "!!change_me!!"
+          purplix_csrf_secret: "!!change_me!!"
 
-            # ProxiedUrls Settings
-            purplix_proxy_urls: |
-                {
-                    "frontend": "https://localhost",
-                    "backend": "https://localhost/api",
-                    "docs": "https://docs.localhost"
-                }
+          # ProxiedUrls Settings
+          # No trailing slash!
+          purplix_proxy_urls: |
+              {
+                  "frontend": "https://localhost",
+                  "backend": "https://localhost/api",
+                  "docs": "https://docs.localhost"
+              }
 
-            # S3 Settings
-            purplix_s3: |
-                {
-                    "region_name": "your_region",
-                    "secret_access_key": "your_secret_key",
-                    "access_key_id": "your_access_key_id",
-                    "bucket": "your_bucket",
-                    "folder": "purplix",
-                    "download_url": "your_download_url",
-                    "endpoint_url": null,
-                    "chunk_size": 655400
-                }
+          # S3 Settings
+          purplix_s3: |
+              {
+                  "region_name": "your_region",
+                  "secret_access_key": "your_secret_key",
+                  "access_key_id": "your_access_key_id",
+                  "bucket": "your_bucket",
+                  "folder": "purplix",
+                  "download_url": "your_download_url",
+                  "endpoint_url": null,
+                  "chunk_size": 655400
+              }
 
-            # mCaptcha Settings
-            purplix_mcaptcha: |
-                {
-                    "verify_url": "https://mcaptcha.purplix.io/api/v1/pow/verify",
-                    "site_key": "691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6",
-                    "account_secret": "f0bm6QvcbZoddSqeeTXoY4BvdGaMmOv7"
-                }
+          # mCaptcha Settings
+          purplix_mcaptcha: |
+              {
+                  "verify_url": "https://mcaptcha.purplix.io/api/v1/pow/verify",
+                  "site_key": "691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6",
+                  "account_secret": "f0bm6QvcbZoddSqeeTXoY4BvdGaMmOv7"
+              }
 
-            # Jwt Settings
-            purplix_jwt: |
-                {
-                    "secret": "!!change_me!!",
-                    "expire_days": 30
-                }
+          # Jwt Settings
+          purplix_jwt: |
+              {
+                  "secret": "!!change_me!!",
+                  "expire_days": 30
+              }
 
-            # Ntfy Settings
-            purplix_ntfy: |
-                {
-                    "url": "your_ntfy_url",
-                    "topic_len": 32
-                }
+          # Ntfy Settings
+          purplix_ntfy: |
+              {
+                  "url": "your_ntfy_url",
+                  "topic_len": 32
+              }
 
-            # DomainVerify Settings
-            purplix_domain_verify: |
-                {
-                    "prefix": "purplix.io__verify=",
-                    "timeout": 60
-                }
+          # DomainVerify Settings
+          purplix_domain_verify: |
+              {
+                  "prefix": "purplix.io__verify=",
+                  "timeout": 60
+              }
 
-            # Proxycheck Settings
-            purplix_proxycheck: |
-                {
-                    "api_key": "",
-                    "url": "https://proxycheck.io/v2/"
-                }
+          # Proxycheck Settings
+          purplix_proxycheck: |
+              {
+                  "api_key": "",
+                  "url": "https://proxycheck.io/v2/"
+              }
 
-            # Smtp Settings
-            purplix_smtp: |
-                {
-                    "host": "your_smtp_host",
-                    "port": your_smtp_port,
-                    "username": "",
-                    "password": "",
-                    "email": "your_email@example.com"
-                }
+          # Smtp Settings
+          purplix_smtp: |
+              {
+                  "host": "your_smtp_host",
+                  "port": your_smtp_port,
+                  "username": "",
+                  "password": "",
+                  "email": "your_email@example.com"
+              }
 
-            # Enabled Settings
-            purplix_enabled: |
-                {
-                    "survey": true,
-                    "canaries": true
-                }
+          # Enabled Settings
+          purplix_enabled: |
+              {
+                  "survey": true,
+                  "canaries": true
+              }
 
-            # MongoDB Settings
-            purplix_mongo: |
-                {
-                    "host": "purplix-mongo",
-                    "port": 27017,
-                    "collection": "purplix"
-                }
+          # MongoDB Settings
+          purplix_mongo: |
+              {
+                  "host": "purplix-mongo",
+                  "port": 27017,
+                  "collection": "purplix"
+              }
 
-            # Redis Settings
-            purplix_redis: |
-                {
-                    "host": "purplix-redis",
-                    "port": 6379,
-                    "db": 0
-                }
+          # Redis Settings
+          purplix_redis: |
+              {
+                  "host": "purplix-redis",
+                  "port": 6379,
+                  "db": 0
+              }
 
   purplix-mongo:
     image: mongo:latest
@@ -198,20 +243,20 @@ services:
       MONDODB_LOG_DIR: /dev/null
     volumes:
       - purplix-mongo-data:/data/db
-
+  
   purplix-redis:
     image: redis:latest
     container_name: purplix-redis
-
+  
   purplix-socks5:
     restart: unless-stopped
     image: serjs/go-socks5-proxy:latest
     environment:
-        PROXY_USER: someuser
-        PROXY_PASSWORD: somepass
-        PROXY_PORT: 1080
+      PROXY_USER: someuser
+      PROXY_PASSWORD: somepass
+      PROXY_PORT: 1080
     ports:
-      - "1080:1080"
+    - "1080:1080"
 
 volumes:
     purplix-mongo-data:
