@@ -74,11 +74,11 @@ I recommend looking at the example docker compose to learn what the values shoul
  - `PROXY_PASSWORD`: proxy password.
 
 #### wardpearce/purplix-backend:latest
-- `untrusted_request_proxy`: This variable should be set to the reverse proxied SOCKS5 proxy. It determines the proxy server used for handling untrusted requests.
+- `purplix_untrusted_request_proxy`: This variable should be set to the reverse proxied SOCKS5 proxy. It determines the proxy server used for handling untrusted requests.
 
-- `disable_registration`: Set this variable to true if you want to disable user registration. If set to false, registration will be enabled.
+- `purplix_disable_registration`: Set this variable to true if you want to disable user registration. If set to false, registration will be enabled.
 
-- `csrf_secret`: This variable should contain a randomly generated 32-character secret key used for Cross-Site Request Forgery (CSRF) protection. If you want the secret to be generated randomly, you can remove this variable from your configuration.
+- `purplix_csrf_secret`: This variable should contain a randomly generated 32-character secret key used for Cross-Site Request Forgery (CSRF) protection. If you want the secret to be generated randomly, you can remove this variable from your configuration.
 
 - `purplix_proxy_urls`: This variable should contain a JSON object with reverse proxied URLs for different endpoints. Ensure there is no trailing slash in the URLs. For example, it includes frontend, backend, and documentation URLs.
 
@@ -137,11 +137,11 @@ services:
       ports:
           - "8865:80"
       environment:
-          untrusted_request_proxy: "sock5://"
+          purplix_untrusted_request_proxy: "sock5://"
 
-          disable_registration: false
+          purplix_disable_registration: false
 
-          csrf_secret: "!!change_me!!"
+          purplix_csrf_secret: "!!change_me!!"
 
           # ProxiedUrls Settings
           # No trailing slash!

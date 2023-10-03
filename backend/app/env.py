@@ -136,7 +136,7 @@ class Settings(BaseSettings):
     csrf_secret: str = Field(default=secrets.token_urlsafe(32), min_length=32)
 
     notification_webhooks: NotificationWebhooks = NotificationWebhooks()
-    nfty: Ntfy
+    ntfy: Ntfy
 
     model_config = SettingsConfigDict(env_prefix="purplix_")
 
