@@ -18,7 +18,7 @@
     "@types/libsodium-wrappers-sumo": "^0.7.5",
     "@types/safe-regex": "^1.1.4",
     "@types/ua-parser-js": "^0.7.36",
-    "@zxcvbn-ts/core": "^3.0.1",
+    "@zxcvbn-ts/core": "^3.0.4",
     "ajv": "^8.12.0",
     "beercss": "^3.2.7",
     "dayjs": "^1.11.8",
