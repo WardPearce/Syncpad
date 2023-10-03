@@ -25,11 +25,11 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "https://api.purplxi.io/$1"
+            "destination": "https://api.purplix.io/$1"
         },
         {
             "source": "/api",
-            "destination": "https://api.purplxi.io/"
+            "destination": "https://api.purplix.io/"
         },
         {
             "source": "/(.*)",
