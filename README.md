@@ -69,6 +69,10 @@ I recommend looking at the example docker compose to learn what the values shoul
 #### wardpearce/purplix-docs:latest
 - Set `VITE_API_SCHEMA_URL` as the reverse proxied URL for the API, e.g. `https://{myurl.tld}/api/schema/openapi.json`.
 
+#### serjs/go-socks5-proxy:latest
+ - `PROXY_USER`: proxy username.
+ - `PROXY_PASSWORD`: proxy password.
+
 #### wardpearce/purplix-backend:latest
 - `untrusted_request_proxy`: This variable should be set to the reverse proxied SOCKS5 proxy. It determines the proxy server used for handling untrusted requests.
 
