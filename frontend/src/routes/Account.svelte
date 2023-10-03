@@ -54,6 +54,23 @@
 
   let maxAllowedWebhooks: number = 3;
 
+  let showDeleteAccount = false;
+  let deleteAccountEmail: string = "";
+  let deleteAccountOtpCode: string = "";
+  let deleteAccountError: string = "";
+
+  async function deleteAccount() {
+    try {
+      await apiClient.account.controllersAccountEmailDeleteDeleteAccount(
+        deleteAccountEmail,
+        deleteAccountOtpCode
+      );
+      await logout();
+    } catch (error) {
+      deleteAccountError = error.body.detail;
+    }
+  }
+
   async function changeThemeColor() {
     await ui("theme", themeColor);
 
@@ -220,6 +237,33 @@
 {#if !user}
   <PageLoading />
 {:else}
+  <dialog class:active={showDeleteAccount} class="surface-variant">
+    <form on:submit|preventDefault={deleteAccount}>
+      {#if deleteAccountError}
+        <div class="error" style="padding: 0.3em 1em;">
+          <p>{deleteAccountError}</p>
+        </div>
+      {/if}
+      <div class="field label border fill">
+        <input type="text" bind:value={deleteAccountEmail} name="email" />
+        <label for="email">Enter email</label>
+      </div>
+      <div class="field label border fill">
+        <input type="text" bind:value={deleteAccountOtpCode} name="otp" />
+        <label for="otp">OTP code</label>
+      </div>
+      <nav class="wrap">
+        <button on:click={() => (showDeleteAccount = false)} type="button"
+          >Cancel</button
+        >
+        <button class="tertiary" type="submit">
+          <i>delete_forever</i>
+          I'm sure, delete account
+        </button>
+      </nav>
+    </form>
+  </dialog>
+
   <dialog
     class:active={resetDialogState !== resetDialogStates.closed}
     class="surface-variant"
@@ -668,7 +712,7 @@
         </div>
       </summary>
       <nav class="wrap">
-        <button class="tertiary">
+        <button class="tertiary" on:click={() => (showDeleteAccount = true)}>
           <i>delete_forever</i>
           <span>Delete account</span>
         </button>

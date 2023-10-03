@@ -82,13 +82,13 @@ class LoginController(Controller):
         except InvalidAccountAuth:
             raise
 
-        collection_names = await request.state.mongo.list_collection_names()
+        collection_names = await state.mongo.list_collection_names()  # type: ignore
 
         for collection_name in collection_names:
-            collection = request.state.mongo[collection_name]
+            collection = state.mongo[collection_name]
             await collection.delete_many({"user_id": user.id})
 
-        await request.state.mongo.user.delete_one({"_id": user.id})
+        await state.mongo.user.delete_one({"_id": user.id})
 
     @get(
         path="/public",
