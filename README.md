@@ -63,28 +63,28 @@ In order to self-host Purplix, you must be conformable using Docker, using some 
 ```yaml
 version: "3"
 services:
-  purplix-frontend:
-    container_name: purplix-frontend
-    image: wardpearce/purplix-frontend:latest
-    restart: unless-stopped
-    environment:
-        VITE_MCAPTCHA_ENABLED: true
-        VITE_MCAPTCHA_API: https://mcaptcha.purplix.io/api/v1
-        VITE_MCAPTCHA_SITE_KEY: 691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6
-        VITE_THEME: "#8749f4"
-        VITE_SITE_NAME: "Purplix"
-        VITE_BLOCKSTREAM_API: https://blockstream.info/api
-    ports:
-      - "8866:80"
+    purplix-frontend:
+        container_name: purplix-frontend
+        image: wardpearce/purplix-frontend:latest
+        restart: unless-stopped
+        environment:
+            VITE_MCAPTCHA_ENABLED: true
+            VITE_MCAPTCHA_API: https://mcaptcha.purplix.io/api/v1
+            VITE_MCAPTCHA_SITE_KEY: 691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6
+            VITE_THEME: "#8749f4"
+            VITE_SITE_NAME: "Purplix"
+            VITE_BLOCKSTREAM_API: https://blockstream.info/api
+        ports:
+            - "8866:80"
 
-  purplix-docs:
-    container_name: purplix-docs
-    image: wardpearce/purplix-docs:latest
-    restart: unless-stopped
-    environment:
-        VITE_API_SCHEMA_URL: true
-    ports:
-      - "8866:80"
+    purplix-docs:
+        container_name: purplix-docs
+        image: wardpearce/purplix-docs:latest
+        restart: unless-stopped
+        environment:
+            VITE_API_SCHEMA_URL: true
+        ports:
+            - "8866:80"
 
     purplix-backend:
         container_name: purplix-backend
@@ -182,7 +182,6 @@ services:
                     "port": 6379,
                     "db": 0
                 }
-
 
   purplix-mongo:
     image: mongo:latest
