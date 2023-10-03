@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+.vscode
+
 .vscode/PythonImportHelper-v2-Completion.json
 
 # Distribution / packaging
