@@ -59,6 +59,46 @@ In order to self-host Purplix, you must be conformable using Docker, using some 
 - `redis:latest` - Cache for Purplix.
 - `serjs/go-socks5-proxy:latest` - Sock5 proxy for Purplix untrusted webhooks.
 
+### Configuration
+I recommend looking at the example docker compose to learn what the values should be.
+
+#### wardpearce/purplix-frontend:latest
+- Set `VITE_MCAPTCHA_ENABLED`, `VITE_MCAPTCHA_API` & `VITE_MCAPTCHA_SITE_KEY` if mCaptcha in use.
+- `VITE_BLOCKSTREAM_API` is use to get the most recent BTC block hash, most likely you should set this as `https://blockstream.info/api`
+
+#### wardpearce/purplix-docs:latest
+- Set `VITE_API_SCHEMA_URL` as the reverse proxied URL for the API, e.g. `https://{myurl.tld}/api/schema/openapi.json`.
+
+#### wardpearce/purplix-backend:latest
+- `untrusted_request_proxy`: This variable should be set to the reverse proxied SOCKS5 proxy. It determines the proxy server used for handling untrusted requests.
+
+- `disable_registration`: Set this variable to true if you want to disable user registration. If set to false, registration will be enabled.
+
+- `csrf_secret`: This variable should contain a randomly generated 32-character secret key used for Cross-Site Request Forgery (CSRF) protection. If you want the secret to be generated randomly, you can remove this variable from your configuration.
+
+- `purplix_proxy_urls`: This variable should contain a JSON object with reverse proxied URLs for different endpoints. Ensure there is no trailing slash in the URLs. For example, it includes frontend, backend, and documentation URLs.
+
+- `purplix_s3`: These settings are related to the Amazon S3 storage configuration. You need to specify your S3 region, secret access key, access key ID, bucket name, folder, download URL, and optionally an endpoint URL and chunk size.
+
+- `purplix_mcaptcha`: These settings are for configuring mCaptcha, a CAPTCHA service. You should provide the verification URL, site key, and account secret, which are typically obtained from the mCaptcha website you host.
+
+- `purplix_jwt`: This variable should contain a randomly generated 32-character secret key used for JSON Web Token (JWT) authentication. If you want the secret to be generated randomly, you can remove this variable from your configuration. Additionally, you can specify the number of days until JWT tokens expire.
+
+- `purplix_ntfy`: Configure this variable with the URL and topic length for Ntfy, a notification service.
+
+- `purplix_domain_verify`: These settings are for domain verification. You can specify a prefix and timeout for verification.
+
+- `purplix_proxycheck`: Configuration for Proxycheck, which may include an API key and the URL for the service.
+
+- `purplix_smtp`: These settings are for configuring the SMTP server, including the host, port, username, password, and sender email address.
+
+- `purplix_enabled`: This variable contains settings for enabling or disabling certain features, such as surveys and canaries.
+
+- `purplix_mongo`: Configuration for connecting to a MongoDB database, including the host, port, and collection name.
+
+- `purplix_redis`: Configuration for connecting to a Redis database, including the host, port, and database number.
+
+
 ### Compose example
 ```yaml
 version: "3"
@@ -82,7 +122,7 @@ services:
         image: wardpearce/purplix-docs:latest
         restart: unless-stopped
         environment:
-            VITE_API_SCHEMA_URL: true
+            VITE_API_SCHEMA_URL: https://localhost/api/schema/openapi.json
         ports:
             - "8866:80"
 
@@ -100,6 +140,7 @@ services:
             csrf_secret: "!!change_me!!"
 
             # ProxiedUrls Settings
+            # No trailing slash!
             purplix_proxy_urls: |
                 {
                     "frontend": "https://localhost",
