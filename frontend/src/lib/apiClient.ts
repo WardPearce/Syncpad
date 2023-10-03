@@ -43,4 +43,6 @@ class CSrfHttpRequest extends FetchHttpRequest {
 }
 
 
-export default new CanaryClient(undefined, CSrfHttpRequest);
+export default new CanaryClient({
+    BASE: import.meta.env.VITE_API_URL
+}, CSrfHttpRequest);
