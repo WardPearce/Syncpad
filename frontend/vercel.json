@@ -24,6 +24,14 @@
     ],
     "rewrites": [
         {
+            "source": "/api/(.*)",
+            "destination": "https://api.purplxi.io/$1"
+        },
+        {
+            "source": "/api",
+            "destination": "https://api.purplxi.io/"
+        },
+        {
             "source": "/(.*)",
             "destination": "/"
         }
