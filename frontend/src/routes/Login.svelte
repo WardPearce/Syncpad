@@ -199,12 +199,6 @@
 
           {#if isRegister}
             <label class="checkbox">
-              <div class="tooltip max">
-                <p>
-                  Your IP will be processed with Proxycheck.io for session logs
-                  on login. Stored encrypted with your public key.
-                </p>
-              </div>
               <input type="checkbox" bind:checked={ipConsent} />
               <span>Device session logs</span>
             </label>
