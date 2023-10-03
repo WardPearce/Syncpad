@@ -49,5 +49,3 @@ Users are automatically notified on the event of a new statement being published
 
 # Setup
 ## Production
-
-## Development
