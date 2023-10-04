@@ -34,7 +34,7 @@ class OpenAPI(BaseModel):
 
 
 class Redis(BaseModel):
-    host: str = "purplix-redis"
+    host: str = "localhost"
     port: int = 6379
     db: int = 0
 

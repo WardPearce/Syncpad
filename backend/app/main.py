@@ -14,7 +14,6 @@ from litestar.openapi.spec import License, Server
 from litestar.stores.redis import RedisStore
 from models.customs import TYPE_ENCODERS
 from motor import motor_asyncio
-from pydantic import BaseModel
 from redis.asyncio import Redis
 
 from app.controllers import routes
@@ -121,7 +120,7 @@ app = Litestar(
         version=SETTINGS.open_api.version,
         servers=[Server(url=SETTINGS.proxy_urls.backend, description="Production API")],
     ),
-    stores={"redis": redis_store.with_client()},
+    stores={"redis": redis_store},
     plugins=[
         ChannelsPlugin(
             backend=RedisChannelsPubSubBackend(
