@@ -163,6 +163,6 @@ class Survey:
             "created": datetime.utcnow(),
             "user_id": user_id,
         }
-        await self._state.mongo.survey_answer.insert_one(**insert)
+        await self._state.mongo.survey_answer.insert_one(insert)
 
         return SurveyResultModel(**insert)
