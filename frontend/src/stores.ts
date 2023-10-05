@@ -11,7 +11,7 @@ export const showNav = writable(true);
 export const enabled: Writable<{
     canaries: boolean;
     survey: boolean;
-}> = writable({ canaries: false, survey: false });
+}> = writable({ canaries: true, survey: true });
 
 export interface LocalSecretsModel {
     email: string;
