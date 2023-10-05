@@ -22,7 +22,6 @@
             <input
                 type="radio"
                 on:click={(event) => onChoiceSelect(event, choice.id)}
-                name={choice.choice}
                 checked={answer === choice.id}
             />
             <span>{choice.choice}</span>
