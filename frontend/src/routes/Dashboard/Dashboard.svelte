@@ -12,11 +12,15 @@
   let surveys: SurveyModel[] = [];
 
   onMount(async () => {
-    if ($enabled.canaries)
-      canaries = await apiClient.canary.controllersCanaryListListCanaries();
+    try {
+      if ($enabled.canaries)
+        canaries = await apiClient.canary.controllersCanaryListListCanaries();
+    } catch {}
 
-    if ($enabled.survey)
-      surveys = await apiClient.survey.controllersSurveyListListSurveys();
+    try {
+      if ($enabled.survey)
+        surveys = await apiClient.survey.controllersSurveyListListSurveys();
+    } catch {}
   });
 </script>
 
