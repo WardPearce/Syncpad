@@ -15,7 +15,7 @@
     if ($enabled.canaries)
       canaries = await apiClient.canary.controllersCanaryListListCanaries();
 
-    if ($enabled.canaries)
+    if ($enabled.survey)
       surveys = await apiClient.survey.controllersSurveyListListSurveys();
   });
 </script>
