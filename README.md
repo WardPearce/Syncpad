@@ -1,5 +1,3 @@
-# Not production ready...
-
 &nbsp;
 
 <div align="center">
@@ -14,6 +12,8 @@
 
 # About
 ## What is Purplix Survey?
+![Purplix survey preview](https://files.catbox.moe/13yjgb.gif)
+
 Purplix Survey is a free & open source survey tool what can't read your questions & answers.
 
 With traditional surveys you are one data breach, one rouge employee or one government warrant away from all your user's data being exposed. Purplix uses modern encryption techniques to keep your user's data away from any actors.
