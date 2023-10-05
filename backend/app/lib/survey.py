@@ -50,7 +50,7 @@ class SurveyUser:
 
     async def answer(self, page: int) -> SurveyResultModel:
         result = await self._upper._state.mongo.survey_answer.find_one(
-            {"survey_id": self._upper._survey_id, "user_id": self._user_id},
+            {"survey_id": self._upper._survey_id},
             sort=[("created", -1)],
             skip=page,
         )
