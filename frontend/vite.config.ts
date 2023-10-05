@@ -6,15 +6,6 @@ import wasm from "vite-plugin-wasm";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    minify: false,
-    cssCodeSplit: false,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
-  },
   plugins: [
     svelte(),
     wasm(),
