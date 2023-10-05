@@ -29,7 +29,7 @@ export default defineConfig({
     })
   ],
   optimizeDeps: {
-    include: ["beercss"]
+    exclude: ["svelte-navigator"]
   }
 },
 );
