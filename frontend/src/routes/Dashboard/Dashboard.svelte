@@ -20,7 +20,7 @@
   });
 </script>
 
-{#if $enabled.canaries}
+{#if $enabled.survey}
   <h3>Surveys</h3>
   <div class="grid">
     {#if surveys.length > 0}
