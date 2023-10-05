@@ -113,6 +113,18 @@
   {/if}
 
   <main class="responsive">
+    <article class="fill" style="margin-bottom: 1em;">
+      <h5>Purplix is in early alpha</h5>
+      <p>
+        Please report any issues to <a
+          href="https://github.com/WardPearce/Purplix.io/issues"
+          class="link"
+          target="_blank"
+          rel="noopener noreferrer">here</a
+        >
+      </p>
+    </article>
+
     {#if emailVerification}
       <article style="margin-bottom: 2em;">
         <nav>
