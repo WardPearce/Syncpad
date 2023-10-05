@@ -60,10 +60,11 @@
         regex = regexPatterns[target.value];
     }
 
-    function changeAnswer(typeTarget: number) {
+    let selectedTypeTarget: number;
+    function changeAnswer() {
         choices = [];
-        type = typeTarget;
-        selectedAnswer = answerTypes[typeTarget].component;
+        type = selectedTypeTarget;
+        selectedAnswer = answerTypes[selectedTypeTarget].component;
     }
 </script>
 
@@ -119,10 +120,13 @@
             </div>
             <div class="s12 m6 l4">
                 <div class="field suffix large border">
-                    <select>
+                    <select
+                        bind:value={selectedTypeTarget}
+                        on:change={() => changeAnswer()}
+                    >
                         {#each Object.keys(answerTypes) as answer}
                             <option
-                                on:click={() => changeAnswer(Number(answer))}
+                                value={Number(answer)}
                                 selected={SurveyQuestionModel.type[answer] ===
                                     type}>{answerTypes[answer].name}</option
                             >

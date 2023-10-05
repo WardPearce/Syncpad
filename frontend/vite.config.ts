@@ -27,6 +27,9 @@ export default defineConfig({
         theme_color: "#8749f4"
       }
     })
-  ]
+  ],
+  optimizeDeps: {
+    exclude: ["beercss"]
+  }
 },
 );
