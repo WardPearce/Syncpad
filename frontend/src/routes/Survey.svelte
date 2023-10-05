@@ -41,7 +41,7 @@
 
     let showSubmitDialog = false;
     let errorMsg = "";
-    let submissionError = false;
+    let submissionError = "";
     let surveyCompleted = false;
 
     onMount(async () => {
@@ -118,7 +118,7 @@
 
     async function submit() {
         const encryptedAnswers: SurveyAnswerModel[] = [];
-        submissionError = false;
+        submissionError = "";
 
         rawSurvey.questions.forEach((question) => {
             if (
@@ -127,7 +127,7 @@
             ) {
                 if (question.required) {
                     question.error = "This question is required";
-                    submissionError = true;
+                    submissionError = "Please complete all fields correctly.";
                     return;
                 }
                 return;
@@ -141,7 +141,7 @@
                 const regex = new RegExp(question.regex);
                 if (!regex.test(question.answer)) {
                     question.error = "Regex does not match";
-                    submissionError = true;
+                    submissionError = "Please complete all fields correctly.";
                     return;
                 }
             }
@@ -191,12 +191,16 @@
             );
         }
 
-        await apiClient.survey.controllersSurveySurveyIdSubmitSubmitSurvey(
-            surveyId,
-            createPayload
-        );
+        try {
+            await apiClient.survey.controllersSurveySurveyIdSubmitSubmitSurvey(
+                surveyId,
+                createPayload
+            );
 
-        surveyCompleted = true;
+            surveyCompleted = true;
+        } catch (error) {
+            submissionError = error.body.detail;
+        }
     }
 
     async function determineSubmitPrompt() {
@@ -326,7 +330,7 @@
         </div>
 
         {#if submissionError}
-            <Incomplete />
+            <Incomplete errorMsg={submissionError} />
         {/if}
 
         <Title title={rawSurvey.title} description={rawSurvey.description} />
@@ -336,7 +340,7 @@
         {/each}
 
         {#if submissionError}
-            <Incomplete />
+            <Incomplete errorMsg={submissionError} />
         {/if}
 
         <div class="extra-large-width" style="margin-top: 1em;">
