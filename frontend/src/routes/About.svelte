@@ -96,7 +96,7 @@
                 by users to encrypt their answers. Only you have the means to
                 decrypt the answers once they are submitted. When you share a
                 survey, we include a hash of the public key in the URL to
-                prevent main-in-the-middle attacks.
+                prevent man-in-the-middle attacks.
             </p>
 
             <h6>Preventing spam & multiple submissions</h6>
