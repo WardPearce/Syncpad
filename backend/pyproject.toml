@@ -36,6 +36,8 @@ pydantic-settings = "^2.0.3"
 motor-types = "^1.0.0b1"
 types-aiobotocore = {extras = ["essential"], version = "^2.5.0.post2"}
 pytest = "^7.4.2"
+black = "^23.9.1"
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
