@@ -78,7 +78,7 @@ class CanaryUser:
             raise DomainValidationError()
 
         resp = await self.__upper._state.aiohttp.get(
-            f"https://cloudflare-dns.com/dns-query?name={quote_plus(self.__upper.identifier)}&type=TXT",
+            f"https://cloudflare-dns.com/dns-query?name={quote_plus(str(self.__upper.identifier))}&type=TXT",
             headers={"accept": "application/dns-json"},
         )
         if resp.status != 200:
