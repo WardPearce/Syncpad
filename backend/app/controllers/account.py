@@ -468,7 +468,7 @@ class PushNotificationController(Controller):
         response: dict[str, NftyNotificationModel] = {}
         for type_, topic in user.notifications.push.items():
             response[type_.value] = NftyNotificationModel(
-                topic=topic, url=SETTINGS.nfty.url
+                topic=topic, url=SETTINGS.ntfy.url
             )
 
         return response
@@ -484,7 +484,7 @@ class PushNotificationController(Controller):
         request: Request[ObjectId, Token, Any],
         data: NotificationEnum,
     ) -> NftyNotificationModel:
-        topic = secrets.token_urlsafe(SETTINGS.nfty.topic_len)
+        topic = secrets.token_urlsafe(SETTINGS.ntfy.topic_len)
 
         await state.mongo.user.update_one(
             {"_id": request.user},
@@ -493,7 +493,7 @@ class PushNotificationController(Controller):
             },
         )
 
-        return NftyNotificationModel(topic=topic, url=SETTINGS.nfty.url)
+        return NftyNotificationModel(topic=topic, url=SETTINGS.ntfy.url)
 
     @delete(
         "/remove",
