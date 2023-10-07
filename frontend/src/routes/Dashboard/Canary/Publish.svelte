@@ -58,7 +58,11 @@
     let enteredDomain = "";
     let errorMsg = "";
 
-    let documentLimits: Documents;
+    let documentLimits: Documents = {
+        max_amount: 0,
+        max_size: 0,
+        allowed_extensions: [],
+    };
 
     onMount(async () => {
         const customTemplates = await idbKeyval.get("customCanaryTemplates");
@@ -166,7 +170,7 @@
             goToCanary(canary);
         } catch (error) {
             if (error instanceof ApiError) errorMsg = error.body.detail;
-            else errorMsg = error.message;
+            else errorMsg = (error as Error).message;
         }
     }
 
@@ -176,7 +180,7 @@
 
     async function saveCustomTemplate() {
         if (customTemplateLabel) {
-            const toSave = {};
+            const toSave: Record<string, string> = {};
             const customTemplates = await idbKeyval.get(
                 "customCanaryTemplates"
             );
