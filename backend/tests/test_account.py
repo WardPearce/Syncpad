@@ -3,7 +3,8 @@ from urllib.parse import quote_plus
 
 import pytest
 from litestar.testing import TestClient
-from models.user import PublicUserModel
+
+from app.models.user import PublicUserModel
 
 if TYPE_CHECKING:
     from tests.conftest import AccountDetails
