@@ -141,12 +141,12 @@ class Canary:
             self._object_id = False
             _identifier: str | None = yarl.URL(identifier).host
             if not _identifier:
-                self.identifier = _identifier
+                self.identifier = identifier
             else:
                 self.identifier = _identifier
         else:
             self._object_id = True
-            self._identifier = identifier
+            self.identifier = identifier
 
         self._state = state
 

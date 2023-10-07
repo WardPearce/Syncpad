@@ -65,6 +65,8 @@
       return;
     }
 
+    console.log(logoFiles[0]);
+
     if (logoFiles) {
       try {
         await apiClient.canary.controllersCanaryDomainLogoUpdateUpdateLogo(
