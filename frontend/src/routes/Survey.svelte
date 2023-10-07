@@ -4,6 +4,7 @@
     import { navigate, useLocation } from "svelte-navigator";
     import { get } from "svelte/store";
     import CheckMark from "../components/CheckMark.svelte";
+    import Mcaptcha from "../components/Mcaptcha.svelte";
     import PageLoading from "../components/PageLoading.svelte";
     import Incomplete from "../components/Survey/Submit/Incomplete.svelte";
     import Question from "../components/Survey/Submit/Question.svelte";
@@ -44,6 +45,7 @@
     let submissionError = "";
     let surveyCompleted = false;
 
+    let captchaCode: string | undefined;
     onMount(async () => {
         surveyLoading = true;
 
@@ -194,7 +196,8 @@
         try {
             await apiClient.survey.controllersSurveySurveyIdSubmitSubmitSurvey(
                 surveyId,
-                createPayload
+                createPayload,
+                captchaCode
             );
 
             surveyCompleted = true;
@@ -344,6 +347,9 @@
         {/if}
 
         <div class="extra-large-width" style="margin-top: 1em;">
+            {#if survey.requires_captcha}
+                <Mcaptcha bind:captchaToken={captchaCode} />
+            {/if}
             <nav class="right-align">
                 <button on:click={determineSubmitPrompt}>Complete survey</button
                 >

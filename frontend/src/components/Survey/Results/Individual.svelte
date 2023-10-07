@@ -88,14 +88,14 @@
     {#if currentPage !== 0}
         <button on:click={async () => (currentPage--, await loadResult())}>
             <i>arrow_back</i>
-            <span>Past statement</span>
+            <span>Past response</span>
         </button>
     {:else}
         <div />
     {/if}
     {#if individualResult.length > 0}
         <button on:click={async () => (currentPage++, await loadResult())}>
-            <span>Next statement</span>
+            <span>Next response</span>
             <i>arrow_forward</i>
         </button>
     {/if}
