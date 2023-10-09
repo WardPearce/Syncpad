@@ -1,13 +1,20 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import react from '@vitejs/plugin-react';
+import commonjs from 'rollup-plugin-commonjs';
+import nodeResolve from 'rollup-plugin-node-resolve';
 import { defineConfig } from 'vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   build: {
-    target: "esnext"
+    target: 'esnext',
+    rollupOptions: {
+      plugins: [
+        nodeResolve(),
+        commonjs(),
+      ],
+    },
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -15,7 +22,6 @@ export default defineConfig({
       define: {
         global: 'globalThis',
       },
-      // Enable esbuild polyfill plugins
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
