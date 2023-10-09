@@ -11,6 +11,7 @@
     import Title from "../components/Survey/Submit/Title.svelte";
     import apiClient from "../lib/apiClient";
     import type {
+        ApiError,
         SubmitSurveyModel,
         SurveyAnswerModel,
         SurveyPublicModel,
@@ -55,7 +56,7 @@
                     surveyId
                 );
         } catch (error) {
-            errorMsg = error.body.detail;
+            errorMsg = (error as ApiError).body.detail;
             surveyLoading = false;
             return;
         }

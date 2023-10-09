@@ -2,7 +2,7 @@
   import { navigate } from "svelte-navigator";
 
   import apiClient from "../../../lib/apiClient";
-  import type { CreateCanaryModel } from "../../../lib/client";
+  import type { ApiError, CreateCanaryModel } from "../../../lib/client";
   import { base64Encode } from "../../../lib/crypto/codecUtils";
   import secretKey, { SecretkeyLocation } from "../../../lib/crypto/secretKey";
   import signatures from "../../../lib/crypto/signatures";
@@ -60,7 +60,7 @@
     try {
       await apiClient.canary.controllersCanaryCreateCreateCanary(canaryData);
     } catch (error) {
-      errorMsg = error.body.detail;
+      errorMsg = (error as ApiError).body.detail;
       isLoading = false;
       return;
     }
@@ -71,6 +71,7 @@
       try {
         await apiClient.canary.controllersCanaryDomainLogoUpdateUpdateLogo(
           siteDomain,
+          // @ts-ignore
           [logoFiles[0]]
         );
       } catch (error) {}

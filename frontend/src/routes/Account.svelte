@@ -8,6 +8,7 @@
   import account, { logout, resetPassword } from "../lib/account";
   import apiClient from "../lib/apiClient";
   import {
+    ApiError,
     WebhookModel,
     type NftyNotificationModel,
     type SessionModel,
@@ -67,7 +68,7 @@
       );
       await logout();
     } catch (error) {
-      deleteAccountError = error.body.detail;
+      deleteAccountError = (error as ApiError).body.detail;
     }
   }
 
@@ -135,7 +136,7 @@
       await apiClient.account.controllersAccountOtpResetResetOtp(otpCode);
       await account.logout();
     } catch (error) {
-      resetDialogError = error.body.detail;
+      resetDialogError = (error as ApiError).body.detail;
     }
   }
 
@@ -145,7 +146,7 @@
         // Do nothing
       }
     } catch (error) {
-      resetDialogError = error.body.detail;
+      resetDialogError = (error as ApiError).body.detail;
     }
   }
 
