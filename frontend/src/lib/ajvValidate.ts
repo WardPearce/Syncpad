@@ -16,6 +16,7 @@ export function validateData(route: string, method: string, data: unknown): void
     throw new ValidationException(`Route '${route}' not found in schema.`);
   }
 
+  // @ts-ignore
   const routeInfo = schema.paths[route];
 
   if (!(method in routeInfo)) {

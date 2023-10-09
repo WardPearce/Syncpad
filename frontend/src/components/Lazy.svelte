@@ -37,7 +37,7 @@
         showFallback = true;
       }, delayMs);
     }
-    component().then((module) => {
+    component().then((module: any) => {
       loadedComponent = module.default;
     });
 

@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 import { emailVerificationRequired, localSecrets, setLocalSecrets } from "../stores";
 import apiClient from "./apiClient";
 import { syncTrustedCanaries } from './canary';
-import type { AccountUpdatePassword, CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
+import type { AccountUpdatePassword, ApiError, CreateUserModel, PublicUserModel, UserJtiModel, UserModel } from "./client";
 import { base64Decode, base64Encode } from "./crypto/codecUtils";
 import publicKey from './crypto/publicKey';
 import secretKey from "./crypto/secretKey";
@@ -152,7 +152,7 @@ export async function* resetPassword(newPassword: string, otpCode?: string) {
       otpCode
     );
   } catch (error) {
-    throw new RegisterError(error.body.detail);
+    throw new RegisterError((error as ApiError).body.detail);
   }
 
   await logout();
@@ -176,7 +176,7 @@ export async function* login(
       email
     );
   } catch (error) {
-    throw new LoginError(error.body.detail);
+    throw new LoginError((error as ApiError).body.detail);
   }
 
   // Somewhat hackie in memory caching system, so OTP code doesn't
@@ -234,7 +234,7 @@ export async function* login(
       captchaToken as string,
     );
   } catch (error) {
-    throw new LoginError(error.body.detail);
+    throw new LoginError((error as ApiError).body.detail);
   }
 
   // Manually defining the whole object, must
@@ -272,7 +272,7 @@ export async function* login(
   try {
     signatures.validateHash(rawAuthKeys.publicKey, loggedInUser.user.signature, accountUnsigned);
   } catch (error) {
-    throw new LoginError(error.message);
+    throw new LoginError((error as ApiError).message);
   }
 
   yield "Decrypting keychain";
@@ -438,7 +438,7 @@ export async function* register(email: string, password: string, captchaToken?: 
       captchaToken as string,
     );
   } catch (error) {
-    throw new RegisterError(error.body.detail);
+    throw new RegisterError((error as ApiError).body.detail);
   }
 }
 

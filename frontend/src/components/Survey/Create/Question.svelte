@@ -57,13 +57,15 @@
 
     function setRegex(event: Event) {
         const target = event.target as HTMLSelectElement;
-        regex = regexPatterns[target.value];
+        // @ts-ignore
+        regex = regexPatterns[target.value as string];
     }
 
     let selectedTypeTarget: number;
     function changeAnswer() {
         choices = [];
         type = selectedTypeTarget;
+        // @ts-ignore
         selectedAnswer = answerTypes[selectedTypeTarget].component;
     }
 </script>

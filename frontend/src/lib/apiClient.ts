@@ -15,6 +15,7 @@ class CSrfHttpRequest extends FetchHttpRequest {
             if (this.config.HEADERS === undefined)
                 this.config.HEADERS = {};
 
+            // @ts-ignore
             this.config.HEADERS["x-csrftoken"] = csrfToken;
         }
 
@@ -32,9 +33,9 @@ class CSrfHttpRequest extends FetchHttpRequest {
                     ok: false,
                     status: 400,
                     statusText: "400",
-                    body: { detail: error.message }
+                    body: { detail: (error as Error).message }
                 },
-                error.message
+                (error as Error).message
             );
         }
 

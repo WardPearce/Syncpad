@@ -51,11 +51,11 @@
         dragDisabled = true;
     }
 
-    function handleConsider(event) {
+    function handleConsider(event: any) {
         surveyQuestions = event.detail.items;
     }
 
-    function handleFinalize(event) {
+    function handleFinalize(event: any) {
         surveyQuestions = event.detail.items;
         dragDisabled = true;
     }

@@ -2,7 +2,7 @@ import * as idbKeyval from "idb-keyval";
 import { writable, type Writable } from "svelte/store";
 
 export const advanceModeStore = writable(localStorage.getItem("advanceMode") === "true");
-export const themeStore = writable({});
+export const themeStore: Writable<Record<string, string>> = writable({});
 
 export const isDarkMode = writable(true);
 
