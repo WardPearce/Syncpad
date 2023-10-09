@@ -234,6 +234,27 @@ services:
                   "db": 0
               }
 
+  purplix-ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    command:
+      - serve
+    environment:
+      - TZ=UTC
+    user: 1000:1000
+    volumes:
+      - /var/cache/ntfy:/var/cache/ntfy
+      - /etc/ntfy:/etc/ntfy
+    ports:
+      - 9997:80
+    healthcheck:
+        test: ["CMD-SHELL", "wget -q --tries=1 https:/example.com/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+        interval: 60s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
+    restart: unless-stopped
+
   purplix-mongo:
     image: mongo:latest
     container_name: purplix-mongo
@@ -247,6 +268,7 @@ services:
   purplix-redis:
     image: redis:latest
     container_name: purplix-redis
+    restart: unless-stopped
   
   purplix-socks5:
     restart: unless-stopped
@@ -258,6 +280,38 @@ services:
     ports:
     - "1080:1080"
 
+  mcaptcha:
+    image: mcaptcha/mcaptcha:latest
+    ports:
+      - 7000:7000
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:password@mcaptcha_postgres:5432/postgres
+      MCAPTCHA_REDIS_URL: redis://mcaptcha_redis/
+      RUST_LOG: debug
+      PORT: 7000
+      MCAPTCHA_SERVER_DOMAIN: mcaptcha.example.com
+      MCAPTCHA_COMMERCIAL: false
+      MCAPTCHA_ALLOW_REGISTRATION: false
+      MCAPTCHA_ALLOW_DEMO: false
+    depends_on:
+      - mcaptcha_postgres
+      - mcaptcha_redis
+
+  mcaptcha_postgres:
+    image: postgres:13.2
+    restart: unless-stopped
+    volumes:
+      - purplix-mcaptcha-data:/var/lib/postgresql/
+    environment:
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/mcaptcha/
+
+  mcaptcha_redis:
+    image: mcaptcha/cache:latest
+    restart: unless-stopped
+
 volumes:
     purplix-mongo-data:
+    purplix-mcaptcha-data:
 ```
