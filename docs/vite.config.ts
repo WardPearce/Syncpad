@@ -6,6 +6,9 @@ import { defineConfig } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    target: "esnext"
+  },
   optimizeDeps: {
     esbuildOptions: {
       // Node.js global to browser globalThis
