@@ -203,7 +203,7 @@
 
             surveyCompleted = true;
         } catch (error) {
-            submissionError = error.body.detail;
+            submissionError = (error as ApiError).body.detail;
         }
     }
 

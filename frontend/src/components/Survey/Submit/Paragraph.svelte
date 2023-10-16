@@ -5,7 +5,7 @@
     export let choices: rawChoice[] = [];
     export let readOnly: boolean = false;
 
-    export let answer: number | number[] | string | null = null;
+    export let answer: string | number | string[] | null | undefined = null;
 </script>
 
 <div class="field border survey-response textarea extra">

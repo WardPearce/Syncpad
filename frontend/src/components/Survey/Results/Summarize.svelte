@@ -21,7 +21,7 @@
 
     function createWs(pullHistory: boolean): WebSocket {
         return new WebSocket(
-            `ws://${apiClient.request.config.BASE.replace(
+            `wss://${apiClient.request.config.BASE.replace(
                 "http://",
                 ""
             ).replace(
@@ -49,8 +49,7 @@
                     surveyChoices[question.id] = {};
 
                 question.choices.forEach((choice) => {
-                    surveyChoices[question.id][choice.id.toString()] =
-                        choice.choice;
+                    surveyChoices[question.id][choice.id] = choice.choice;
                 });
             }
         });
@@ -78,13 +77,21 @@
                             return;
                         }
 
-                        const choice = surveyChoices[answer.id][selectedChoice];
+                        const choice =
+                            surveyChoices[answer.id][Number(selectedChoice)];
 
                         if (!(choice in summaryResults[answer.id])) {
-                            summaryResults[answer.id][choice] = 0;
+                            (
+                                summaryResults[answer.id] as Record<
+                                    string,
+                                    number
+                                >
+                            )[choice] = 0;
                         }
 
-                        summaryResults[answer.id][choice]++;
+                        (summaryResults[answer.id] as Record<string, number>)[
+                            choice
+                        ]++;
                     });
                 } else if (answer.type === 3) {
                     if (!(answer.id in summaryResults)) {
@@ -98,10 +105,14 @@
                         surveyChoices[answer.id][Number(answer.answer)];
 
                     if (!(choice in summaryResults[answer.id])) {
-                        summaryResults[answer.id][choice] = 0;
+                        (summaryResults[answer.id] as Record<string, number>)[
+                            choice
+                        ] = 0;
                     }
 
-                    summaryResults[answer.id][choice]++;
+                    (summaryResults[answer.id] as Record<string, number>)[
+                        choice
+                    ]++;
                 } else {
                     if (!(answer.id in summaryResults)) {
                         summaryResults[answer.id] = [];
@@ -136,7 +147,7 @@
                 {details.question}
                 <span style="font-size: .5em; margin-left: 1em;">
                     {#if id in summaryResultCount}
-                        ({summaryResultCount[id]} responses)
+                        ({summaryResultCount[Number(id)]} responses)
                     {:else}
                         (No responses)
                     {/if}
@@ -146,12 +157,12 @@
                 <p>{details.description}</p>
             {/if}
 
-            {#if summaryResults[id] instanceof Array}
+            {#if summaryResults[Number(id)] instanceof Array}
                 <div
                     style="max-height: 350px;overflow-y: auto;border-radius: 0;"
                 >
                     <ul>
-                        {#each summaryResults[id] as result}
+                        {#each Object.values(summaryResults[Number(id)]) as result}
                             <li style="margin-top: 1em;">
                                 <article class="surface-variant">
                                     <p>{result}</p>
@@ -160,9 +171,9 @@
                         {/each}
                     </ul>
                 </div>
-            {:else if summaryResults[id] instanceof Object}
+            {:else if summaryResults[Number(id)] instanceof Object}
                 <div class="grid">
-                    {#each Object.entries(summaryResults[id]) as [choice, result]}
+                    {#each Object.entries(summaryResults[Number(id)]) as [choice, result]}
                         <div class="s12 m6 l4">
                             <article class="surface-variant">
                                 <h6>{choice}</h6>

@@ -11,16 +11,23 @@
   let canaries: CanaryModel[] = [];
   let surveys: SurveyModel[] = [];
 
-  onMount(async () => {
+  async function loadCanaries() {
     try {
       if ($enabled.canaries)
         canaries = await apiClient.canary.controllersCanaryListListCanaries();
     } catch {}
+  }
 
+  async function loadSurveys() {
     try {
       if ($enabled.survey)
         surveys = await apiClient.survey.controllersSurveyListListSurveys();
     } catch {}
+  }
+
+  onMount(async () => {
+    loadSurveys();
+    loadCanaries();
   });
 </script>
 

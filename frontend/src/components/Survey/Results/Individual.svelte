@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import apiClient from "../../../lib/apiClient";
+    import type { ApiError } from "../../../lib/client";
     import {
         decryptAnswers,
         type rawQuestionAnswer,
@@ -28,7 +29,7 @@
                     currentPage
                 );
         } catch (error) {
-            apiError = error.body.detail;
+            apiError = (error as ApiError).body.detail;
             return;
         }
 

@@ -34,7 +34,7 @@
         None: null,
     };
 
-    const answerTypes = {
+    const answerTypes: Record<number, { component: any; name: string }> = {
         0: {
             component: ShortAnswer,
             name: "Short Answer",
@@ -129,8 +129,10 @@
                         {#each Object.keys(answerTypes) as answer}
                             <option
                                 value={Number(answer)}
-                                selected={SurveyQuestionModel.type[answer] ===
-                                    type}>{answerTypes[answer].name}</option
+                                selected={Object.values(
+                                    SurveyQuestionModel.type
+                                )[Number(answer)] === type}
+                                >{answerTypes[Number(answer)].name}</option
                             >
                         {/each}
                     </select>
