@@ -6,7 +6,10 @@ import signatures from "./crypto/signatures";
 
 
 export interface rawQuestionAnswer extends rawQuestion {
-  answer: number | number[] | string | null;
+  answer: | (string | number | string[] | undefined) &
+  (string | number | number[]) &
+  (string | number | number[] | undefined)
+  | null;
   error: string | null;
 }
 

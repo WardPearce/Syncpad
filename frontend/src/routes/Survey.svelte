@@ -152,7 +152,7 @@
             let answer: string[] | string;
             if (question.answer instanceof Array) {
                 answer = [];
-                question.answer.forEach((choiceId) => {
+                (question.answer as string[]).forEach((choiceId) => {
                     (answer as string[]).push(
                         publicKey.boxSeal(rawPublicKey, choiceId.toString())
                     );

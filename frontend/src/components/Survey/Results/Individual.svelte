@@ -33,7 +33,11 @@
             return;
         }
 
-        let resultAnswer: number | number[] | string;
+        let resultAnswer:
+            | ((string | number | string[] | undefined) &
+                  (string | number | number[]) &
+                  (string | number | number[] | undefined))
+            | null;
         for (const answer of decryptAnswers(
             rawPublicKey,
             rawPrivateKey,

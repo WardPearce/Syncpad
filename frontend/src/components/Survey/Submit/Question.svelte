@@ -16,7 +16,11 @@
     export let error: string | null;
     export let readOnly: boolean = false;
 
-    export let answer: number | number[] | string | null;
+    export let answer:
+        | ((string | number | string[] | undefined) &
+              (string | number | number[]) &
+              (string | number | number[] | undefined))
+        | null;
 
     const answerTypes = {
         0: ShortAnswer,
