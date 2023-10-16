@@ -11,6 +11,7 @@
     import Title from "../components/Survey/Submit/Title.svelte";
     import apiClient from "../lib/apiClient";
     import type {
+        ApiError,
         SubmitSurveyModel,
         SurveyAnswerModel,
         SurveyPublicModel,
@@ -55,7 +56,7 @@
                     surveyId
                 );
         } catch (error) {
-            errorMsg = error.body.detail;
+            errorMsg = (error as ApiError).body.detail;
             surveyLoading = false;
             return;
         }
@@ -151,7 +152,7 @@
             let answer: string[] | string;
             if (question.answer instanceof Array) {
                 answer = [];
-                question.answer.forEach((choiceId) => {
+                (question.answer as string[]).forEach((choiceId) => {
                     (answer as string[]).push(
                         publicKey.boxSeal(rawPublicKey, choiceId.toString())
                     );
@@ -202,7 +203,7 @@
 
             surveyCompleted = true;
         } catch (error) {
-            submissionError = error.body.detail;
+            submissionError = (error as ApiError).body.detail;
         }
     }
 

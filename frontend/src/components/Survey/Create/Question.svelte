@@ -34,7 +34,7 @@
         None: null,
     };
 
-    const answerTypes = {
+    const answerTypes: Record<number, { component: any; name: string }> = {
         0: {
             component: ShortAnswer,
             name: "Short Answer",
@@ -57,13 +57,15 @@
 
     function setRegex(event: Event) {
         const target = event.target as HTMLSelectElement;
-        regex = regexPatterns[target.value];
+        // @ts-ignore
+        regex = regexPatterns[target.value as string];
     }
 
     let selectedTypeTarget: number;
     function changeAnswer() {
         choices = [];
         type = selectedTypeTarget;
+        // @ts-ignore
         selectedAnswer = answerTypes[selectedTypeTarget].component;
     }
 </script>
@@ -127,8 +129,10 @@
                         {#each Object.keys(answerTypes) as answer}
                             <option
                                 value={Number(answer)}
-                                selected={SurveyQuestionModel.type[answer] ===
-                                    type}>{answerTypes[answer].name}</option
+                                selected={Object.values(
+                                    SurveyQuestionModel.type
+                                )[Number(answer)] === type}
+                                >{answerTypes[Number(answer)].name}</option
                             >
                         {/each}
                     </select>

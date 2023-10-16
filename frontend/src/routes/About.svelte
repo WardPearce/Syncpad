@@ -26,7 +26,7 @@
     });
 
     onDestroy(() => {
-        clearInterval(roller);
+        clearInterval(Number(roller));
     });
 </script>
 

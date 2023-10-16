@@ -1,3 +1,6 @@
+# Purplix is in early alpha
+Please report any issues.
+
 &nbsp;
 
 <div align="center">
@@ -30,6 +33,7 @@ Every survey has its own unique key pair. The private key is securely stored in 
 Survey creators can opt-in to use VPN blocking, requiring a Purplix account or IP blocking. IP blocking works by storing a hash of the IP salted with a key not stored by Purplix, minimizing the attack surface of tracking submission locations, these IP hashes are only stored for 7 days or until the survey closes. Users will always be informed when any of these features are enabled.
 
 ## What is Purplix Canary?
+![Image of canary site](https://i.imgur.com/c3HUe1C.png)
 Purplix Canary is a free & open source warrant canary tool what helps you to build trust with your users.
 
 It allows you to inform users cryptographically if your site has been compromised, seized or raided by anyone.

@@ -10,6 +10,7 @@
   import apiClient from "../lib/apiClient";
   import { getTrustedCanary, saveCanaryAsTrusted } from "../lib/canary";
   import type {
+    ApiError,
     DocumentCanaryWarrantModel,
     PublicCanaryModel,
     PublishedCanaryWarrantModel,
@@ -120,7 +121,7 @@
         loadSubscribeStatus();
       }
     } catch (error) {
-      canaryApiError = error.body.detail;
+      canaryApiError = (error as ApiError).body.detail;
     }
 
     isLoading = false;
@@ -253,7 +254,7 @@
         currentPublishedWarrant = undefined;
       }
     } catch (error) {
-      statementApiError = error.body.detail;
+      statementApiError = (error as ApiError).body.detail;
       currentPublishedWarrant = undefined;
     }
 

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import apiClient from "../../../lib/apiClient";
+    import type { ApiError } from "../../../lib/client";
     import {
         decryptAnswers,
         type rawQuestionAnswer,
@@ -28,11 +29,15 @@
                     currentPage
                 );
         } catch (error) {
-            apiError = error.body.detail;
+            apiError = (error as ApiError).body.detail;
             return;
         }
 
-        let resultAnswer: number | number[] | string;
+        let resultAnswer:
+            | ((string | number | string[] | undefined) &
+                  (string | number | number[]) &
+                  (string | number | number[] | undefined))
+            | null;
         for (const answer of decryptAnswers(
             rawPublicKey,
             rawPrivateKey,

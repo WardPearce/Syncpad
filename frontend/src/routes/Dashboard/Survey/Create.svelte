@@ -34,7 +34,7 @@
     let proxyBlock = false;
     let allowMultipleSubmissions = true;
     let requireCaptcha = false;
-    let surveyCloses: Date | null = null;
+    let surveyCloses: string | null = null;
     let surveyTheme = import.meta.env.VITE_THEME;
 
     addQuestion();
@@ -51,11 +51,11 @@
         dragDisabled = true;
     }
 
-    function handleConsider(event) {
+    function handleConsider(event: any) {
         surveyQuestions = event.detail.items;
     }
 
-    function handleFinalize(event) {
+    function handleFinalize(event: any) {
         surveyQuestions = event.detail.items;
         dragDisabled = true;
     }

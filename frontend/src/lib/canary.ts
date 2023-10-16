@@ -58,7 +58,7 @@ export async function listTrustedCanaries(): Promise<Record<string, string>> {
     try {
       const untrustedCanaries = await apiClient.canary.controllersCanaryTrustedListListTrustedCanaries();
 
-      const trustedCanaries = {};
+      const trustedCanaries: Record<string, string> = {};
       for (const [domain, canary] of Object.entries(untrustedCanaries)) {
         try {
           signatures.validateHash(

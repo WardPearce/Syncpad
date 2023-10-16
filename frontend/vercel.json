@@ -20,6 +20,10 @@
     ],
     "rewrites": [
         {
+            "source": "/api/controllers/survey/:surveyId/responses/realtime",
+            "destination": "wss://api.purplix.io/api/controllers/survey/:surveyId/responses/realtime"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "https://api.purplix.io/$1"
         },

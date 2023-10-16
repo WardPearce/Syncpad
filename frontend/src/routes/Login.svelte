@@ -8,7 +8,7 @@
   import OtpInput from "../components/OtpInput.svelte";
   import account, { OtpRequiredError } from "../lib/account";
   import apiClient from "../lib/apiClient";
-  import { type UserModel } from "../lib/client";
+  import { ApiError, type UserModel } from "../lib/client";
   import { advanceModeStore, localSecrets, themeStore } from "../stores";
 
   export let isRegister = false;
@@ -41,12 +41,6 @@
       derived: new Uint8Array([]),
     },
   };
-
-  let theme;
-  themeStore.subscribe((value) => (theme = value));
-
-  let advanceMode;
-  advanceModeStore.subscribe((value) => (advanceMode = value));
 
   onMount(() => {
     if (get(localSecrets) !== undefined) {
@@ -99,7 +93,7 @@
         otpSetupRequired = false;
       } else {
         passwordScreen = true;
-        errorMsg = error.message;
+        errorMsg = (error as Error).message;
       }
     }
 
@@ -117,7 +111,7 @@
           replace: true,
         });
       } catch (error) {
-        errorMsg = error.body.detail;
+        errorMsg = (error as ApiError).body.detail;
       }
     } else {
       try {
@@ -138,7 +132,7 @@
           }
         }
       } catch (error) {
-        errorMsg = error.message;
+        errorMsg = (error as ApiError).message;
         password = "";
         passwordScreen = true;
       }
@@ -156,7 +150,7 @@
         <p>Please wait, this may take a moment.</p>
         <span style="margin: 1em 0;" class="loader large" />
 
-        {#if advanceMode}
+        {#if $advanceModeStore}
           <div style="font-style: italic;text-align: center;">
             <p style="font-weight: bold;">Advance comment</p>
             <p>{advanceModeMsg}</p>
@@ -230,8 +224,8 @@
           >
             <QrCode
               value={loggedInUser.otp.provisioning_uri}
-              background={theme["--surface"]}
-              color={theme["--primary"]}
+              background={$themeStore["--surface"]}
+              color={$themeStore["--primary"]}
             />
             <button
               on:click={async () => {
