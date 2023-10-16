@@ -2457,6 +2457,7 @@ files = [
 ]
 
 [package.dependencies]
+cryptography = {version = ">=3.4.0", optional = true, markers = "extra == \"cryptography\""}
 ecdsa = "!=0.15"
 pyasn1 = "*"
 rsa = "*"
@@ -3672,4 +3673,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "032d888ae3f429e46981a0f9e6a8f9dbae7f252dbcb6ab81368a98f33e1d09a3"
+content-hash = "07ab90527a9fc638eb7648fd89dc5dd46a3d73b3190751b0074c0de5b87551e7"

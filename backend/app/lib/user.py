@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Union
 
 from bson import ObjectId
-from sqlalchemy import false
 
 from app.errors import UserNotFoundException
 from app.models.user import UserModel
