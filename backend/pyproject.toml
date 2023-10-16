@@ -31,6 +31,8 @@ humanize = "^4.6.0"
 cryptography = "^41.0.2"
 pydantic-settings = "^2.0.3"
 redis = "^5.0.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+uvicorn = "^0.23.2"
 
 
 [tool.poetry.group.dev.dependencies]
