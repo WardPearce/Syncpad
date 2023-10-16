@@ -9,6 +9,7 @@ from argon2 import PasswordHasher
 from bson import ObjectId
 from bson.errors import InvalidId
 from litestar import Request, Response, Router, delete
+from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jwt import Token
 from litestar.controller import Controller
 from litestar.exceptions import (
@@ -373,11 +374,11 @@ async def create_account(
     return Response(
         None,
         status_code=201,
-        # background=BackgroundTask(
-        #     send_email_verify,
-        #     to=data.email,
-        #     email_secret=await generate_email_validation(state, email),
-        # ),
+        background=BackgroundTask(
+            send_email_verify,
+            to=data.email,
+            email_secret=await generate_email_validation(state, email),
+        ),
     )
 
 
