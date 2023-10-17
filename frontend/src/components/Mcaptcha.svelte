@@ -29,7 +29,7 @@
       }
     );
     // Assume API is down, mark as completed.
-    if (configResp.status != 200) {
+    if (!configResp.ok) {
       status = CaptchaStatus.completed;
       return;
     }
