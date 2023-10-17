@@ -18,53 +18,62 @@
   async function startPow() {
     status = CaptchaStatus.loading;
 
-    const configResp = await fetch(
-      `${import.meta.env.VITE_MCAPTCHA_API}/pow/config`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ key: import.meta.env.VITE_MCAPTCHA_SITE_KEY }),
+    try {
+      const configResp = await fetch(
+        `${import.meta.env.VITE_MCAPTCHA_API}/pow/config`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({ key: import.meta.env.VITE_MCAPTCHA_SITE_KEY }),
+        }
+      );
+
+      // Assume API is down, mark as completed.
+      if (!configResp.ok) {
+        status = CaptchaStatus.completed;
+        return;
       }
-    );
-    // Assume API is down, mark as completed.
-    if (!configResp.ok) {
-      status = CaptchaStatus.completed;
-      return;
-    }
 
-    const configJson = await configResp.json();
+      const configJson = await configResp.json();
 
-    const work = JSON.parse(
-      gen_pow(configJson.salt, configJson.string, configJson.difficulty_factor)
-    );
+      const work = JSON.parse(
+        gen_pow(
+          configJson.salt,
+          configJson.string,
+          configJson.difficulty_factor
+        )
+      );
 
-    const verifyResp = await fetch(
-      `${import.meta.env.VITE_MCAPTCHA_API}/pow/verify`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          key: import.meta.env.VITE_MCAPTCHA_SITE_KEY,
-          string: configJson.string,
-          ...work,
-        }),
+      const verifyResp = await fetch(
+        `${import.meta.env.VITE_MCAPTCHA_API}/pow/verify`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            key: import.meta.env.VITE_MCAPTCHA_SITE_KEY,
+            string: configJson.string,
+            ...work,
+          }),
+        }
+      );
+
+      if (verifyResp.status != 200) {
+        status = CaptchaStatus.completed;
+        return;
       }
-    );
 
-    if (verifyResp.status != 200) {
+      const verifyJson = await verifyResp.json();
+
+      captchaToken = verifyJson.token;
+
       status = CaptchaStatus.completed;
-      return;
+    } catch {
+      status = CaptchaStatus.completed;
     }
-
-    const verifyJson = await verifyResp.json();
-
-    captchaToken = verifyJson.token;
-
-    status = CaptchaStatus.completed;
   }
 </script>
 
