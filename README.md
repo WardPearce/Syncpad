@@ -64,8 +64,6 @@ In order to self-host Purplix, you must be conformable using Docker, using some 
 - `serjs/go-socks5-proxy:latest` - Sock5 proxy for Purplix untrusted webhooks.
 
 ### Configuration
-I recommend looking at the example docker compose to learn what the values should be.
-
 #### wardpearce/purplix-frontend:latest
 - Set `VITE_MCAPTCHA_ENABLED`, `VITE_MCAPTCHA_API` & `VITE_MCAPTCHA_SITE_KEY` if mCaptcha in use.
 - `VITE_BLOCKSTREAM_API` is use to get the most recent BTC block hash, most likely you should set this as `https://blockstream.info/api`
@@ -107,87 +105,77 @@ I recommend looking at the example docker compose to learn what the values shoul
 - `purplix_redis`: Configuration for connecting to a Redis database, including the host, port, and database number.
 
 
+#### mcaptcha/mcaptcha:latest
+[Docs](https://github.com/mCaptcha/mCaptcha/blob/master/docs/CONFIGURATION.md)
+
+#### binwiederhier/ntfy
+[Docs](https://docs.ntfy.sh/)
+
 ### Compose example
 ```yaml
 version: "3"
 services:
-  purplix-frontend:
-      container_name: purplix-frontend
-      image: wardpearce/purplix-frontend:latest
-      restart: unless-stopped
-      environment:
-          VITE_MCAPTCHA_ENABLED: true
-          VITE_MCAPTCHA_API: https://mcaptcha.purplix.io/api/v1
-          VITE_MCAPTCHA_SITE_KEY: 691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6
-          VITE_THEME: "#8749f4"
-          VITE_SITE_NAME: "Purplix"
-          VITE_BLOCKSTREAM_API: https://blockstream.info/api
-      ports:
-          - "8866:80"
-
-  purplix-docs:
-      container_name: purplix-docs
-      image: wardpearce/purplix-docs:latest
-      restart: unless-stopped
-      environment:
-          VITE_API_SCHEMA_URL: https://localhost/api/schema/openapi.json
-      ports:
-          - "8866:80"
-
   purplix-backend:
       container_name: purplix-backend
       image: wardpearce/purplix-backend:latest
       restart: unless-stopped
       ports:
           - "8865:80"
+      networks:
+        - purplix-network
+      depends_on:
+        - purplix-mongo
       environment:
-          purplix_untrusted_request_proxy: "sock5://"
+          # Redis Settings
+          purplix_redis: '{"host": "purplix-redis", "port": 6379, "db": 0}'
+
+          purplix_untrusted_request_proxy: "socks5://purplix:password@address:1080"
 
           purplix_disable_registration: false
 
-          purplix_csrf_secret: "!!change_me!!"
+          purplix_csrf_secret: "!!changeme!!"
 
           # ProxiedUrls Settings
           # No trailing slash!
           purplix_proxy_urls: |
               {
-                  "frontend": "https://localhost",
-                  "backend": "https://localhost/api",
-                  "docs": "https://docs.localhost"
+                  "frontend": "https://purplix.io",
+                  "backend": "https://purplix.io/api",
+                  "docs": "https://docs.purplix.io"
               }
 
           # S3 Settings
           purplix_s3: |
               {
-                  "region_name": "your_region",
-                  "secret_access_key": "your_secret_key",
-                  "access_key_id": "your_access_key_id",
-                  "bucket": "your_bucket",
+                  "region_name": "",
+                  "secret_access_key": "",
+                  "access_key_id": "",
+                  "bucket": "",
                   "folder": "purplix",
-                  "download_url": "your_download_url",
-                  "endpoint_url": null,
+                  "download_url": "",
+                  "endpoint_url": "",
                   "chunk_size": 655400
               }
 
           # mCaptcha Settings
           purplix_mcaptcha: |
               {
-                  "verify_url": "https://mcaptcha.purplix.io/api/v1/pow/verify",
-                  "site_key": "691wu6nlaYfeNl1XyYYYfRYYjIp4HQw6",
-                  "account_secret": "f0bm6QvcbZoddSqeeTXoY4BvdGaMmOv7"
+                  "verify_url": "https://mcaptcha.example.com/api/v1/pow/verify",
+                  "site_key": "",
+                  "account_secret": ""
               }
 
           # Jwt Settings
           purplix_jwt: |
               {
-                  "secret": "!!change_me!!",
+                  "secret": "",
                   "expire_days": 30
               }
 
           # Ntfy Settings
           purplix_ntfy: |
               {
-                  "url": "your_ntfy_url",
+                  "url": "https://ntfy.example.com",
                   "topic_len": 32
               }
 
@@ -208,11 +196,11 @@ services:
           # Smtp Settings
           purplix_smtp: |
               {
-                  "host": "your_smtp_host",
-                  "port": your_smtp_port,
+                  "host": ",
+                  "port": 25,
                   "username": "",
                   "password": "",
-                  "email": "your_email@example.com"
+                  "email": ""
               }
 
           # Enabled Settings
@@ -230,15 +218,67 @@ services:
                   "collection": "purplix"
               }
 
-          # Redis Settings
-          purplix_redis: |
-              {
-                  "host": "purplix-redis",
-                  "port": 6379,
-                  "db": 0
-              }
 
-  purplix-ntfy:
+  purplix-mongo:
+    image: mongo:latest
+    container_name: purplix-mongo
+    restart: unless-stopped
+    environment:
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - purplix-mongo-data:/data/db
+    networks:
+      - purplix-network
+
+  purplix-socks5:
+    restart: unless-stopped
+    image: serjs/go-socks5-proxy:latest
+    environment:
+      PROXY_USER: purplix
+      PROXY_PASSWORD: "!!changeme!!"
+      PROXY_PORT: 1080
+    ports:
+    - "1080:1080"
+
+  purplix-redis:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: purplix-redis
+    networks:
+      - purplix-network
+
+  purplix-mcaptcha:
+    image: mcaptcha/mcaptcha:latest
+    ports:
+      - 7000:7000
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:password@purplix-postgres:5432/postgres
+      MCAPTCHA_REDIS_URL: redis://purplix-redis
+      PORT: 7000
+      MCAPTCHA_SERVER_DOMAIN: mcaptcha.purplix.io
+      MCAPTCHA_COMMERCIAL: false
+      MCAPTCHA_ALLOW_REGISTRATION: false
+      MCAPTCHA_ALLOW_DEMO: false
+    depends_on:
+      - purplix-postgres
+      - purplix-redis
+    networks:
+      - purplix-network
+
+  purplix-postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - purplix-mcaptcha-data:/var/lib/postgresql/
+    environment:
+      POSTGRES_PASSWORD: "!!changeme!!" 
+      PGDATA: /var/lib/postgresql/data/mcaptcha/
+    networks:
+      - purplix-network
+
+  ntfy:
     image: binwiederhier/ntfy
     container_name: ntfy
     command:
@@ -252,70 +292,19 @@ services:
     ports:
       - 9997:80
     healthcheck:
-        test: ["CMD-SHELL", "wget -q --tries=1 https:/example.com/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+        test: ["CMD-SHELL", "wget -q --tries=1 https://ntfy.example.com/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
         interval: 60s
         timeout: 10s
         retries: 3
         start_period: 40s
     restart: unless-stopped
 
-  purplix-mongo:
-    image: mongo:latest
-    container_name: purplix-mongo
-    restart: unless-stopped
-    environment:
-      MONGODB_DATA_DIR: /data/db
-      MONDODB_LOG_DIR: /dev/null
-    volumes:
-      - purplix-mongo-data:/data/db
-  
-  purplix-redis:
-    image: redis:latest
-    container_name: purplix-redis
-    restart: unless-stopped
-  
-  purplix-socks5:
-    restart: unless-stopped
-    image: serjs/go-socks5-proxy:latest
-    environment:
-      PROXY_USER: someuser
-      PROXY_PASSWORD: somepass
-      PROXY_PORT: 1080
-    ports:
-    - "1080:1080"
-
-  mcaptcha:
-    image: mcaptcha/mcaptcha:latest
-    ports:
-      - 7000:7000
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgres://postgres:password@mcaptcha_postgres:5432/postgres
-      MCAPTCHA_REDIS_URL: redis://mcaptcha_redis/
-      RUST_LOG: debug
-      PORT: 7000
-      MCAPTCHA_SERVER_DOMAIN: mcaptcha.example.com
-      MCAPTCHA_COMMERCIAL: false
-      MCAPTCHA_ALLOW_REGISTRATION: false
-      MCAPTCHA_ALLOW_DEMO: false
-    depends_on:
-      - mcaptcha_postgres
-      - mcaptcha_redis
-
-  mcaptcha_postgres:
-    image: postgres:13.2
-    restart: unless-stopped
-    volumes:
-      - purplix-mcaptcha-data:/var/lib/postgresql/
-    environment:
-      POSTGRES_PASSWORD: password
-      PGDATA: /var/lib/postgresql/data/mcaptcha/
-
-  mcaptcha_redis:
-    image: mcaptcha/cache:latest
-    restart: unless-stopped
-
 volumes:
     purplix-mongo-data:
     purplix-mcaptcha-data:
+
+
+networks:
+  purplix-network:
+    driver: bridge
 ```
