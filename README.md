@@ -251,6 +251,8 @@ services:
   purplix-mcaptcha-redis:
     image: mcaptcha/cache:latest
     restart: unless-stopped
+    networks:
+      - purplix-network
 
   purplix-mcaptcha:
     image: mcaptcha/mcaptcha:latest
