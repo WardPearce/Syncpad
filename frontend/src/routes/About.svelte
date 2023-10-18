@@ -63,33 +63,33 @@
         <div class="s12 m6 l8">
             <h3>What is {import.meta.env.VITE_SITE_NAME} Survey?</h3>
             <p>
-                Purplix Survey is a free & <a
+                Purplix Survey is a free& <a
                     target="_blank"
                     referrerpolicy="no-referrer"
                     href="https://github.com/WardPearce/Purplix.io"
-                    class="link">open source</a
-                > survey tool what can't read your questions & answers.
+                    class="link">open-source</a
+                > survey tool that can't read your questions and answers.
             </p>
 
             <p>
-                With traditional surveys you are one data breach, one rouge
-                employee or one government warrant away from all your user's
+                With traditional surveys, you are one data breach, one rogue
+                employee, or one government warrant away from all your users'
                 data being exposed. Purplix uses modern encryption techniques to
-                keep your user's data away from any actors.
+                keep your users' data away from any actors.
             </p>
 
             <h5>How does it work?</h5>
-            <h6>Questions, Descriptions & Title encryption</h6>
+            <h6>Questions, Descriptions & Title Encryption</h6>
             <p>
-                When you create a survey, we encrypt your title, descriptions &
-                questions with a secret key. This key is then stored encrypted
-                in your keychain. When you share your survey with others using a
-                link, the key is stored in the link for your participants. This
-                ensures that your survey questions can only be read by your
-                participants.
+                When you create a survey, we encrypt your title, descriptions,
+                and questions with a secret key. This key is then stored
+                encrypted in your keychain. When you share your survey with
+                others using a link, the key is stored in the link for your
+                participants. This ensures that your survey questions can only
+                be read by your participants.
             </p>
 
-            <h6>Answers encryption</h6>
+            <h6>Answers Encryption</h6>
             <p>
                 Every survey has its own unique key pair. The private key is
                 securely stored in your keychain, while the public key is used
@@ -99,13 +99,13 @@
                 prevent man-in-the-middle attacks.
             </p>
 
-            <h6>Preventing spam & multiple submissions</h6>
+            <h6>Preventing Spam & Multiple Submissions</h6>
             <p>
                 Survey creators can opt-in to use VPN blocking, requiring a
-                Purplix account or IP blocking. IP blocking works by storing a
+                Purplix account, or IP blocking. IP blocking works by storing a
                 hash of the IP salted with a key not stored by Purplix,
-                minimizing the attack surface of tracking submission locations,
-                these IP hashes are only stored for 7 days or until the survey
+                minimizing the attack surface of tracking submission locations.
+                These IP hashes are only stored for 7 days or until the survey
                 closes. Users will always be informed when any of these features
                 are enabled.
             </p>
@@ -140,22 +140,23 @@
                     target="_blank"
                     referrerpolicy="no-referrer"
                     href="https://github.com/WardPearce/Purplix.io"
-                    class="link">open source</a
-                > warrant canary tool what helps you to build trust with your users.
+                    class="link">open-source</a
+                > warrant canary tool that helps you build trust with your users.
             </p>
             <p>
                 It allows you to inform users cryptographically if your site has
-                been compromised, seized or raided by anyone.
+                been compromised, seized, or raided by anyone.
             </p>
 
             <h5>How does it work?</h5>
-            <h6>Site verification</h6>
+            <h6>Site Verification</h6>
             <p>
                 Purplix uses DNS records to verify the domain the canary is for,
-                giving your users confidence they are trusting the right people.
+                giving your users confidence that they are trusting the right
+                people.
             </p>
 
-            <h6>Canary signatures</h6>
+            <h6>Canary Signatures</h6>
             <p>
                 Each domain is associated with a unique key pair. The private
                 key is generated locally and securely stored within the owner's
