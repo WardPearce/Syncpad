@@ -248,6 +248,10 @@ services:
     networks:
       - purplix-network
 
+  purplix-mcaptcha-redis:
+    image: mcaptcha/cache:latest
+    restart: unless-stopped
+
   purplix-mcaptcha:
     image: mcaptcha/mcaptcha:latest
     ports:
@@ -255,15 +259,15 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://postgres:password@purplix-postgres:5432/postgres
-      MCAPTCHA_REDIS_URL: redis://purplix-redis
+      MCAPTCHA_redis_URL: redis://purplix-mcaptcha-redis
       PORT: 7000
-      MCAPTCHA_SERVER_DOMAIN: mcaptcha.purplix.io
-      MCAPTCHA_COMMERCIAL: false
-      MCAPTCHA_ALLOW_REGISTRATION: false
-      MCAPTCHA_ALLOW_DEMO: false
+      MCAPTCHA_server_DOMAIN: mcaptcha.purplix.io
+      MCAPTCHA_commercial: false
+      MCAPTCHA_allow_registration: false
+      MCAPTCHA_allow_demo: false
     depends_on:
       - purplix-postgres
-      - purplix-redis
+      - purplix-mcaptcha-redis
     networks:
       - purplix-network
 
