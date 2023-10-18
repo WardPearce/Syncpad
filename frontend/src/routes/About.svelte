@@ -63,7 +63,7 @@
         <div class="s12 m6 l8">
             <h3>What is {import.meta.env.VITE_SITE_NAME} Survey?</h3>
             <p>
-                Purplix Survey is a free& <a
+                Purplix Survey is a free & <a
                     target="_blank"
                     referrerpolicy="no-referrer"
                     href="https://github.com/WardPearce/Purplix.io"
