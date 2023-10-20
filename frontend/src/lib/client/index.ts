@@ -60,7 +60,7 @@ export type { UserJtiModel } from './models/UserJtiModel';
 export type { UserLoginSignatureModel } from './models/UserLoginSignatureModel';
 export type { UserModel } from './models/UserModel';
 export type { UserToSignModel } from './models/UserToSignModel';
-export { WebhookModel } from './models/WebhookModel';
+export type { WebhookModel } from './models/WebhookModel';
 
 export { AccountService } from './services/AccountService';
 export { CanaryService } from './services/CanaryService';

@@ -39,6 +39,32 @@ export class WarrantService {
     }
 
     /**
+     * Publish
+     * Publish a canary
+     * @param warrantId
+     * @param requestBody
+     * @returns any Document created, URL follows
+     * @throws ApiError
+     */
+    public controllersCanaryWarrantWarrantIdPublishPublish(
+        warrantId: string,
+        requestBody: PublishCanaryWarrantModel,
+    ): CancelablePromise<any> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/controllers/canary/warrant/{warrant_id}/publish',
+            path: {
+                'warrant_id': warrantId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
      * UploadDocument
      * Upload a canary warrant document
      * @param warrantId
@@ -61,32 +87,6 @@ export class WarrantService {
             },
             formData: formData,
             mediaType: 'multipart/form-data',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
-     * Publish
-     * Publish a canary
-     * @param warrantId
-     * @param requestBody
-     * @returns any Document created, URL follows
-     * @throws ApiError
-     */
-    public controllersCanaryWarrantWarrantIdPublishPublish(
-        warrantId: string,
-        requestBody: PublishCanaryWarrantModel,
-    ): CancelablePromise<any> {
-        return this.httpRequest.request({
-            method: 'POST',
-            url: '/controllers/canary/warrant/{warrant_id}/publish',
-            path: {
-                'warrant_id': warrantId,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },

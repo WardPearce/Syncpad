@@ -9,18 +9,18 @@ export class SubscriptionService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * Unsubscribe
-     * Unsubscribe from a canary
+     * AmSubscribed
+     * Check if user is subscribed to a canary
      * @param canaryId
-     * @returns void
+     * @returns boolean Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
+    public controllersCanarySubscriptionCanaryIdAmSubscribed(
         canaryId: string,
-    ): CancelablePromise<void> {
+    ): CancelablePromise<boolean> {
         return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
+            method: 'GET',
+            url: '/controllers/canary/subscription/{canary_id}',
             path: {
                 'canary_id': canaryId,
             },
@@ -53,18 +53,18 @@ export class SubscriptionService {
     }
 
     /**
-     * AmSubscribed
-     * Check if user is subscribed to a canary
+     * Unsubscribe
+     * Unsubscribe from a canary
      * @param canaryId
-     * @returns boolean Request fulfilled, document follows
+     * @returns void
      * @throws ApiError
      */
-    public controllersCanarySubscriptionCanaryIdAmSubscribed(
+    public controllersCanarySubscriptionCanaryIdUnsubscribeUnsubscribe(
         canaryId: string,
-    ): CancelablePromise<boolean> {
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/canary/subscription/{canary_id}',
+            method: 'DELETE',
+            url: '/controllers/canary/subscription/{canary_id}/unsubscribe',
             path: {
                 'canary_id': canaryId,
             },

@@ -9,7 +9,6 @@
   import apiClient from "../lib/apiClient";
   import {
     ApiError,
-    WebhookModel,
     type NftyNotificationModel,
     type SessionModel,
     type UserModel,
@@ -47,7 +46,7 @@
   let newRawPassword = "";
 
   let webhookUrl = "";
-  let currentNotifyTab: WebhookModel.type = WebhookModel.type.CANARY_RENEWALS;
+  let currentNotifyTab: string = "canary_renewals";
 
   let pushNotificationTokens: Record<string, NftyNotificationModel> = {};
 
@@ -384,7 +383,7 @@
       </summary>
       <div>
         <div class="tabs left-align scroll">
-          {#each Object.values(WebhookModel.type) as webhookType}
+          {#each ["canary_renewals", "canary_subscriptions", "survey_submissions"] as webhookType}
             <a
               class:active={webhookType === currentNotifyTab}
               on:click={() => (currentNotifyTab = webhookType)}
@@ -398,12 +397,12 @@
           class="page padding active surface-variant"
           style="border-radius: 0 0 .75rem .75rem;"
         >
-          {#if currentNotifyTab === WebhookModel.type.CANARY_RENEWALS}
+          {#if currentNotifyTab === "canary_renewals"}
             <p>
               Whenever your canary is due for renewal, receive a alert via these
               channels.
             </p>
-          {:else if currentNotifyTab === WebhookModel.type.CANARY_SUBSCRIPTIONS}
+          {:else if currentNotifyTab === "canary_subscriptions"}
             <p>
               Receive a notification whenever a canary you are subscribed to
               publishes a new warrant via these channels.

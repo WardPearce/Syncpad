@@ -18,7 +18,7 @@ export class PushService {
      * @throws ApiError
      */
     public controllersAccountNotificationsPushAddAddPush(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+        requestBody: string,
     ): CancelablePromise<NftyNotificationModel> {
         return this.httpRequest.request({
             method: 'POST',
@@ -52,7 +52,7 @@ export class PushService {
      * @throws ApiError
      */
     public controllersAccountNotificationsPushRemoveRemovePush(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+        requestBody: string,
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',

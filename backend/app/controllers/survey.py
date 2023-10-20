@@ -85,46 +85,46 @@ async def list_surveys(
     return surveys
 
 
+@websocket(
+    "/responses/realtime/{survey_id:str}",
+    description="Stream survey responses in realtime",
+)
+async def stream_responses_ws(
+    socket: WebSocket,
+    channels: ChannelsPlugin,
+    state: "State",
+    survey_id: str,
+    pull_history: str = "true",
+) -> None:
+    try:
+        id_ = ObjectId(survey_id)
+    except InvalidId:
+        await socket.close()
+        raise SurveyNotFoundException()
+
+    user = Survey(state, id_).user(socket.user)
+
+    try:
+        await user.exists()
+    except SurveyNotFoundException:
+        await socket.close()
+        return
+
+    await socket.accept()
+
+    async with channels.start_subscription(
+        [f"survey.results.{survey_id}"]
+    ) as subscriber:
+        if pull_history.lower() == "true":
+            async for answer in user.answers():
+                await socket.send_json(answer.json(by_alias=True))
+
+        async for message in subscriber.iter_events():
+            await socket.send_json(message.decode())
+
+
 class SurveyController(Controller):
     path = "/{survey_id:str}"
-
-    @websocket(
-        "/responses/realtime",
-        description="Stream survey responses in realtime",
-    )
-    async def stream_responses_ws(
-        self,
-        socket: WebSocket,
-        channels: ChannelsPlugin,
-        state: "State",
-        survey_id: str,
-        pull_history: str = "true",
-    ) -> None:
-        try:
-            id_ = ObjectId(survey_id)
-        except InvalidId:
-            await socket.close()
-            raise SurveyNotFoundException()
-
-        user = Survey(state, id_).user(socket.user)
-
-        try:
-            await user.exists()
-        except SurveyNotFoundException:
-            await socket.close()
-            return
-
-        await socket.accept()
-
-        async with channels.start_subscription(
-            [f"survey.results.{survey_id}"]
-        ) as subscriber:
-            if pull_history.lower() == "true":
-                async for answer in user.answers():
-                    await socket.send_json(answer.json(by_alias=True))
-
-            async for message in subscriber.iter_events():
-                await socket.send_json(message.decode())
 
     async def __stream_responses(
         self, survey: SurveyUser
@@ -370,5 +370,5 @@ class SurveyController(Controller):
 router = Router(
     path="/survey",
     tags=["survey"],
-    route_handlers=[SurveyController, create_survey, list_surveys],
+    route_handlers=[SurveyController, create_survey, list_surveys, stream_responses_ws],
 )

@@ -27,7 +27,7 @@
             ).replace(
                 "https://",
                 ""
-            )}/controllers/survey/${surveyId}/responses/realtime?pull_history=${pullHistory}`
+            )}/controllers/survey/responses/realtime/${surveyId}/?pull_history=${pullHistory}`
         );
     }
 

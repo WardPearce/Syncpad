@@ -20,48 +20,26 @@ export class AccountService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
-     * ToSign
-     * Used to generate a unique code to sign.
+     * DeleteAccount
+     * Deletes entire account
      * @param email
-     * @returns UserToSignModel Request fulfilled, document follows
+     * @param otp
+     * @returns void
      * @throws ApiError
      */
-    public controllersAccountEmailToSignToSign(
+    public controllersAccountEmailDeleteDeleteAccount(
         email: string,
-    ): CancelablePromise<UserToSignModel> {
+        otp: string,
+    ): CancelablePromise<void> {
         return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/to-sign',
+            method: 'DELETE',
+            url: '/controllers/account/{email}/delete',
             path: {
                 'email': email,
             },
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-                404: `Nothing matches the given URI`,
+            query: {
+                'otp': otp,
             },
-        });
-    }
-
-    /**
-     * VerifyEmail
-     * Verify email for given account
-     * @param email
-     * @param emailSecret
-     * @returns string Redirect Response
-     * @throws ApiError
-     */
-    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
-        email: string,
-        emailSecret: string,
-    ): CancelablePromise<string> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/account/{email}/email/verify/{email_secret}',
-            path: {
-                'email': email,
-                'email_secret': emailSecret,
-            },
-            responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -126,26 +104,48 @@ export class AccountService {
     }
 
     /**
-     * DeleteAccount
-     * Deletes entire account
+     * ToSign
+     * Used to generate a unique code to sign.
      * @param email
-     * @param otp
-     * @returns void
+     * @returns UserToSignModel Request fulfilled, document follows
      * @throws ApiError
      */
-    public controllersAccountEmailDeleteDeleteAccount(
+    public controllersAccountEmailToSignToSign(
         email: string,
-        otp: string,
-    ): CancelablePromise<void> {
+    ): CancelablePromise<UserToSignModel> {
         return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/{email}/delete',
+            method: 'GET',
+            url: '/controllers/account/{email}/to-sign',
             path: {
                 'email': email,
             },
-            query: {
-                'otp': otp,
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+                404: `Nothing matches the given URI`,
             },
+        });
+    }
+
+    /**
+     * VerifyEmail
+     * Verify email for given account
+     * @param email
+     * @param emailSecret
+     * @returns string Redirect Response
+     * @throws ApiError
+     */
+    public controllersAccountEmailVerifyEmailSecretVerifyEmail(
+        email: string,
+        emailSecret: string,
+    ): CancelablePromise<string> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/account/{email}/email/verify/{email_secret}',
+            path: {
+                'email': email,
+                'email_secret': emailSecret,
+            },
+            responseHeader: 'location',
             errors: {
                 400: `Bad request syntax or unsupported method`,
             },
@@ -197,27 +197,6 @@ export class AccountService {
     }
 
     /**
-     * RemoveWebhook
-     * Remove a webhook
-     * @param requestBody
-     * @returns void
-     * @throws ApiError
-     */
-    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
-        requestBody: WebhookModel,
-    ): CancelablePromise<void> {
-        return this.httpRequest.request({
-            method: 'DELETE',
-            url: '/controllers/account/notifications/webhook/remove',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad request syntax or unsupported method`,
-            },
-        });
-    }
-
-    /**
      * AddWebhook
      * Add a webhook
      * @param requestBody
@@ -239,18 +218,18 @@ export class AccountService {
     }
 
     /**
-     * RemoveEmail
-     * Disable email notification
+     * RemoveWebhook
+     * Remove a webhook
      * @param requestBody
      * @returns void
      * @throws ApiError
      */
-    public controllersAccountNotificationsEmailRemoveRemoveEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+    public controllersAccountNotificationsWebhookRemoveRemoveWebhook(
+        requestBody: WebhookModel,
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/controllers/account/notifications/email/remove',
+            url: '/controllers/account/notifications/webhook/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -267,11 +246,32 @@ export class AccountService {
      * @throws ApiError
      */
     public controllersAccountNotificationsEmailAddAddEmail(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+        requestBody: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
             url: '/controllers/account/notifications/email/add',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad request syntax or unsupported method`,
+            },
+        });
+    }
+
+    /**
+     * RemoveEmail
+     * Disable email notification
+     * @param requestBody
+     * @returns void
+     * @throws ApiError
+     */
+    public controllersAccountNotificationsEmailRemoveRemoveEmail(
+        requestBody: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/controllers/account/notifications/email/remove',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -288,7 +288,7 @@ export class AccountService {
      * @throws ApiError
      */
     public controllersAccountNotificationsPushAddAddPush(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+        requestBody: string,
     ): CancelablePromise<NftyNotificationModel> {
         return this.httpRequest.request({
             method: 'POST',
@@ -322,7 +322,7 @@ export class AccountService {
      * @throws ApiError
      */
     public controllersAccountNotificationsPushRemoveRemovePush(
-        requestBody: 'canary_renewals' | 'canary_subscriptions' | 'survey_submissions',
+        requestBody: string,
     ): CancelablePromise<void> {
         return this.httpRequest.request({
             method: 'DELETE',

@@ -13,6 +13,18 @@ export class SettingsService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
     /**
+     * Documents
+     * @returns Documents Request fulfilled, document follows
+     * @throws ApiError
+     */
+    public controllersSettingsDocumentsDocuments(): CancelablePromise<Documents> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/controllers/settings/documents',
+        });
+    }
+
+    /**
      * Enabled
      * @returns Enabled Request fulfilled, document follows
      * @throws ApiError
@@ -33,18 +45,6 @@ export class SettingsService {
         return this.httpRequest.request({
             method: 'GET',
             url: '/controllers/settings/notification/webhooks',
-        });
-    }
-
-    /**
-     * Documents
-     * @returns Documents Request fulfilled, document follows
-     * @throws ApiError
-     */
-    public controllersSettingsDocumentsDocuments(): CancelablePromise<Documents> {
-        return this.httpRequest.request({
-            method: 'GET',
-            url: '/controllers/settings/documents',
         });
     }
 

@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type NotificationsModel = {
-    email: Array<'canary_renewals' | 'canary_subscriptions' | 'survey_submissions'>;
+    email: Array<string>;
     webhooks: Record<string, Array<string>>;
     push?: Record<string, string>;
 };
