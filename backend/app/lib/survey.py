@@ -7,7 +7,6 @@ from lib.ntfy import push_notification
 from lib.smtp import send_email
 from lib.url import untrusted_http_request
 from lib.user import User
-from models.user import NotificationEnum
 
 from app.errors import SurveyNotFoundException, SurveyResultNotFoundException
 from app.models.survey import (
@@ -101,10 +100,7 @@ class Survey:
         subject = "A new user has submitted a survey"
         message = "A new survey response has been submitted"
 
-        if any(
-            NotificationEnum.survey_submissions.value == enum.value
-            for enum in user.notifications.email
-        ):
+        if "survey_submissions" in user.notifications.email:
             futures.append(
                 send_email(
                     user.email,
@@ -113,14 +109,11 @@ class Survey:
                 )
             )
 
-        if any(
-            NotificationEnum.survey_submissions.value == enum.value
-            for enum in user.notifications.push
-        ):
+        if "survey_submissions" in user.notifications.push:
             futures.append(
                 push_notification(
                     self._state,
-                    topic=user.notifications.push[NotificationEnum.survey_submissions],
+                    topic=user.notifications.push["survey_submissions"],
                     message=message,
                     title=subject,
                     tags="mailbox_with_mail",
@@ -128,13 +121,8 @@ class Survey:
                 )
             )
 
-        if any(
-            NotificationEnum.survey_submissions.value == enum.value
-            for enum in user.notifications.webhooks
-        ):
-            for webhook in user.notifications.webhooks[
-                NotificationEnum.survey_submissions
-            ]:
+        if "survey_submissions" in user.notifications.webhooks:
+            for webhook in user.notifications.webhooks["survey_submissions"]:
                 futures.append(
                     untrusted_http_request(
                         state=self._state, url=webhook, method="POST", json=submission

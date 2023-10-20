@@ -11,7 +11,6 @@ from lib.ntfy import push_notification
 from lib.smtp import send_email
 from lib.url import untrusted_http_request
 from lib.user import User
-from models.user import NotificationEnum
 
 from app.env import SETTINGS
 from app.errors import CanaryNotFoundException, DomainValidationError
@@ -181,10 +180,7 @@ class Canary:
         ):
             user = await User(self._state, subscribed["user_id"]).get()
 
-            if any(
-                NotificationEnum.canary_subscriptions.value == enum.value
-                for enum in user.notifications.email
-            ):
+            if "canary_subscriptions" in user.notifications.email:
                 futures.append(
                     send_email(
                         user.email,
@@ -193,16 +189,11 @@ class Canary:
                     )
                 )
 
-            if any(
-                NotificationEnum.canary_subscriptions.value == enum.value
-                for enum in user.notifications.push
-            ):
+            if "canary_subscriptions" in user.notifications.push:
                 futures.append(
                     push_notification(
                         self._state,
-                        topic=user.notifications.push[
-                            NotificationEnum.canary_subscriptions
-                        ],
+                        topic=user.notifications.push["canary_subscriptions"],
                         message=message,
                         title=subject,
                         tags="mailbox_with_mail",
@@ -210,13 +201,8 @@ class Canary:
                     )
                 )
 
-            if any(
-                NotificationEnum.canary_subscriptions.value == enum.value
-                for enum in user.notifications.webhooks
-            ):
-                for webhook in user.notifications.webhooks[
-                    NotificationEnum.canary_subscriptions
-                ]:
+            if "canary_subscriptions" in user.notifications.webhooks:
+                for webhook in user.notifications.webhooks["canary_subscriptions"]:
                     futures.append(
                         untrusted_http_request(
                             state=self._state, url=webhook, method="POST", json=warrant

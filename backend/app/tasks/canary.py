@@ -13,7 +13,6 @@ from app.lib.smtp import send_email
 from app.lib.url import untrusted_http_request
 from app.lib.user import User
 from app.models.canary import CanaryModel, PublishedCanaryWarrantModel
-from app.models.user import NotificationEnum
 
 if TYPE_CHECKING:
     from app.custom_types import State
@@ -35,7 +34,7 @@ async def __handle_canary_verification(state: "State", canary: CanaryModel) -> N
 
     await push_notification(
         state,
-        topic=user.notifications.push[NotificationEnum.canary_renewals],
+        topic=user.notifications.push["canary_renewals"],
         message=content,
         title=subject,
         tags="+1",
@@ -94,10 +93,7 @@ async def canary_owner_alerts(state: "State") -> None:
         subject = f"Canary renewal due in {due_in}"
         message = f"Your canary for {canary['domain']} is due in {due_in}.\nPlease renew it at {SETTINGS.proxy_urls.frontend}/dashboard/canary/publish/{canary['domain']}/"
 
-        if any(
-            NotificationEnum.canary_renewals.value == enum.value
-            for enum in user.notifications.email
-        ):
+        if "canary_renewals" in user.notifications.email:
             futures.append(
                 send_email(
                     user.email,
@@ -106,14 +102,11 @@ async def canary_owner_alerts(state: "State") -> None:
                 )
             )
 
-        if any(
-            NotificationEnum.canary_renewals.value == enum.value
-            for enum in user.notifications.push
-        ):
+        if "canary_renewals" in user.notifications.push:
             futures.append(
                 push_notification(
                     state,
-                    topic=user.notifications.push[NotificationEnum.canary_renewals],
+                    topic=user.notifications.push["canary_renewals"],
                     message=message,
                     title=subject,
                     tags="loudspeaker",
@@ -121,13 +114,8 @@ async def canary_owner_alerts(state: "State") -> None:
                 )
             )
 
-        if any(
-            NotificationEnum.canary_renewals.value == enum.value
-            for enum in user.notifications.webhooks
-        ):
-            for webhook in user.notifications.webhooks[
-                NotificationEnum.canary_renewals
-            ]:
+        if "canary_renewals" in user.notifications.webhooks:
+            for webhook in user.notifications.webhooks["canary_renewals"]:
                 futures.append(
                     untrusted_http_request(
                         state=state,

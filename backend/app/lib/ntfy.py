@@ -19,7 +19,7 @@ async def push_notification(
     | Literal["min"] = "default",
 ) -> None:
     await state.aiohttp.post(
-        f"{SETTINGS.nfty.url}/{topic}",
+        f"{SETTINGS.ntfy.url}/{topic}",
         data=message,
         headers={
             "Title": title,
