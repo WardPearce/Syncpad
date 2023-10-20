@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 import pyotp
 from argon2.profiles import RFC_9106_LOW_MEMORY
@@ -10,16 +10,16 @@ from pydantic import AnyUrl, BaseModel, EmailStr, Field
 from app.env import SETTINGS
 from app.models.customs import CustomJsonEncoder, IvField
 
-
-class NotificationEnum(Enum):
-    canary_renewals = "canary_renewals"
-    canary_subscriptions = "canary_subscriptions"
-    survey_submissions = "survey_submissions"
+ALERT_TYPES = (
+    Literal["canary_renewals"]
+    | Literal["canary_subscriptions"]
+    | Literal["survey_submissions"]
+)
 
 
 class WebhookModel(BaseModel):
     url: AnyUrl
-    type: NotificationEnum
+    type: ALERT_TYPES
 
 
 class EmailModel(BaseModel):
@@ -135,9 +135,9 @@ class OtpModel(BaseModel):
 
 
 class NotificationsModel(CustomJsonEncoder):
-    email: List[NotificationEnum] = Field(..., max_length=3)
-    webhooks: Dict[NotificationEnum, List[str]]
-    push: Dict[NotificationEnum, str] = {}
+    email: List[ALERT_TYPES] = Field(..., max_length=3)
+    webhooks: Dict[ALERT_TYPES, List[str]]
+    push: Dict[ALERT_TYPES, str] = {}
 
 
 class UserModel(__CreateUserShared, EmailModel, CustomJsonEncoder):

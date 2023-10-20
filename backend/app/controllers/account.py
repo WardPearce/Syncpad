@@ -42,10 +42,10 @@ from app.lib.user import User, generate_email_validation
 from app.models.jwt import UserJtiModel
 from app.models.session import CreateSessionModel, SessionLocationModel
 from app.models.user import (
+    ALERT_TYPES,
     AccountUpdatePassword,
     CreateUserModel,
     NftyNotificationModel,
-    NotificationEnum,
     OtpModel,
     PublicUserModel,
     UserLoginSignatureModel,
@@ -362,9 +362,9 @@ async def create_account(
             "otp": {"secret": pyotp.random_base32(), "completed": False},
             "notifications": {
                 "email": [
-                    NotificationEnum.canary_renewals.value,
-                    NotificationEnum.canary_subscriptions.value,
-                    NotificationEnum.survey_submissions.value,
+                    "canary_renewals",
+                    "canary_subscriptions",
+                    "survey_submissions",
                 ],
                 "webhooks": {},
             },
@@ -468,9 +468,7 @@ class PushNotificationController(Controller):
 
         response: dict[str, NftyNotificationModel] = {}
         for type_, topic in user.notifications.push.items():
-            response[type_.value] = NftyNotificationModel(
-                topic=topic, url=SETTINGS.ntfy.url
-            )
+            response[type_] = NftyNotificationModel(topic=topic, url=SETTINGS.ntfy.url)
 
         return response
 
@@ -483,14 +481,14 @@ class PushNotificationController(Controller):
         self,
         state: "State",
         request: Request[ObjectId, Token, Any],
-        data: NotificationEnum,
+        data: ALERT_TYPES,
     ) -> NftyNotificationModel:
         topic = secrets.token_urlsafe(SETTINGS.ntfy.topic_len)
 
         await state.mongo.user.update_one(
             {"_id": request.user},
             {
-                "$set": {f"notifications.push.{data.value}": topic},
+                "$set": {f"notifications.push.{data}": topic},
             },
         )
 
@@ -505,11 +503,11 @@ class PushNotificationController(Controller):
         self,
         state: "State",
         request: Request[ObjectId, Token, Any],
-        data: NotificationEnum,
+        data: ALERT_TYPES,
     ) -> None:
         await state.mongo.user.update_one(
             {"_id": request.user},
-            {"$unset": f"notifications.push.{data.value}"},
+            {"$unset": f"notifications.push.{data}"},
         )
 
 
@@ -525,10 +523,10 @@ class EmailNotificationController(Controller):
         self,
         state: "State",
         request: Request[ObjectId, Token, Any],
-        data: NotificationEnum,
+        data: ALERT_TYPES,
     ) -> None:
         await state.mongo.user.update_one(
-            {"_id": request.user}, {"$push": {"notifications.email": data.value}}
+            {"_id": request.user}, {"$push": {"notifications.email": data}}
         )
 
     @delete(
@@ -540,10 +538,10 @@ class EmailNotificationController(Controller):
         self,
         state: "State",
         request: Request[ObjectId, Token, Any],
-        data: NotificationEnum,
+        data: ALERT_TYPES,
     ) -> None:
         await state.mongo.user.update_one(
-            {"_id": request.user}, {"$pull": {"notifications.email": data.value}}
+            {"_id": request.user}, {"$pull": {"notifications.email": data}}
         )
 
 
@@ -563,7 +561,7 @@ class WebhookController(Controller):
     ) -> None:
         await state.mongo.user.update_one(
             {"_id": request.user},
-            {"$pull": {f"notifications.webhooks.{data.type.value}": data.url}},
+            {"$pull": {f"notifications.webhooks.{data.type}": data.url}},
         )
 
     @post(
@@ -588,17 +586,17 @@ class WebhookController(Controller):
         await state.mongo.user.update_one(
             {
                 "_id": request.user,
-                f"notifications.webhooks.{data.type.value}": {"$exists": False},
+                f"notifications.webhooks.{data.type}": {"$exists": False},
             },
             {
-                "$set": {"notifications.webhooks": {data.type.value: []}},
+                "$set": {"notifications.webhooks": {data.type: []}},
             },
         )
 
         await state.mongo.user.update_one(
             {"_id": request.user},
             {
-                "$push": {f"notifications.webhooks.{data.type.value}": data.url},
+                "$push": {f"notifications.webhooks.{data.type}": data.url},
             },
         )
 
