@@ -205,13 +205,13 @@ frozenlist = ">=1.1.0"
 
 [[package]]
 name = "aiosmtplib"
-version = "3.0.0"
+version = "3.0.1"
 description = "asyncio SMTP client"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "aiosmtplib-3.0.0-py3-none-any.whl", hash = "sha256:3b718f8a457fa3a986c4975f0cccb864a73070bc4809f83199b55e6251eeb254"},
-    {file = "aiosmtplib-3.0.0.tar.gz", hash = "sha256:857767879678edb5d188e9d38c16dbfe7b3045b535f45b26b349c6471fe8c234"},
+    {file = "aiosmtplib-3.0.1-py3-none-any.whl", hash = "sha256:abcceae7e820577307b4cda2041b2c25e5121469c0e186764ddf8e15b12064cd"},
+    {file = "aiosmtplib-3.0.1.tar.gz", hash = "sha256:43580604b152152a221598be3037f0ae6359c2817187ac4433bd857bc3fc6513"},
 ]
 
 [package.extras]
@@ -3696,4 +3696,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "08b990f57cee96eeae5a1d9647a155d6b07ac44a2155fa676371a7a014fd8e79"
+content-hash = "3c95407ae5a968d8366e61b40aa5c8dd0c79133421bbb293684e29473ae8a31d"
