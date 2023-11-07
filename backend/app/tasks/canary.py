@@ -71,7 +71,7 @@ async def canary_owner_alerts(state: "State") -> None:
         {
             "active": True,
             "published": True,
-            "next_canary": {"$gte": now, "$lte": now + timedelta(hours=24)},
+            "next_canary": {"$lte": now + timedelta(hours=24)},
             "alerted": False,
         }
     ):
@@ -129,7 +129,7 @@ async def canary_owner_alerts(state: "State") -> None:
             asyncio.gather(*futures)
 
         await state.mongo.canary_warrant.update_one(
-            {"_id": canary_warrant["_id"]}, {"alerted": True}
+            {"_id": canary_warrant["_id"]}, {"$set": {"alerted": True}}
         )
 
 

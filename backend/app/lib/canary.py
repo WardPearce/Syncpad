@@ -173,7 +173,7 @@ class Canary:
         futures = []
 
         subject = f"A new canary warrant has been published for {canary.domain}"
-        message = f"Please visit the canary for {canary.domain} to view the latest statement.\n\nNever trust any claims made via emails about canaries."
+        message = f"Please visit the canary for {canary.domain} to view the latest statement.\n\nNever trust any claims made via notifications about canaries."
 
         async for subscribed in self._state.mongo.subscribed_canary.find(
             {"canary_id": canary.id}
