@@ -1,5 +1,5 @@
 <main>
-  <div class="loader large" />
+  <progress class="circle large" />
   <h5>Loading...</h5>
 </main>
 

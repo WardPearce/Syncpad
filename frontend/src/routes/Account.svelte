@@ -587,7 +587,7 @@
       </summary>
 
       {#if activeSessions.length === 0}
-        <span class="loader medium" />
+        <progress class="circle" />
       {:else}
         {#if activeSessions.length > 1}
           <button on:click={logoutAllOther}>Logout all other sessions</button>

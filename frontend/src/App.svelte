@@ -135,7 +135,7 @@
               <span>Resend email</span>
             </button>
           {:else}
-            <span class="loader small" />
+            <progress class="circle small" />
           {/if}
         </nav>
         <p>

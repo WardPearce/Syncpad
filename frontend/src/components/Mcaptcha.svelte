@@ -84,7 +84,7 @@
         <button class="square round" on:click={startPow} type="button" />
         <p>I'm not a robot</p>
       {:else if status == CaptchaStatus.loading}
-        <span class="loader" style="margin: 0 1em" />
+        <progress class="circle" style="margin: 0 1em" />
         <p>Processing</p>
       {:else}
         <button class="square round" disabled type="button">

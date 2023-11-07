@@ -102,7 +102,7 @@
 
     <div class="right-align" style="margin-top: 1em;">
       {#if domainVerifying}
-        <span class="loader medium" />
+        <progress class="circle" />
       {:else}
         <button on:click={verifyDomain}>
           <i>travel_explore</i>

@@ -526,7 +526,7 @@
                       {/if}
 
                       {#if documentDownloading.includes(document.file_id)}
-                        <span class="loader small" />
+                        <progress class="circle small" />
                       {:else}
                         <nav class="wrap">
                           <button

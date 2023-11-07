@@ -133,7 +133,7 @@
 
     <div class="right-align" style="margin-top: 1em;">
       {#if isLoading}
-        <span class="loader medium" />
+        <progress class="circle" />
       {:else}
         <button>
           <i>arrow_forward_ios</i>
