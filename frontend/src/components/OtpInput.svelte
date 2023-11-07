@@ -28,5 +28,5 @@
     </nav>
   </form>
 {:else}
-  <span class="loader medium" />
+  <progress class="circle" />
 {/if}

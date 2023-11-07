@@ -148,7 +148,7 @@
       <div style="display: flex; flex-direction: column;align-items: center;">
         <h4>Loading</h4>
         <p>Please wait, this may take a moment.</p>
-        <span style="margin: 1em 0;" class="loader large" />
+        <progress class="circle large" style="margin: 1em 0;" />
 
         {#if $advanceModeStore}
           <div style="font-style: italic;text-align: center;">

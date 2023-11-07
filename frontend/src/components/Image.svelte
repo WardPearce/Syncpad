@@ -30,5 +30,5 @@
 {:else if failed}
     <p>Failed to load</p>
 {:else if loading}
-    <span class={`loader ${size}`} />
+    <progress class={`circle ${size}`} />
 {/if}
