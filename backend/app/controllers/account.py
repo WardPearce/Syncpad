@@ -1,4 +1,5 @@
 import binascii
+import hashlib
 import secrets
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Optional
@@ -82,6 +83,14 @@ class LoginController(Controller):
             await OneTimePassword.validate_user(state, user, otp)
         except InvalidAccountAuth:
             raise
+
+        block_canary_domain = []
+        async for canary in state.mongo.canary.find({"user_id": user.id}):
+            block_canary_domain.append(
+                {"domain_hash": hashlib.sha256(canary["domain"].encode()).hexdigest()}
+            )
+
+        await state.mongo.deleted_canary.insert_many(block_canary_domain)
 
         collection_names = await state.mongo.list_collection_names()  # type: ignore
 

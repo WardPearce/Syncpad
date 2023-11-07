@@ -219,6 +219,7 @@ class PublishCanary(Controller):
             "concern": data.concern.value,
             "active": True,
             "published": True,
+            "alerted": False,
         }
 
         await state.mongo.canary_warrant.update_one(
