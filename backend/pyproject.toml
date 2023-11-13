@@ -18,7 +18,7 @@ motor = "^3.1.2"
 motor-types = "^1.0.0b1"
 pynacl = "^1.5.0"
 pyotp = "^2.8.0"
-litestar = {extras = ["full"], version = "^2.3.1"}
+litestar = {extras = ["full"], version = "^2.3.2"}
 aiohttp = "^3.8.6"
 email-validator = "^2.1.0"
 argon2-cffi = "^23.1.0"
@@ -39,9 +39,9 @@ uvicorn = {extras = ["standard"], version = "^0.24.0"}
 motor-types = "^1.0.0b1"
 types-aiobotocore = {extras = ["essential"], version = "^2.7.0"}
 pytest = "^7.4.3"
-black = "^23.10.1"
-mypy = "^1.6.1"
-types-redis = "^4.6.0.9"
+black = "^23.11.0"
+mypy = "^1.7.0"
+types-redis = "^4.6.0.10"
 
 [build-system]
 requires = ["poetry-core"]
