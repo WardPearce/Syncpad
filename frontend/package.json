@@ -15,7 +15,7 @@
     "@sveltejs/vite-plugin-svelte": "^2.5.2",
     "@tsconfig/svelte": "^5.0.2",
     "@types/ajv": "^1.0.0",
-    "@types/libsodium-wrappers-sumo": "^0.7.7",
+    "@types/libsodium-wrappers-sumo": "^0.7.8",
     "@types/safe-regex": "^1.1.5",
     "@types/ua-parser-js": "^0.7.39",
     "@zxcvbn-ts/core": "^3.0.4",
