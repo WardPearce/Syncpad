@@ -20,7 +20,7 @@
     "@types/ua-parser-js": "^0.7.39",
     "@zxcvbn-ts/core": "^3.0.4",
     "ajv": "^8.12.0",
-    "beercss": "^3.4.5",
+    "beercss": "^3.4.7",
     "dayjs": "^1.11.8",
     "idb-keyval": "^6.2.1",
     "libsodium-wrappers-sumo": "^0.7.11",
