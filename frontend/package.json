@@ -16,7 +16,7 @@
     "@tsconfig/svelte": "^5.0.2",
     "@types/ajv": "^1.0.0",
     "@types/libsodium-wrappers-sumo": "^0.7.8",
-    "@types/safe-regex": "^1.1.5",
+    "@types/safe-regex": "^1.1.6",
     "@types/ua-parser-js": "^0.7.39",
     "@zxcvbn-ts/core": "^3.0.4",
     "ajv": "^8.12.0",
