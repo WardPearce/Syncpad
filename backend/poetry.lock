@@ -1282,13 +1282,13 @@ six = ">=1.13.0"
 
 [[package]]
 name = "litestar"
-version = "2.5.2"
+version = "2.5.5"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "litestar-2.5.2-py3-none-any.whl", hash = "sha256:b869b57e3e469576ee478c6ce3f5a74b02e420096ef7fa74ed44497874f80738"},
-    {file = "litestar-2.5.2.tar.gz", hash = "sha256:7978eb33ad1211c102e9c362e1ec3a754a93741b46b3bc7bbf0f43804bef55f5"},
+    {file = "litestar-2.5.5-py3-none-any.whl", hash = "sha256:7797e74dd5bb465f6398cf35e5d5bfb99fee92f66b4afd4c066f7dc370510021"},
+    {file = "litestar-2.5.5.tar.gz", hash = "sha256:0ae9e526ec89c869883e3e5818f71fb2ae3d53490e0f316ccd71d5cbe5ce0c49"},
 ]
 
 [package.dependencies]
@@ -3640,4 +3640,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "45a086ccb65eb6f59f98926f9e9a0de125f5f9765aef585d4e1a54af973e2d70"
+content-hash = "c591b6a84489c67457f9bd5c1eeb757cb2c47225a2ac54fb3f1763db36538f88"
