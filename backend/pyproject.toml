@@ -41,7 +41,7 @@ types-aiobotocore = {extras = ["essential"], version = "^2.11.0"}
 pytest = "^8.0.0"
 black = "^23.12.1"
 mypy = "^1.8.0"
-types-redis = "^4.6.0.11"
+types-redis = "^4.6.0.20240106"
 
 [build-system]
 requires = ["poetry-core"]
