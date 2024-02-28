@@ -15,7 +15,7 @@ server = "run:main"
 [tool.poetry.dependencies]
 python = "^3.11"
 motor = "^3.3.2"
-motor-types = "^1.0.0b1"
+motor-types = "^1.0.0b4"
 pynacl = "^1.5.0"
 pyotp = "^2.8.0"
 litestar = {extras = ["full"], version = "^2.6.0"}
@@ -36,7 +36,7 @@ uvicorn = {extras = ["standard"], version = "^0.27.1"}
 
 
 [tool.poetry.group.dev.dependencies]
-motor-types = "^1.0.0b1"
+motor-types = "^1.0.0b4"
 types-aiobotocore = {extras = ["essential"], version = "^2.11.2"}
 pytest = "^8.0.0"
 black = "^24.1.1"
