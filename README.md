@@ -1,3 +1,6 @@
+## Purplix is still in development!
+As Svelte 5 is yet to be released, we are actively gearing up for its stable release. Once launched, our focus will shift towards comprehensive test coverage, a third-party audit, and implementing a payment scheme aligned with FOSS principles to ensure Purplix's self-sustainability.
+
 # Purplix is in early alpha
 Please report any issues.
 
