@@ -33,7 +33,7 @@
     "svelte-dnd-action": "^0.9.40",
     "svelte-qrcode": "^1.0.0",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.2",
     "ua-parser-js": "^1.0.37",
     "vite": "^4.5.0",
     "vite-plugin-pwa": "^0.19.2",
