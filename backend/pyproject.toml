@@ -30,7 +30,7 @@ aiocron = "^1.8"
 humanize = "^4.9.0"
 cryptography = "^42.0.5"
 pydantic-settings = "^2.2.1"
-redis = "^5.0.2"
+redis = "^5.0.3"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 uvicorn = {extras = ["standard"], version = "^0.28.0"}
 
