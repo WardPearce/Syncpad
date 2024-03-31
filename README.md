@@ -54,6 +54,9 @@ Canaries can include signed documents to help users further understand a situati
 #### Notifications
 Users are automatically notified on the event of a new statement being published.
 
+# Have any questions?
+[Join our Matrix space](https://matrix.to/#/#ward:matrix.org)
+
 # Setup
 ## Production
 In order to self-host Purplix, you must be conformable using Docker, using some sort of reverse proxy & following documentation.
