@@ -18,13 +18,13 @@ typing-extensions = "*"
 
 [[package]]
 name = "aiobotocore"
-version = "2.12.1"
+version = "2.12.2"
 description = "Async client for aws services using botocore and aiohttp"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "aiobotocore-2.12.1-py3-none-any.whl", hash = "sha256:6a9a3d646cf422f45fdc1e4256e78563ebffba64733bc9b8ca9123614e8ba9af"},
-    {file = "aiobotocore-2.12.1.tar.gz", hash = "sha256:8706b28f16f93c541f6ed50352115a79d8f3499539f8d0bb70aa0f7a5379c1fe"},
+    {file = "aiobotocore-2.12.2-py3-none-any.whl", hash = "sha256:eb595362cfa6cd70e2940766e3945b114e2522168b67096b0dbc3067f7fd60ad"},
+    {file = "aiobotocore-2.12.2.tar.gz", hash = "sha256:41160f33cdada96815be7d180d1a2405fbf03f0364bac88c03d6ff1ad2cd83d7"},
 ]
 
 [package.dependencies]
@@ -3655,4 +3655,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "edece423c8684731db996ded9fc99b2d171bf925a51ec16bce591e9afad3da42"
+content-hash = "ff294ae30258f8ebc93a38918497737438f100f38c7681b68935cd0b00cf54e3"
