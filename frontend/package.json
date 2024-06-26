@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@mcaptcha/pow-wasm": "^0.1.0-alpha-1",
-    "@sveltejs/vite-plugin-svelte": "^2.5.2",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/ajv": "^1.0.0",
     "@types/libsodium-wrappers-sumo": "^0.7.8",
