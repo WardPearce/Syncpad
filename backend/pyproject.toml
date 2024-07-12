@@ -37,7 +37,7 @@ uvicorn = {extras = ["standard"], version = "^0.30.1"}
 
 [tool.poetry.group.dev.dependencies]
 motor-types = "^1.0.0b4"
-types-aiobotocore = {extras = ["essential"], version = "^2.13.0"}
+types-aiobotocore = {extras = ["essential"], version = "^2.13.1"}
 pytest = "^8.2.2"
 black = "^24.4.2"
 mypy = "^1.10.0"
