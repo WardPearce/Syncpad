@@ -28,7 +28,7 @@ aiobotocore = "^2.13.1"
 aiohttp-proxy = "^0.1.2"
 aiocron = "^1.8"
 humanize = "^4.10.0"
-cryptography = "^42.0.8"
+cryptography = "^43.0.0"
 pydantic-settings = "^2.3.4"
 redis = "^5.0.7"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
