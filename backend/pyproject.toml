@@ -32,7 +32,7 @@ cryptography = "^42.0.8"
 pydantic-settings = "^2.3.4"
 redis = "^5.0.7"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-uvicorn = {extras = ["standard"], version = "^0.30.3"}
+uvicorn = {extras = ["standard"], version = "^0.30.5"}
 
 
 [tool.poetry.group.dev.dependencies]
