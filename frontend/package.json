@@ -23,7 +23,7 @@
     "beercss": "^3.5.6",
     "dayjs": "^1.11.11",
     "idb-keyval": "^6.2.1",
-    "libsodium-wrappers-sumo": "^0.7.11",
+    "libsodium-wrappers-sumo": "^0.7.14",
     "material-dynamic-colors": "^1.1.2",
     "openapi-typescript-codegen": "^0.29.0",
     "pretty-bytes": "^6.1.1",
