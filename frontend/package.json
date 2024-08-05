@@ -21,7 +21,7 @@
     "@zxcvbn-ts/core": "^3.0.4",
     "ajv": "^8.17.1",
     "beercss": "^3.5.6",
-    "dayjs": "^1.11.11",
+    "dayjs": "^1.11.12",
     "idb-keyval": "^6.2.1",
     "libsodium-wrappers-sumo": "^0.7.11",
     "material-dynamic-colors": "^1.1.2",
